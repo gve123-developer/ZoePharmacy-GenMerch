@@ -5,8 +5,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+08:00";
 
-CREATE DATABASE IF NOT EXISTS `pos_inventory_system_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `pos_inventory_system_db`;
 
 -- 1. Users table (No dependencies)
 DROP TABLE IF EXISTS `users`;
