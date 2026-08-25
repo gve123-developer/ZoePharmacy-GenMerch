@@ -4,12 +4,14 @@
     # 1. Allow direct access to PHP API and includes
     RewriteRule ^(api|includes) - [L]
 
-    # 2. If the file exists in /dist, serve it from /dist
+    # 2. Prevent infinite loops: if we are already serving from /dist/, stop rewriting
+    RewriteCond %{REQUEST_URI} ^/dist/
+    RewriteRule ^ - [L]
+
+    # 3. If the requested file exists in /dist, serve it from /dist (e.g. /assets/style.css -> /dist/assets/style.css)
     RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -f
     RewriteRule ^(.*)$ dist/$1 [L]
 
-    # 3. Otherwise, for any other request (like /, /dashboard, etc), serve dist/index.html
-    RewriteCond %{REQUEST_URI} !^/api/
-    RewriteCond %{REQUEST_URI} !^/includes/
+    # 4. Otherwise, route all remaining requests (like the root / or /dashboard) to dist/index.html for React Router
     RewriteRule ^(.*)$ dist/index.html [L]
 </IfModule>
