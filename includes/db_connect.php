@@ -4,12 +4,24 @@ error_reporting(E_ALL);
 ini_set('display_errors', '0');  // Don't show errors to browser — log them to DB instead
 ini_set('log_errors', '1');
 
-// Support Environment Variables for Production (Render/Aiven) with fallback to Localhost
-$servername = getenv('DB_HOST') ?: "127.0.0.1";
-$username = getenv('DB_USER') ?: "root";
-$password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : "";
-$dbname = getenv('DB_NAME') ?: "pos_inventory_system_db";
-$port = getenv('DB_PORT') ?: "3306";
+// Support Heroku JawsDB URL automatically
+$jawsdb_url = getenv('JAWSDB_URL');
+
+if ($jawsdb_url) {
+    $dbparts = parse_url($jawsdb_url);
+    $servername = $dbparts['host'];
+    $username = $dbparts['user'];
+    $password = $dbparts['pass'];
+    $dbname = ltrim($dbparts['path'], '/');
+    $port = isset($dbparts['port']) ? $dbparts['port'] : "3306";
+} else {
+    // Fallback for Localhost (XAMPP)
+    $servername = getenv('DB_HOST') ?: "127.0.0.1";
+    $username = getenv('DB_USER') ?: "root";
+    $password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : "";
+    $dbname = getenv('DB_NAME') ?: "pos_inventory_system_db";
+    $port = getenv('DB_PORT') ?: "3306";
+}
 
 try {
     $conn = new mysqli($servername, $username, $password, $dbname, (int) $port);
