@@ -1,0 +1,6 @@
+node_modules/
+debug_error.log
+mysql_data/
+.vite/
+api/reset_emails.log
+.vs/
