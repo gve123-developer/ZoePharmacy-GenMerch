@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-User-Name");
@@ -15,155 +16,359 @@ if ($method === 'OPTIONS') {
 
 if ($method !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Method not allowed'
+    ]);
+
     exit();
 }
 
 try {
-    $data = json_decode(file_get_contents("php://input"), true);
-    if (!$data) {
-        throw new RuntimeException("Invalid JSON body");
+
+    $data = json_decode(
+        file_get_contents("php://input"),
+        true
+    );
+
+    if (!is_array($data)) {
+        throw new RuntimeException(
+            "Invalid JSON body"
+        );
     }
 
     $action = $data['action'] ?? '';
 
-    // ─── ACTION 1: Request Reset Code ──────────────────────────────────────────
+
+    // =========================================================
+    // ACTION 1: REQUEST RESET CODE
+    // =========================================================
     if ($action === 'request') {
-        $loginInput = trim($data['login'] ?? ''); // Can be email or username
+
+        $loginInput =
+            trim($data['login'] ?? '');
+
         if ($loginInput === '') {
-            throw new RuntimeException("Email or username is required");
+            throw new RuntimeException(
+                "Email or username is required"
+            );
         }
 
-        // Find user by email or username
-        $stmt = $conn->prepare("SELECT email, username, full_name FROM users WHERE email = ? OR username = ?");
-        if (!$stmt) {
-            throw new RuntimeException("Prepare select user: " . $conn->error);
-        }
-        $stmt->bind_param("ss", $loginInput, $loginInput);
-        $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+        // Find user using either email or username
+        $stmt = $conn->prepare(
+            "SELECT
+                email,
+                username,
+                full_name
+             FROM users
+             WHERE email = :email
+                OR username = :username
+             LIMIT 1"
+        );
+
+        $stmt->execute([
+            ':email' => $loginInput,
+            ':username' => $loginInput
+        ]);
+
+        $user =
+            $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
+
             http_response_code(404);
-            echo json_encode(['success' => false, 'message' => 'No user account found with that email or username.']);
+
+            echo json_encode([
+                'success' => false,
+                'message' =>
+                    'No user account found with that email or username.'
+            ]);
+
             exit();
         }
 
         $email = $user['email'];
         $fullName = $user['full_name'];
 
-        // Generate a 6-digit reset code
-        $token = sprintf("%06d", mt_rand(100000, 999999));
+        // Generate secure 6-digit reset code
+        $token = (string)random_int(
+            100000,
+            999999
+        );
 
-        // Delete any existing codes for this email first
-        $del_stmt = $conn->prepare("DELETE FROM password_resets WHERE email = ?");
-        $del_stmt->bind_param("s", $email);
-        $del_stmt->execute();
-        $del_stmt->close();
+        /*
+        |--------------------------------------------------------------------------
+        | Replace any existing token for this email
+        |--------------------------------------------------------------------------
+        */
 
-        // Insert new token
-        $ins_stmt = $conn->prepare("INSERT INTO password_resets (email, token) VALUES (?, ?)");
-        if (!$ins_stmt) {
-            throw new RuntimeException("Prepare insert reset: " . $conn->error);
+        $conn->beginTransaction();
+
+        try {
+
+            $deleteStmt = $conn->prepare(
+                "DELETE FROM password_resets
+                 WHERE email = :email"
+            );
+
+            $deleteStmt->execute([
+                ':email' => $email
+            ]);
+
+            $insertStmt = $conn->prepare(
+                "INSERT INTO password_resets
+                (
+                    email,
+                    token
+                )
+                VALUES
+                (
+                    :email,
+                    :token
+                )"
+            );
+
+            $insertStmt->execute([
+                ':email' => $email,
+                ':token' => $token
+            ]);
+
+            $conn->commit();
+
+        } catch (Throwable $e) {
+
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            throw $e;
         }
-        $ins_stmt->bind_param("ss", $email, $token);
-        if (!$ins_stmt->execute()) {
-            throw new RuntimeException("Execute insert reset: " . $ins_stmt->error);
-        }
-        $ins_stmt->close();
 
-        // Send email using helper
+        /*
+        |--------------------------------------------------------------------------
+        | Send reset email
+        |--------------------------------------------------------------------------
+        */
+
         include_once __DIR__ . '/../includes/send_email.php';
-        send_reset_email($email, $fullName, $token);
 
-        // 🟢 LOCAL DEBUG LOG: Always write to a local log file so the user can test easily!
-        $logPath = __DIR__ . '/reset_emails.log';
-        $logContent = "==================================================\n";
-        $logContent .= "Timestamp: " . date('Y-m-d H:i:s') . "\n";
-        $logContent .= "Recipient: $fullName ($email)\n";
-        $logContent .= "Subject: Zoe Pharmacy POS - Password Reset Code\n";
-        $logContent .= "Token: $token\n";
-        $logContent .= "Message: Verification code: $token sent to email.\n";
-        $logContent .= "==================================================\n\n";
-        file_put_contents($logPath, $logContent, FILE_APPEND);
+        send_reset_email(
+            $email,
+            $fullName,
+            $token
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Local debug log
+        |--------------------------------------------------------------------------
+        */
+
+        $logPath =
+            __DIR__ . '/reset_emails.log';
+
+        $logContent =
+            "==================================================\n";
+
+        $logContent .=
+            "Timestamp: " .
+            date('Y-m-d H:i:s') .
+            "\n";
+
+        $logContent .=
+            "Recipient: $fullName ($email)\n";
+
+        $logContent .=
+            "Subject: Zoe Pharmacy POS - Password Reset Code\n";
+
+        $logContent .=
+            "Token: $token\n";
+
+        $logContent .=
+            "Message: Verification code: $token sent to email.\n";
+
+        $logContent .=
+            "==================================================\n\n";
+
+        file_put_contents(
+            $logPath,
+            $logContent,
+            FILE_APPEND
+        );
 
         echo json_encode([
             'success' => true,
             'email' => $email,
-            'message' => 'Reset code has been sent to your email.'
+            'message' =>
+                'Reset code has been sent to your email.'
         ]);
+
         exit();
     }
 
-    // ─── ACTION 2: Verify Token & Reset Password ──────────────────────────────
+
+    // =========================================================
+    // ACTION 2: VERIFY TOKEN AND RESET PASSWORD
+    // =========================================================
     elseif ($action === 'reset') {
-        $email = trim($data['email'] ?? '');
-        $token = trim($data['token'] ?? '');
-        $newPassword = $data['password'] ?? '';
 
-        if ($email === '' || $token === '' || $newPassword === '') {
-            throw new RuntimeException("Email, reset code, and new password are required");
+        $email =
+            trim($data['email'] ?? '');
+
+        $token =
+            trim($data['token'] ?? '');
+
+        $newPassword =
+            $data['password'] ?? '';
+
+        if (
+            $email === '' ||
+            $token === '' ||
+            $newPassword === ''
+        ) {
+            throw new RuntimeException(
+                "Email, reset code, and new password are required"
+            );
         }
 
-        // Verify token in DB (check if token matches and was created within 15 minutes)
+        /*
+        |--------------------------------------------------------------------------
+        | Verify reset token
+        |--------------------------------------------------------------------------
+        */
+
         $stmt = $conn->prepare(
-            "SELECT id FROM password_resets 
-             WHERE email = ? AND token = ? AND created_at >= NOW() - INTERVAL 15 MINUTE"
+            "SELECT id
+             FROM password_resets
+             WHERE email = :email
+               AND token = :token
+               AND created_at >=
+                   CURRENT_TIMESTAMP - INTERVAL '15 minutes'
+             ORDER BY created_at DESC
+             LIMIT 1"
         );
-        if (!$stmt) {
-            throw new RuntimeException("Prepare verify: " . $conn->error);
-        }
-        $stmt->bind_param("ss", $email, $token);
-        $stmt->execute();
-        $resetRecord = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+
+        $stmt->execute([
+            ':email' => $email,
+            ':token' => $token
+        ]);
+
+        $resetRecord =
+            $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$resetRecord) {
+
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Invalid or expired reset code.']);
+
+            echo json_encode([
+                'success' => false,
+                'message' =>
+                    'Invalid or expired reset code.'
+            ]);
+
             exit();
         }
 
-        // Hash new password
-        $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+        $passwordHash =
+            password_hash(
+                $newPassword,
+                PASSWORD_BCRYPT
+            );
 
-        // Update password in DB
-        $up_stmt = $conn->prepare("UPDATE users SET password_hash = ? WHERE email = ?");
-        if (!$up_stmt) {
-            throw new RuntimeException("Prepare update: " . $conn->error);
+        /*
+        |--------------------------------------------------------------------------
+        | Update password and delete token atomically
+        |--------------------------------------------------------------------------
+        */
+
+        $conn->beginTransaction();
+
+        try {
+
+            $updateStmt = $conn->prepare(
+                "UPDATE users
+                 SET
+                    password_hash = :password_hash,
+                    updated_at = CURRENT_TIMESTAMP
+                 WHERE email = :email"
+            );
+
+            $updateStmt->execute([
+                ':password_hash' => $passwordHash,
+                ':email' => $email
+            ]);
+
+            if ($updateStmt->rowCount() === 0) {
+                throw new RuntimeException(
+                    "User account not found"
+                );
+            }
+
+            $userStmt = $conn->prepare(
+                "SELECT username
+                 FROM users
+                 WHERE email = :email
+                 LIMIT 1"
+            );
+
+            $userStmt->execute([
+                ':email' => $email
+            ]);
+
+            $userRow =
+                $userStmt->fetch(PDO::FETCH_ASSOC);
+
+            $deleteStmt = $conn->prepare(
+                "DELETE FROM password_resets
+                 WHERE email = :email"
+            );
+
+            $deleteStmt->execute([
+                ':email' => $email
+            ]);
+
+            $conn->commit();
+
+        } catch (Throwable $e) {
+
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            throw $e;
         }
-        $up_stmt->bind_param("ss", $passwordHash, $email);
-        if (!$up_stmt->execute()) {
-            throw new RuntimeException("Execute update: " . $up_stmt->error);
-        }
-        $up_stmt->close();
-
-        // Get username to return to frontend so they can sync localStorage
-        $user_stmt = $conn->prepare("SELECT username FROM users WHERE email = ?");
-        $user_stmt->bind_param("s", $email);
-        $user_stmt->execute();
-        $userRow = $user_stmt->get_result()->fetch_assoc();
-        $user_stmt->close();
-
-        // Delete reset token so it cannot be reused
-        $del_stmt = $conn->prepare("DELETE FROM password_resets WHERE email = ?");
-        $del_stmt->bind_param("s", $email);
-        $del_stmt->execute();
-        $del_stmt->close();
 
         echo json_encode([
             'success' => true,
-            'username' => $userRow['username'] ?? '',
-            'message' => 'Password reset successfully!'
+            'username' =>
+                $userRow['username'] ?? '',
+            'message' =>
+                'Password reset successfully!'
         ]);
+
         exit();
-    } else {
-        throw new RuntimeException("Invalid action");
     }
 
-} catch (Exception $e) {
+
+    else {
+        throw new RuntimeException(
+            "Invalid action"
+        );
+    }
+
+} catch (Throwable $e) {
+
+    error_log(
+        "[forgot_password.php] " .
+        $e->getMessage()
+    );
+
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
 ?>

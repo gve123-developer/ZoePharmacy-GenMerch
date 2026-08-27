@@ -4,3 +4,12 @@ mysql_data/
 .vite/
 api/reset_emails.log
 .vs/
+
+mysql_data_backup/
+vendor/
+src/app/App.tsx.backup
+src/app/App.tsx.backup2
+test_postgres.php
+api/reset_emails.log
+inventory_system_setup_mysql_backup.sql
+inventory_system_setup_postgresql.sql

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
@@ -115,37 +115,91 @@ function App() {
 
     const fetchData = async () => {
       try {
-        const [productsRes, transactionsRes] = await Promise.all([
-          fetch('/api/products.php'),
-          fetch('/api/transactions.php')
-        ]);
+        const productsRes = await fetch('/api/products.php', {
+          cache: 'no-store'
+        });
 
-        if (!productsRes.ok || !transactionsRes.ok) {
-          throw new Error('Database connection failed');
+        if (!productsRes.ok) {
+          throw new Error(`Products API failed: HTTP ${productsRes.status}`);
         }
 
         const productsData = await productsRes.json();
-        const transactionsData = await transactionsRes.json();
 
-        // 🟢 SAVE TO CACHE FOR OFFLINE ACCESS
-        localStorage.setItem('cachedProducts', JSON.stringify(productsData));
-        localStorage.setItem('cachedTransactions', JSON.stringify(transactionsData));
+        if (!Array.isArray(productsData)) {
+          throw new Error('Products API returned invalid data');
+        }
 
         setProducts(productsData);
-        setTransactions(transactionsData);
+        localStorage.setItem(
+          'cachedProducts',
+          JSON.stringify(productsData)
+        );
+
       } catch (error) {
-        console.error("Error fetching data, falling back to cache:", error);
+        console.error('Error fetching products:', error);
+
         const cachedProducts = localStorage.getItem('cachedProducts');
-        const cachedTransactions = localStorage.getItem('cachedTransactions');
+
         if (cachedProducts) {
-          setProducts(JSON.parse(cachedProducts));
+          try {
+            const parsedProducts = JSON.parse(cachedProducts);
+
+            if (Array.isArray(parsedProducts)) {
+              setProducts(parsedProducts);
+            }
+          } catch (cacheError) {
+            console.error('Invalid cached products:', cacheError);
+          }
         }
+      }
+
+      try {
+        const transactionsRes = await fetch('/api/transactions.php', {
+          cache: 'no-store'
+        });
+
+        if (!transactionsRes.ok) {
+          throw new Error(
+            `Transactions API failed: HTTP ${transactionsRes.status}`
+          );
+        }
+
+        const transactionsData = await transactionsRes.json();
+
+        if (!Array.isArray(transactionsData)) {
+          throw new Error('Transactions API returned invalid data');
+        }
+
+        setTransactions(transactionsData);
+
+        localStorage.setItem(
+          'cachedTransactions',
+          JSON.stringify(transactionsData)
+        );
+
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+
+        const cachedTransactions =
+          localStorage.getItem('cachedTransactions');
+
         if (cachedTransactions) {
-          setTransactions(JSON.parse(cachedTransactions));
+          try {
+            const parsedTransactions =
+              JSON.parse(cachedTransactions);
+
+            if (Array.isArray(parsedTransactions)) {
+              setTransactions(parsedTransactions);
+            }
+          } catch (cacheError) {
+            console.error(
+              'Invalid cached transactions:',
+              cacheError
+            );
+          }
         }
       }
     };
-
     fetchData();
     const interval = setInterval(fetchData, 1000); // Retry every 1 second
     return () => clearInterval(interval);
@@ -210,7 +264,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    // ✅ Audit: log logout event
+    // âœ… Audit: log logout event
     if (currentUser) {
       logAuditAction(currentUser.name, 'Logout', `User "${currentUser.username}" logged out.`);
     }
@@ -493,7 +547,7 @@ function App() {
                       onClick={downloadPDF}
                       className="bg-red-600 hover:bg-red-700 text-white shadow-sm"
                     >
-                      <span className="mr-2">📄</span>
+                      <span className="mr-2">ðŸ“„</span>
                       Download
                     </Button>
                   )}
@@ -525,7 +579,7 @@ function App() {
                             </td>
                             <td className="px-6 py-4 border text-sm text-gray-600">{product.reorderLevel}</td>
                             <td className="px-6 py-4 border text-sm text-blue-700 font-black">{(product as any).forecast?.reorderRecommendation || 0}</td>
-                            <td className="px-6 py-4 border text-sm text-gray-900">₱{product.cost.toFixed(2)}</td>
+                            <td className="px-6 py-4 border text-sm text-gray-900">â‚±{product.cost.toFixed(2)}</td>
                           </tr>
                         ))
                       ) : (

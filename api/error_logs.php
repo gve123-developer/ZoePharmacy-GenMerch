@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-User-Name");
@@ -8,98 +9,268 @@ include '../includes/db_connect.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($method === 'OPTIONS') { http_response_code(200); exit(); }
+if ($method === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-// ─── GET: Fetch error logs ────────────────────────────────────────────────────
+
+// ============================================================
+// GET: Fetch error logs
+// ============================================================
 if ($method === 'GET') {
+
     try {
-        $source = $_GET['source'] ?? 'all';  // all | php | javascript
-        $limit  = min((int)($_GET['limit'] ?? 200), 500);
+
+        $source = $_GET['source'] ?? 'all';
+
+        $limit = (int)($_GET['limit'] ?? 200);
+
+        if ($limit <= 0) {
+            $limit = 200;
+        }
+
+        if ($limit > 500) {
+            $limit = 500;
+        }
 
         if ($source !== 'all') {
+
             $stmt = $conn->prepare(
-                "SELECT id, source, level, message, file, line, stack_trace, url, user_name, extra, created_at
-                 FROM error_logs WHERE source = ? ORDER BY id DESC LIMIT ?"
+                "SELECT
+                    id,
+                    source,
+                    level,
+                    message,
+                    file,
+                    line,
+                    stack_trace,
+                    url,
+                    user_name,
+                    extra,
+                    created_at
+                 FROM error_logs
+                 WHERE source = :source
+                 ORDER BY id DESC
+                 LIMIT :limit"
             );
-            if (!$stmt) throw new RuntimeException("Prepare: " . $conn->error);
-            $stmt->bind_param("si", $source, $limit);
+
+            $stmt->bindValue(
+                ':source',
+                $source,
+                PDO::PARAM_STR
+            );
+
+            $stmt->bindValue(
+                ':limit',
+                $limit,
+                PDO::PARAM_INT
+            );
+
             $stmt->execute();
-            $result = $stmt->get_result();
-            $stmt->close();
+
         } else {
+
             $stmt = $conn->prepare(
-                "SELECT id, source, level, message, file, line, stack_trace, url, user_name, extra, created_at
-                 FROM error_logs ORDER BY id DESC LIMIT ?"
+                "SELECT
+                    id,
+                    source,
+                    level,
+                    message,
+                    file,
+                    line,
+                    stack_trace,
+                    url,
+                    user_name,
+                    extra,
+                    created_at
+                 FROM error_logs
+                 ORDER BY id DESC
+                 LIMIT :limit"
             );
-            if (!$stmt) throw new RuntimeException("Prepare: " . $conn->error);
-            $stmt->bind_param("i", $limit);
+
+            $stmt->bindValue(
+                ':limit',
+                $limit,
+                PDO::PARAM_INT
+            );
+
             $stmt->execute();
-            $result = $stmt->get_result();
-            $stmt->close();
         }
 
         $logs = [];
-        while ($row = $result->fetch_assoc()) {
+
+        while (
+            $row =
+            $stmt->fetch(PDO::FETCH_ASSOC)
+        ) {
+
             $logs[] = [
-                'id'         => (string)$row['id'],
-                'source'     => $row['source'],
-                'level'      => $row['level'],
-                'message'    => $row['message'],
-                'file'       => $row['file'],
-                'line'       => $row['line'] ? (int)$row['line'] : null,
+                'id' => (string)$row['id'],
+                'source' => $row['source'],
+                'level' => $row['level'],
+                'message' => $row['message'],
+                'file' => $row['file'],
+                'line' =>
+                    $row['line'] !== null
+                    ? (int)$row['line']
+                    : null,
                 'stackTrace' => $row['stack_trace'],
-                'url'        => $row['url'],
-                'userName'   => $row['user_name'],
-                'extra'      => $row['extra'],
-                'createdAt'  => $row['created_at'],
+                'url' => $row['url'],
+                'userName' => $row['user_name'],
+                'extra' => $row['extra'],
+                'createdAt' => $row['created_at']
             ];
         }
+
         echo json_encode($logs);
 
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
+
+        error_log(
+            "[error_logs.php GET] " .
+            $e->getMessage()
+        );
+
         http_response_code(500);
-        echo json_encode(['success' => false, 'message' => 'Failed to fetch error logs', 'debug' => $e->getMessage()]);
+
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to fetch error logs',
+            'debug' => $e->getMessage()
+        ]);
     }
 }
 
-// ─── POST: Receive a JS/frontend error ───────────────────────────────────────
+
+// ============================================================
+// POST: Receive frontend / JavaScript error
+// ============================================================
 elseif ($method === 'POST') {
+
     try {
-        $data = json_decode(file_get_contents("php://input"), true);
-        if (!$data) throw new RuntimeException("Invalid JSON body");
 
-        $source     = 'javascript';
-        $level      = $data['level']      ?? 'error';
-        $message    = $data['message']    ?? 'Unknown JS error';
-        $file       = $data['file']       ?? null;
-        $line       = isset($data['line']) ? (int)$data['line'] : null;
-        $stackTrace = $data['stackTrace'] ?? null;
-        $url        = $data['url']        ?? null;
-        $userName   = $data['userName']   ?? null;
-        $extra      = isset($data['extra']) ? json_encode($data['extra']) : null;
+        $data = json_decode(
+            file_get_contents("php://input"),
+            true
+        );
 
-        db_log_error($source, $level, $message, $file ?? '', $line ?? 0, $stackTrace ?? '', $url ?? '', $userName ?? '', $extra ?? '');
-        echo json_encode(['success' => true]);
+        if (!is_array($data)) {
+            throw new RuntimeException(
+                "Invalid JSON body"
+            );
+        }
 
-    } catch (Exception $e) {
+        $source = 'javascript';
+
+        $level =
+            $data['level']
+            ?? 'error';
+
+        $message =
+            $data['message']
+            ?? 'Unknown JS error';
+
+        $file =
+            $data['file']
+            ?? '';
+
+        $line =
+            isset($data['line'])
+            ? (int)$data['line']
+            : 0;
+
+        $stackTrace =
+            $data['stackTrace']
+            ?? '';
+
+        $url =
+            $data['url']
+            ?? '';
+
+        $userName =
+            $data['userName']
+            ?? '';
+
+        $extra =
+            isset($data['extra'])
+            ? json_encode($data['extra'])
+            : '';
+
+        db_log_error(
+            $source,
+            $level,
+            $message,
+            $file,
+            $line,
+            $stackTrace,
+            $url,
+            $userName,
+            $extra
+        );
+
+        echo json_encode([
+            'success' => true
+        ]);
+
+    } catch (Throwable $e) {
+
+        error_log(
+            "[error_logs.php POST] " .
+            $e->getMessage()
+        );
+
         http_response_code(500);
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
     }
 }
 
-// ─── DELETE: Clear all error logs ────────────────────────────────────────────
+
+// ============================================================
+// DELETE: Clear error logs
+// ============================================================
 elseif ($method === 'DELETE') {
+
     try {
-        $conn->query("TRUNCATE TABLE error_logs");
-        echo json_encode(['success' => true, 'message' => 'Error logs cleared']);
-    } catch (Exception $e) {
+
+        $conn->exec(
+            "TRUNCATE TABLE error_logs
+             RESTART IDENTITY"
+        );
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Error logs cleared'
+        ]);
+
+    } catch (Throwable $e) {
+
+        error_log(
+            "[error_logs.php DELETE] " .
+            $e->getMessage()
+        );
+
         http_response_code(500);
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
     }
 }
+
 
 else {
+
     http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Method not allowed'
+    ]);
 }
 ?>

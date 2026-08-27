@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-User-Name");
@@ -9,142 +10,377 @@ include_once '../includes/audit_logger.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($method === 'OPTIONS') { http_response_code(200); exit(); }
+if ($method === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+function apiError(int $code, string $message, string $debug = ''): void
+{
+    http_response_code($code);
+
+    $payload = [
+        'success' => false,
+        'message' => $message
+    ];
+
+    if ($debug !== '') {
+        $payload['debug'] = $debug;
+        error_log("[deleted_products.php] $message | $debug");
+    }
+
+    echo json_encode($payload);
+    exit();
+}
 
 
-
-// ─── GET: List archived products ──────────────────────────────────────────────
+// ============================================================
+// GET: List archived products
+// ============================================================
 if ($method === 'GET') {
+
     try {
-        $result = $conn->query("SELECT * FROM deleted_products ORDER BY deleted_at DESC");
-        if (!$result) throw new RuntimeException("Fetch deleted_products: " . $conn->error);
+
+        $stmt = $conn->query(
+            "SELECT *
+             FROM deleted_products
+             ORDER BY deleted_at DESC"
+        );
 
         $items = [];
-        while ($row = $result->fetch_assoc()) {
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+
             $items[] = [
-                'id'          => (string)$row['id'],
-                'originalId'  => (string)$row['original_id'],
-                'sku'         => $row['sku'],
-                'name'        => $row['name'],
-                'category'    => $row['category'] ?? 'Uncategorized',
+                'id' => (string)$row['id'],
+                'originalId' => (string)$row['original_id'],
+                'sku' => $row['sku'],
+                'name' => $row['name'],
+                'category' => $row['category'] ?? 'Uncategorized',
                 'description' => $row['description'],
-                'quantity'    => (int)$row['quantity'],
-                'price'       => (float)$row['price'],
-                'cost'        => (float)$row['cost'],
-                'reorderLevel'=> (int)$row['reorder_level'],
-                'expiryDate'  => $row['expiry_date'],
-                'deletedBy'   => $row['deleted_by'],
-                'deletedAt'   => $row['deleted_at'],
+                'quantity' => (int)$row['quantity'],
+                'price' => (float)$row['price'],
+                'cost' => (float)$row['cost'],
+                'reorderLevel' => (int)$row['reorder_level'],
+                'expiryDate' => $row['expiry_date'],
+                'deletedBy' => $row['deleted_by'],
+                'deletedAt' => $row['deleted_at']
             ];
         }
+
         echo json_encode($items);
 
-    } catch (Exception $e) {
-        apiError(500, 'Failed to fetch archived products', $e->getMessage());
+    } catch (Throwable $e) {
+
+        apiError(
+            500,
+            'Failed to fetch archived products',
+            $e->getMessage()
+        );
     }
 }
 
-// ─── POST: Restore a product ──────────────────────────────────────────────────
+
+// ============================================================
+// POST: Restore archived product
+// ============================================================
 elseif ($method === 'POST') {
+
     try {
-        $data    = json_decode(file_get_contents("php://input"), true);
-        $dump_id = (int)($data['id'] ?? 0);
-        if (!$dump_id) throw new RuntimeException("Missing dump ID");
 
-        $fetch = $conn->prepare("SELECT * FROM deleted_products WHERE id=?");
-        if (!$fetch) throw new RuntimeException("Prepare fetch: " . $conn->error);
-        $fetch->bind_param("i", $dump_id);
-        $fetch->execute();
-        $res = $fetch->get_result();
-        $fetch->close();
+        $data = json_decode(
+            file_get_contents("php://input"),
+            true
+        );
 
-        if (!$res || $res->num_rows === 0) apiError(404, 'Archived product not found');
-
-        $p = $res->fetch_assoc();
-
-        // Resolve category
-        $cat_q = $conn->prepare("SELECT id FROM categories WHERE name = ?");
-        if (!$cat_q) throw new RuntimeException("Prepare category query: " . $conn->error);
-        $cat_q->bind_param("s", $p['category']);
-        $cat_q->execute();
-        $cat_row = $cat_q->get_result()->fetch_assoc();
-        $cat_q->close();
-
-        if ($cat_row) {
-            $category_id = $cat_row['id'];
-        } else {
-            $ins_cat = $conn->prepare("INSERT INTO categories (name) VALUES (?)");
-            if (!$ins_cat) throw new RuntimeException("Prepare insert category: " . $conn->error);
-            $ins_cat->bind_param("s", $p['category']);
-            if (!$ins_cat->execute()) throw new RuntimeException("Insert category: " . $ins_cat->error);
-            $category_id = $conn->insert_id;
-            $ins_cat->close();
+        if (!is_array($data)) {
+            throw new RuntimeException("Invalid JSON body");
         }
 
-        // Re-insert into active products
-        $ins = $conn->prepare(
-            "INSERT INTO products (sku, name, category_id, description, quantity, price, cost, reorder_level, expiry_date)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        $dump_id = (int)($data['id'] ?? 0);
+
+        if ($dump_id <= 0) {
+            throw new RuntimeException("Missing dump ID");
+        }
+
+        $conn->beginTransaction();
+
+        // Fetch archived product
+        $fetch = $conn->prepare(
+            "SELECT *
+             FROM deleted_products
+             WHERE id = :id
+             FOR UPDATE"
         );
-        if (!$ins) throw new RuntimeException("Prepare product insert: " . $conn->error);
-        $ins->bind_param(
-            "ssisiddis",
-            $p['sku'], $p['name'], $category_id, $p['description'],
-            $p['quantity'], $p['price'], $p['cost'], $p['reorder_level'], $p['expiry_date']
+
+        $fetch->execute([
+            ':id' => $dump_id
+        ]);
+
+        $p = $fetch->fetch(PDO::FETCH_ASSOC);
+
+        if (!$p) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+
+            apiError(
+                404,
+                'Archived product not found'
+            );
+        }
+
+        // Resolve category
+        $categoryName =
+            trim(
+                $p['category']
+                ?? 'Uncategorized'
+            );
+
+        $catStmt = $conn->prepare(
+            "SELECT id
+             FROM categories
+             WHERE name = :name
+             LIMIT 1"
         );
-        if (!$ins->execute()) throw new RuntimeException("Restore insert: " . $ins->error);
-        $ins->close();
 
-        // Remove from dump table
-        $del = $conn->prepare("DELETE FROM deleted_products WHERE id=?");
-        if (!$del) throw new RuntimeException("Prepare delete from dump: " . $conn->error);
-        $del->bind_param("i", $dump_id);
-        if (!$del->execute()) throw new RuntimeException("Delete from dump: " . $del->error);
-        $del->close();
+        $catStmt->execute([
+            ':name' => $categoryName
+        ]);
 
-        $user = $_SERVER['HTTP_X_USER_NAME'] ?? 'Admin';
-        log_action($conn, $user, 'Restore Product', "Restored from archive: {$p['name']}");
+        $category_id =
+            $catStmt->fetchColumn();
 
-        echo json_encode(['success' => true]);
+        if (!$category_id) {
 
-    } catch (Exception $e) {
-        $code = str_contains($e->getMessage(), 'Missing') ? 400 : 500;
-        apiError($code, 'Failed to restore product', $e->getMessage());
+            $insertCategoryStmt =
+                $conn->prepare(
+                    "INSERT INTO categories (name)
+                     VALUES (:name)
+                     RETURNING id"
+                );
+
+            $insertCategoryStmt->execute([
+                ':name' => $categoryName
+            ]);
+
+            $category_id =
+                $insertCategoryStmt->fetchColumn();
+        }
+
+        // Prevent duplicate active SKU
+        $skuCheck = $conn->prepare(
+            "SELECT id
+             FROM products
+             WHERE sku = :sku
+             LIMIT 1"
+        );
+
+        $skuCheck->execute([
+            ':sku' => $p['sku']
+        ]);
+
+        if ($skuCheck->fetchColumn()) {
+            throw new RuntimeException(
+                "Cannot restore product because SKU '{$p['sku']}' already exists"
+            );
+        }
+
+        // Restore product
+        //
+        // We do NOT force original_id back into products.id here,
+        // because that ID may already have been reused. PostgreSQL
+        // will safely assign a new active product ID.
+        $insertProduct = $conn->prepare(
+            "INSERT INTO products
+            (
+                sku,
+                name,
+                category_id,
+                description,
+                quantity,
+                price,
+                cost,
+                reorder_level,
+                expiry_date,
+                new_stock_quantity,
+                new_stock_expiry
+            )
+            VALUES
+            (
+                :sku,
+                :name,
+                :category_id,
+                :description,
+                :quantity,
+                :price,
+                :cost,
+                :reorder_level,
+                :expiry_date,
+                0,
+                NULL
+            )
+            RETURNING id"
+        );
+
+        $insertProduct->execute([
+            ':sku' => $p['sku'],
+            ':name' => $p['name'],
+            ':category_id' => $category_id,
+            ':description' => $p['description'],
+            ':quantity' => (int)$p['quantity'],
+            ':price' => (float)$p['price'],
+            ':cost' => (float)$p['cost'],
+            ':reorder_level' => (int)$p['reorder_level'],
+            ':expiry_date' => $p['expiry_date']
+        ]);
+
+        $restoredProductId =
+            $insertProduct->fetchColumn();
+
+        // Remove from archive
+        $deleteArchive = $conn->prepare(
+            "DELETE FROM deleted_products
+             WHERE id = :id"
+        );
+
+        $deleteArchive->execute([
+            ':id' => $dump_id
+        ]);
+
+        $conn->commit();
+
+        $user =
+            $_SERVER['HTTP_X_USER_NAME']
+            ?? 'Admin';
+
+        log_action(
+            $conn,
+            $user,
+            'Restore Product',
+            "Restored from archive: {$p['name']} (New ID: $restoredProductId)"
+        );
+
+        echo json_encode([
+            'success' => true,
+            'id' => (string)$restoredProductId
+        ]);
+
+    } catch (Throwable $e) {
+
+        if (
+            isset($conn) &&
+            $conn instanceof PDO &&
+            $conn->inTransaction()
+        ) {
+            $conn->rollBack();
+        }
+
+        $code =
+            str_contains(
+                $e->getMessage(),
+                'Missing'
+            )
+            ? 400
+            : 500;
+
+        apiError(
+            $code,
+            'Failed to restore product',
+            $e->getMessage()
+        );
     }
 }
 
-// ─── DELETE: Permanently purge from archive ───────────────────────────────────
+
+// ============================================================
+// DELETE: Permanently purge archived product
+// ============================================================
 elseif ($method === 'DELETE') {
+
     try {
-        $dump_id = (int)($_GET['id'] ?? 0);
-        if (!$dump_id) throw new RuntimeException("Missing ID");
 
-        $fetch = $conn->prepare("SELECT name FROM deleted_products WHERE id=?");
-        if (!$fetch) throw new RuntimeException("Prepare fetch name: " . $conn->error);
-        $fetch->bind_param("i", $dump_id);
-        $fetch->execute();
-        $row = $fetch->get_result()->fetch_assoc();
-        $fetch->close();
-        $name = $row['name'] ?? "ID $dump_id";
+        $dump_id =
+            (int)($_GET['id'] ?? 0);
 
-        $del = $conn->prepare("DELETE FROM deleted_products WHERE id=?");
-        if (!$del) throw new RuntimeException("Prepare purge: " . $conn->error);
-        $del->bind_param("i", $dump_id);
-        if (!$del->execute()) throw new RuntimeException("Purge: " . $del->error);
-        $del->close();
+        if ($dump_id <= 0) {
+            throw new RuntimeException(
+                "Missing ID"
+            );
+        }
 
-        $user = $_SERVER['HTTP_X_USER_NAME'] ?? 'Admin';
-        log_action($conn, $user, 'Purge Product', "Permanently purged: $name");
+        $fetch = $conn->prepare(
+            "SELECT name
+             FROM deleted_products
+             WHERE id = :id"
+        );
 
-        echo json_encode(['success' => true]);
+        $fetch->execute([
+            ':id' => $dump_id
+        ]);
 
-    } catch (Exception $e) {
-        $code = str_contains($e->getMessage(), 'Missing') ? 400 : 500;
-        apiError($code, 'Failed to purge product', $e->getMessage());
+        $row =
+            $fetch->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            apiError(
+                404,
+                'Archived product not found'
+            );
+        }
+
+        $name =
+            $row['name']
+            ?? "ID $dump_id";
+
+        $deleteStmt = $conn->prepare(
+            "DELETE FROM deleted_products
+             WHERE id = :id"
+        );
+
+        $deleteStmt->execute([
+            ':id' => $dump_id
+        ]);
+
+        $user =
+            $_SERVER['HTTP_X_USER_NAME']
+            ?? 'Admin';
+
+        log_action(
+            $conn,
+            $user,
+            'Purge Product',
+            "Permanently purged: $name"
+        );
+
+        echo json_encode([
+            'success' => true
+        ]);
+
+    } catch (Throwable $e) {
+
+        $code =
+            str_contains(
+                $e->getMessage(),
+                'Missing'
+            )
+            ? 400
+            : 500;
+
+        apiError(
+            $code,
+            'Failed to purge product',
+            $e->getMessage()
+        );
     }
 }
+
 
 else {
-    apiError(405, 'Method not allowed');
+
+    apiError(
+        405,
+        'Method not allowed'
+    );
 }
 ?>

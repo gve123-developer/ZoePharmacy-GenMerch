@@ -15,12 +15,17 @@ if ($method === 'OPTIONS') {
 
 if ($method !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Method not allowed'
+    ]);
     exit();
 }
 
 try {
+
     $data = json_decode(file_get_contents("php://input"), true);
+
     if (!$data) {
         throw new RuntimeException("Invalid JSON body");
     }
@@ -32,24 +37,35 @@ try {
         throw new RuntimeException("Username and Password are required");
     }
 
-    // Query user from DB
-    $stmt = $conn->prepare("SELECT id, username, password_hash, full_name as name, email FROM users WHERE username = ?");
-    if (!$stmt) {
-        throw new RuntimeException("Database prepare error: " . $conn->error);
-    }
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $user = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
+    // Find user using PostgreSQL PDO
+    $stmt = $conn->prepare(
+        "SELECT id, username, password_hash, full_name AS name, email
+         FROM users
+         WHERE username = :username
+         LIMIT 1"
+    );
 
+    $stmt->execute([
+        ':username' => $username
+    ]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Verify password
     if ($user && password_verify($password, $user['password_hash'])) {
-        // Success: Update last login time
-        $up_stmt = $conn->prepare("UPDATE users SET last_login_at = NOW() WHERE id = ?");
-        $up_stmt->bind_param("i", $user['id']);
-        $up_stmt->execute();
-        $up_stmt->close();
 
-        // Return user info (excluding password hash)
+        // Update last login
+        $up_stmt = $conn->prepare(
+            "UPDATE users
+             SET last_login_at = CURRENT_TIMESTAMP
+             WHERE id = :id"
+        );
+
+        $up_stmt->execute([
+            ':id' => $user['id']
+        ]);
+
+        // Successful login
         echo json_encode([
             'success' => true,
             'user' => [
@@ -57,22 +73,35 @@ try {
                 'username' => $user['username'],
                 'name' => $user['name'],
                 'email' => $user['email'],
-                'role' => 'admin', // Default role mapping
+                'role' => 'admin',
                 'lastLogin' => date('Y-m-d H:i:s')
             ],
             'message' => 'Login successful'
         ]);
+
         exit();
+
     } else {
+
         http_response_code(401);
+
         echo json_encode([
             'success' => false,
             'message' => 'Incorrect username or password.'
         ]);
+
         exit();
     }
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
+
+    error_log("[LOGIN] " . $e->getMessage());
+
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Login error: ' . $e->getMessage()
+    ]);
 }
+?>

@@ -1,39 +1,52 @@
 <?php
-// Temporary script to import the database schema to JawsDB
+// Temporary script to import the PostgreSQL database schema
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
+
     require_once '../includes/db_connect.php';
 
-    $sqlFile = '../inventory_system_setup.sql';
+    // PostgreSQL-compatible SQL file
+    $sqlFile = '../inventory_system_setup_postgresql.sql';
+
     if (!file_exists($sqlFile)) {
-        die("Error: SQL file 'inventory_system_setup.sql' not found.");
+        die(
+            "Error: SQL file 'inventory_system_setup_postgresql.sql' not found."
+        );
     }
-    
+
     $sql = file_get_contents($sqlFile);
-    echo "<h3>Importing Database...</h3>";
 
-    if ($conn->multi_query($sql)) {
-        do {
-            if ($result = $conn->store_result()) {
-                $result->free();
-            }
-        } while ($conn->more_results() && $conn->next_result());
-        echo "<h2 style='color:green;'>✅ Database imported successfully!</h2>";
-        echo "<p>You can now go back to your app.</p>";
-    } else {
-        echo "<h2 style='color:red;'>❌ Error importing database:</h2>";
-        echo "<p>" . $conn->error . "</p>";
+    if ($sql === false) {
+        die("Error: Unable to read PostgreSQL SQL file.");
     }
 
-    $conn->close();
-} catch (Exception $e) {
-    http_response_code(200); // Prevent 500 error so we can read it
-    echo "<h1>Exception Caught:</h1><pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
-} catch (Error $e) {
+    echo "<h3>Importing PostgreSQL Database...</h3>";
+
+    // Execute the complete PostgreSQL script
+    $conn->exec($sql);
+
+    echo "<h2 style='color:green;'>✅ PostgreSQL database imported successfully!</h2>";
+    echo "<p>The database schema and initial data have been created.</p>";
+
+} catch (PDOException $e) {
+
     http_response_code(200);
-    echo "<h1>Fatal Error Caught:</h1><pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+
+    echo "<h2 style='color:red;'>❌ PostgreSQL Database Error</h2>";
+    echo "<pre>" .
+        htmlspecialchars($e->getMessage()) .
+        "</pre>";
+
+} catch (Throwable $e) {
+
+    http_response_code(200);
+
+    echo "<h2 style='color:red;'>❌ Error</h2>";
+    echo "<pre>" .
+        htmlspecialchars($e->getMessage()) .
+        "</pre>";
 }
 ?>
