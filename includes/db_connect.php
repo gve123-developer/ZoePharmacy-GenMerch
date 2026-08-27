@@ -33,7 +33,7 @@ try {
             : 'zoe_pos_system_db';
 
         $username = $dbparts['user'] ?? '';
-        $password = getenv('DB_PASSWORD') ?: 'postgres';
+        $password = $dbparts['pass'] ?? '';
 
     } else {
 
