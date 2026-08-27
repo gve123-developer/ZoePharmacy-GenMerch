@@ -64,6 +64,9 @@ try {
         ]
     );
 
+// Keep PostgreSQL session timestamps aligned with Philippine time
+$conn->exec("SET TIME ZONE 'Asia/Manila'");
+
 } catch (PDOException $e) {
 
     error_log("[DB_CONNECT] " . $e->getMessage());
