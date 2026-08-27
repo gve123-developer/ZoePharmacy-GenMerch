@@ -219,30 +219,48 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
   };
 
   const getFilteredTransactions = () => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    let cutoffDate = new Date(today);
+  const now = new Date();
+  const today = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
 
-    if (timeRange === '7days') {
-      cutoffDate.setDate(today.getDate() - 7);
-    } else if (timeRange === '30days') {
-      cutoffDate.setDate(today.getDate() - 30);
-    } else if (timeRange === 'yearly') {
-      cutoffDate.setFullYear(today.getFullYear() - 1);
-    } else if (timeRange === 'all') {
-      return transactions;
+  // Only completed sales may affect analytics.
+  const completedTransactions = transactions.filter(
+    (t: Transaction) => t.status === 'completed'
+  );
+
+  if (timeRange === 'all') {
+    return completedTransactions;
+  }
+
+  let cutoffDate = new Date(today);
+
+  if (timeRange === '7days') {
+    cutoffDate.setDate(today.getDate() - 7);
+  } else if (timeRange === '30days') {
+    cutoffDate.setDate(today.getDate() - 30);
+  } else if (timeRange === 'yearly') {
+    cutoffDate.setFullYear(today.getFullYear() - 1);
+  }
+
+  return completedTransactions.filter((t: Transaction) => {
+    const txDate = new Date(t.date);
+
+    const txDay = new Date(
+      txDate.getFullYear(),
+      txDate.getMonth(),
+      txDate.getDate()
+    );
+
+    if (timeRange === 'today') {
+      return txDay.getTime() === today.getTime();
     }
 
-    return transactions.filter((t: Transaction) => {
-      const txDate = new Date(t.date);
-      const txDay = new Date(txDate.getFullYear(), txDate.getMonth(), txDate.getDate());
-      if (timeRange === 'today') {
-        return txDay.getTime() === today.getTime();
-      }
-      return txDay >= cutoffDate;
-    });
-  };
-
+    return txDay >= cutoffDate;
+  });
+};
   const getSalesByCategory = () => {
     const filtered = getFilteredTransactions();
     const categorySales: Record<string, number> = {};
@@ -264,49 +282,87 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
   };
 
   const getSalesData = () => {
-    // If 'today', show at least 2 days (Yesterday and Today) so a line can be drawn
-    let days = timeRange === '30days' ? 30 : timeRange === 'today' ? 2 : 7;
+  const completedTransactions = transactions.filter(
+    (t: Transaction) => t.status === 'completed'
+  );
 
-    if (timeRange === 'yearly') {
-      days = 365;
-    } else if (timeRange === 'all') {
-      if (transactions.length === 0) {
-        days = 7;
-      } else {
-        const sorted = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        const firstDate = new Date(sorted[0].date);
-        firstDate.setHours(0, 0, 0, 0);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        days = Math.ceil((today.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-        if (days < 2) days = 2; // Min for line chart
+  // If "today", include yesterday + today so a line can still be drawn.
+  let days =
+    timeRange === '30days'
+      ? 30
+      : timeRange === 'today'
+        ? 2
+        : 7;
+
+  if (timeRange === 'yearly') {
+    days = 365;
+  } else if (timeRange === 'all') {
+    if (completedTransactions.length === 0) {
+      days = 7;
+    } else {
+      const sorted = [...completedTransactions].sort(
+        (a, b) =>
+          new Date(a.date).getTime() -
+          new Date(b.date).getTime()
+      );
+
+      const firstDate = new Date(sorted[0].date);
+      firstDate.setHours(0, 0, 0, 0);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      days =
+        Math.ceil(
+          (today.getTime() - firstDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+        ) + 1;
+
+      if (days < 2) {
+        days = 2;
       }
     }
+  }
 
-    const data = [];
+  const data = [];
 
-    // Group transactions by local date string
-    const txByDate = transactions.reduce((acc, t) => {
+  // Group COMPLETED transactions only by local date.
+  const txByDate = completedTransactions.reduce(
+    (acc, t) => {
       const d = new Date(t.date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      acc[key] = (acc[key] || 0) + t.total;
+
+      const key =
+        `${d.getFullYear()}-` +
+        `${String(d.getMonth() + 1).padStart(2, '0')}-` +
+        `${String(d.getDate()).padStart(2, '0')}`;
+
+      acc[key] = (acc[key] || 0) + Number(t.total || 0);
+
       return acc;
-    }, {} as Record<string, number>);
+    },
+    {} as Record<string, number>
+  );
 
-    for (let i = days - 1; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
 
-      data.push({
-        date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        sales: txByDate[dateKey] || 0,
-      });
-    }
+    const dateKey =
+      `${d.getFullYear()}-` +
+      `${String(d.getMonth() + 1).padStart(2, '0')}-` +
+      `${String(d.getDate()).padStart(2, '0')}`;
 
-    return data;
-  };
+    data.push({
+      date: d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      }),
+      sales: txByDate[dateKey] || 0,
+    });
+  }
 
+  return data;
+};
 
   const getTopProducts = () => {
     const filtered = getFilteredTransactions();
@@ -901,11 +957,16 @@ function MovementAnalysis({ products, transactions }: { products: Product[], tra
   const getFilteredTransactions = () => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Only completed transactions affect movement analytics.
+    const completedTransactions = transactions.filter(
+      (t: Transaction) => t.status === 'completed'
+    );
+
     let cutoffDate = new Date(today);
 
     switch (timeRange) {
       case 'daily':
-        // Today
         break;
       case 'weekly':
         cutoffDate.setDate(today.getDate() - 7);
@@ -917,15 +978,21 @@ function MovementAnalysis({ products, transactions }: { products: Product[], tra
         cutoffDate.setMonth(0, 1); // Start of this year (Jan 1st)
         break;
       default:
-        return transactions;
+        return completedTransactions;
     }
 
-    return transactions.filter(t => {
+    return completedTransactions.filter((t: Transaction) => {
       const txDate = new Date(t.date);
-      const txDay = new Date(txDate.getFullYear(), txDate.getMonth(), txDate.getDate());
+      const txDay = new Date(
+        txDate.getFullYear(),
+        txDate.getMonth(),
+        txDate.getDate()
+      );
+
       if (timeRange === 'daily') {
         return txDay.getTime() === today.getTime();
       }
+
       return txDay >= cutoffDate;
     });
   };
