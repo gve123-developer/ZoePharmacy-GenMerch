@@ -1,16 +1,16 @@
-import { Product, Transaction } from '@/app/App';
+﻿import { Product, Transaction } from '@/app/App';
 
 
 export const calculateVelocity = (productId: string, transactions: Transaction[]) => {
-    // Exponential Smoothing Algorithm (α = 0.7)
-    // Formula: Ft+1 = α * Dt + (1 - α) * Ft
+    // Exponential Smoothing Algorithm (Î± = 0.7)
+    // Formula: Ft+1 = Î± * Dt + (1 - Î±) * Ft
     const ALPHA = 0.7;
 
     // Track daily sales over the last 30 days
     const today = new Date();
     const dailySales = new Array(30).fill(0);
 
-    transactions.forEach(t => {
+    transactions.filter(t => t.status === 'completed').forEach(t => {
         const tDate = new Date(t.date);
         const diffTime = Math.abs(today.getTime() - tDate.getTime());
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -97,7 +97,7 @@ export const calculateAccuracyMetrics = (productId: string, transactions: Transa
     const DAYS = testDays + 30;
     const dailySales = new Array(DAYS).fill(0);
 
-    transactions.forEach(t => {
+    transactions.filter(t => t.status === 'completed').forEach(t => {
         const tDate = new Date(t.date);
         tDate.setHours(0, 0, 0, 0); // Normalize to midnight
         const diffTime = baseDate.getTime() - tDate.getTime();
@@ -199,7 +199,7 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
     const TOTAL_DAYS = daysToTest + PRE_DAYS;
     const dailySales = new Array(TOTAL_DAYS).fill(0);
 
-    transactions.forEach(t => {
+    transactions.filter(t => t.status === 'completed').forEach(t => {
         const tDate = new Date(t.date);
         tDate.setHours(0, 0, 0, 0); 
         const diffTime = baseDate.getTime() - tDate.getTime();
@@ -338,3 +338,4 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
         chartData: chartData
     };
 };
+
