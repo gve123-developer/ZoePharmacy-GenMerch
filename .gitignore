@@ -13,3 +13,29 @@ test_postgres.php
 api/reset_emails.log
 inventory_system_setup_mysql_backup.sql
 inventory_system_setup_postgresql.sql
+
+# Local database/import artifacts
+*.dump
+*.bak
+current_products.csv
+
+# Temporary fix files
+Dashboard.fixed.tsx
+patch_forecasting_voided_transactions.ps1
+
+# Product migration scripts
+zoe_apply_final_product_details.sql
+zoe_bulk_master_sync.sql
+
+# Local database/import artifacts
+*.dump
+*.bak
+current_products.csv
+
+# Temporary fix files
+Dashboard.fixed.tsx
+patch_forecasting_voided_transactions.ps1
+
+# Product migration scripts
+zoe_apply_final_product_details.sql
+zoe_bulk_master_sync.sql
