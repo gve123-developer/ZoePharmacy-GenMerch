@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import { speak } from '@/app/utils/voiceUtils';
 import { User, Product, Transaction } from '@/app/App';
@@ -298,6 +298,39 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     const estimatedHeight = 150 + (itemsCount * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
 
+    // Draw a visual Philippine peso sign while preserving the original Courier receipt design
+    const addPesoStrokes = (pX: number, yPos: number) => {
+      doc.setLineWidth(0.18);
+      doc.line(pX - 0.1, yPos - 1.55, pX + 2.0, yPos - 1.55);
+      doc.line(pX - 0.1, yPos - 0.85, pX + 2.0, yPos - 0.85);
+    };
+
+    const drawPesoRight = (
+      amount: string,
+      xRight: number,
+      yPos: number
+    ) => {
+      const text = `P${amount}`;
+      doc.text(text, xRight, yPos, { align: 'right' });
+
+      const totalWidth = doc.getTextWidth(text);
+      const pX = xRight - totalWidth;
+      addPesoStrokes(pX, yPos);
+    };
+
+    const drawPesoInline = (
+      prefix: string,
+      amount: string,
+      xPos: number,
+      yPos: number
+    ) => {
+      const text = `${prefix}P${amount}`;
+      doc.text(text, xPos, yPos);
+
+      const prefixWidth = doc.getTextWidth(prefix);
+      addPesoStrokes(xPos + prefixWidth, yPos);
+    };
+
     doc.setFont("courier", "bold");
     doc.setFontSize(10);
 
@@ -334,25 +367,25 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     t.items.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
-      doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
-      doc.text(`${it.quantity} units x P${it.price.toFixed(2)}`, 4, y); y += 6;
+      drawPesoRight((it.price * it.quantity).toFixed(2), 76, y); y += 4;
+      drawPesoInline(`${it.quantity} units x `, it.price.toFixed(2), 4, y); y += 6;
     });
 
     doc.text('__________________________________', 40, y, { align: 'center' }); y += 8;
 
     doc.setFont("courier", "bold");
     doc.text(`TOTAL AMOUNT`, 4, y);
-    doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
+    drawPesoRight(t.total.toFixed(2), 76, y); y += 8;
 
     doc.setFont("courier", "normal");
     const amountReceivedVal = t.amountReceived || t.total;
     const changeVal = t.change || 0;
 
     doc.text(`CASH RECEIVED`, 4, y);
-    doc.text(`P${amountReceivedVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
+    drawPesoRight(amountReceivedVal.toFixed(2), 76, y); y += 6;
     doc.setFont("courier", "bold");
     doc.text(`CHANGE DUE`, 4, y);
-    doc.text(`P${changeVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
+    drawPesoRight(changeVal.toFixed(2), 76, y); y += 10;
 
     doc.text(`THANK YOU FOR YOUR TRUST!`, 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(8);
@@ -748,3 +781,4 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     </ErrorBoundary >
   );
 }
+
