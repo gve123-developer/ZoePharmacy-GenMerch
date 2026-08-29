@@ -372,7 +372,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               ZOE <br />
               PHARMACY <br />
               <span className="text-[#96be12] text-2xl md:text-3xl block mt-2 tracking-tighter font-extrabold uppercase">
-                & GENERAL MERCHANDISE
+                & GENERAL MERCHANDISE SYSTEM
               </span>
             </h1>
             <div className="w-24 h-3 bg-[#d5ff47] rounded-full" />
