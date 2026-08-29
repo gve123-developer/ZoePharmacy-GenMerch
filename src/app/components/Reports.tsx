@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/app/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { TrendingUp, DollarSign, Package, ShoppingCart, Calendar, Download, AlertTriangle, Plus, Calculator, BarChart3 } from 'lucide-react';
+import { TrendingUp, PhilippinePeso, Package, ShoppingCart, Calendar, Download, AlertTriangle, Plus, Calculator, BarChart3 } from 'lucide-react';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { logAuditAction } from '@/app/utils/auditUtils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/app/components/ui/dialog';
@@ -632,7 +632,7 @@ export function Reports({ currentUser }: ReportsProps) {
             <Card className="bg-purple-50 border-2 border-purple-200 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-bold text-purple-900">Total Sales</CardTitle>
-                <DollarSign className="size-6 text-purple-600" />
+                <PhilippinePeso className="size-6 text-purple-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-black text-purple-700">{formatCurrency(stats.totalSales)}</div>
