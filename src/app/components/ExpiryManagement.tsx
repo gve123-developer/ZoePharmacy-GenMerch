@@ -75,7 +75,7 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState<'all' | 'safe' | 'soon' | 'expired'>('all');
-    const [expiryTimeFilter, setExpiryTimeFilter] = useState<'all' | 'week' | 'month' | 'year'>('all');
+    const [expiryTimeFilter, setExpiryTimeFilter] = useState<'all' | 'week' | 'month' | 'sixMonths' | 'year'>('all');
     const itemsPerPage = 10;
 
     const getDaysRemaining = (expiryDate: string | undefined): number | undefined => {
@@ -121,6 +121,17 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                     }
                 } else if (expiryTimeFilter === 'month') {
                     if (expiryDate.getMonth() !== now.getMonth() || expiryDate.getFullYear() !== now.getFullYear()) {
+                        return false;
+                    }
+                } else if (expiryTimeFilter === 'sixMonths') {
+                    const todayStart = new Date(now);
+                    todayStart.setHours(0, 0, 0, 0);
+                    
+                    const sixMonthsFromNow = new Date(now);
+                    sixMonthsFromNow.setMonth(now.getMonth() + 6);
+                    sixMonthsFromNow.setHours(23, 59, 59, 999);
+
+                    if (expiryDate < todayStart || expiryDate > sixMonthsFromNow) {
                         return false;
                     }
                 } else if (expiryTimeFilter === 'year') {
@@ -311,6 +322,7 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                                                 <SelectItem value="all">All Time</SelectItem>
                                                 <SelectItem value="week">Weekly (Last 7 Days)</SelectItem>
                                                 <SelectItem value="month">This Month</SelectItem>
+                                                <SelectItem value="sixMonths">Next 6 Months</SelectItem>
                                                 <SelectItem value="year">This Year</SelectItem>
                                             </SelectContent>
                                         </Select>
