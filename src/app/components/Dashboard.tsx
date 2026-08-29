@@ -201,7 +201,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
       const expiry = new Date(p.expiryDate);
       const diffTime = expiry.getTime() - todayDate.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays >= 0 && diffDays <= 30;
+      return diffDays >= 0 && diffDays <= 180;
     });
 
     const totalUnitsCount = products.reduce((sum, p) => sum + (Number(p.quantity) + Number(p.newStockQuantity || 0)), 0);
@@ -664,7 +664,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-black text-amber-700">{formatNumber(stats.expiringSoon)}</div>
-                <p className="text-xs font-semibold text-amber-600 mt-1 uppercase tracking-wider">Next 30 days</p>
+                <p className="text-xs font-semibold text-amber-600 mt-1 uppercase tracking-wider">Next 6 months</p>
               </CardContent>
             </Card>
           </div>
