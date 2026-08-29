@@ -1,5 +1,5 @@
 import { setupPdfPesoFont } from './utils/pdfFont';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
@@ -202,7 +202,7 @@ function App() {
       }
     };
     fetchData();
-    const interval = setInterval(fetchData, 1000); // Retry every 1 second
+    const interval = setInterval(fetchData, 30000); // Sync data every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -274,10 +274,12 @@ function App() {
     setActiveTab('dashboard');
   };
 
-  const purchaseOrderItems = products.map(p => ({
-    ...p,
-    forecast: getForecast(p, transactions, false)
-  })).filter(p => p.forecast.reorderRecommendation > 0);
+  const purchaseOrderItems = useMemo(() => {
+    return products.map(p => ({
+      ...p,
+      forecast: getForecast(p, transactions, false)
+    })).filter(p => p.forecast.reorderRecommendation > 0);
+  }, [products, transactions]);
 
   const lowStockProducts = purchaseOrderItems; // Re-use the list for reports
 

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { jsPDF } from 'jspdf';
 import { speak } from '@/app/utils/voiceUtils';
 import { User, Product, Transaction } from '@/app/App';
@@ -75,36 +75,42 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     recognition.start();
   };
 
-  const getDaysRemaining = (expiryDate: string | undefined): number | undefined => {
-    if (!expiryDate) return undefined;
+  const todayStart = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    return today;
+  }, []);
+
+  const getDaysRemaining = (expiryDate: string | undefined): number | undefined => {
+    if (!expiryDate) return undefined;
     const expiry = new Date(expiryDate);
-    const diffTime = expiry.getTime() - today.getTime();
+    const diffTime = expiry.getTime() - todayStart.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   // No local state for products needed
 
-  const filteredProducts = products
-    .filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.sku.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      // Sort by category first: Pharmaceutical (0) then Non-pharmaceutical (1)
-      const catPriorityA = a.category === 'Pharmaceutical' ? 0 : 1;
-      const catPriorityB = b.category === 'Pharmaceutical' ? 0 : 1;
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter(product => {
+        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
+        return matchesSearch && matchesCategory;
+      })
+      .sort((a, b) => {
+        // Sort by category first: Pharmaceutical (0) then Non-pharmaceutical (1)
+        const catPriorityA = a.category === 'Pharmaceutical' ? 0 : 1;
+        const catPriorityB = b.category === 'Pharmaceutical' ? 0 : 1;
 
-      if (catPriorityA !== catPriorityB) {
-        return catPriorityA - catPriorityB;
-      }
+        if (catPriorityA !== catPriorityB) {
+          return catPriorityA - catPriorityB;
+        }
 
-      // Secondary sort by ID descending (newest first)
-      return Number(b.id) - Number(a.id);
-    });
+        // Secondary sort by ID descending (newest first)
+        return Number(b.id) - Number(a.id);
+      });
+  }, [products, searchQuery, filterCategory]);
 
   const addToCart = (product: Product) => {
     const totalAvailable = Number(product.quantity) + Number(product.newStockQuantity || 0);

@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useMemo } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/components/ui/table';
@@ -78,14 +78,18 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
     const [expiryTimeFilter, setExpiryTimeFilter] = useState<'all' | 'week' | 'month' | 'sixMonths' | 'year'>('all');
     const itemsPerPage = 10;
 
-    const getDaysRemaining = (expiryDate: string | undefined): number | undefined => {
-        if (!expiryDate) return undefined;
+    const todayStart = useMemo(() => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        return today;
+    }, []);
+
+    const getDaysRemaining = (expiryDate: string | undefined): number | undefined => {
+        if (!expiryDate) return undefined;
         const cleanDate = expiryDate.includes('T') ? expiryDate : expiryDate + 'T00:00:00';
         const expiry = new Date(cleanDate);
         expiry.setHours(0, 0, 0, 0);
-        const diffTime = expiry.getTime() - today.getTime();
+        const diffTime = expiry.getTime() - todayStart.getTime();
         return Math.round(diffTime / (1000 * 60 * 60 * 24));
     };
 
@@ -96,69 +100,77 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
         return p.expiryDate;
     };
 
-    const filteredProducts = products
-        .filter(p => {
-            const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                p.sku.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredProducts = useMemo(() => {
+        const now = new Date();
+        const todayLimit = new Date(now);
+        todayLimit.setHours(0, 0, 0, 0);
 
-            if (!matchesSearch) return false;
+        // Precompute time filter boundaries to avoid date allocation in the loop
+        let lastWeekLimit: Date | null = null;
+        let sixMonthsLimit: Date | null = null;
 
-            const activeExpiry = getActiveExpiryDate(p);
+        if (expiryTimeFilter === 'week') {
+            lastWeekLimit = new Date(now);
+            lastWeekLimit.setDate(now.getDate() - 7);
+            lastWeekLimit.setHours(0, 0, 0, 0);
+        } else if (expiryTimeFilter === 'sixMonths') {
+            sixMonthsLimit = new Date(now);
+            sixMonthsLimit.setMonth(now.getMonth() + 6);
+            sixMonthsLimit.setHours(23, 59, 59, 999);
+        }
 
-            // Time filtering logic
-            if (expiryTimeFilter !== 'all') {
-                if (!activeExpiry) return false;
-                const expiryDate = new Date(activeExpiry);
-                const now = new Date();
+        return products
+            .filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.sku.toLowerCase().includes(searchTerm.toLowerCase());
 
-                if (expiryTimeFilter === 'week') {
-                    const lastWeek = new Date(now);
-                    lastWeek.setDate(now.getDate() - 7);
-                    lastWeek.setHours(0, 0, 0, 0);
+                if (!matchesSearch) return false;
 
-                    if (expiryDate < lastWeek || expiryDate > now) {
-                        return false;
-                    }
-                } else if (expiryTimeFilter === 'month') {
-                    if (expiryDate.getMonth() !== now.getMonth() || expiryDate.getFullYear() !== now.getFullYear()) {
-                        return false;
-                    }
-                } else if (expiryTimeFilter === 'sixMonths') {
-                    const todayStart = new Date(now);
-                    todayStart.setHours(0, 0, 0, 0);
-                    
-                    const sixMonthsFromNow = new Date(now);
-                    sixMonthsFromNow.setMonth(now.getMonth() + 6);
-                    sixMonthsFromNow.setHours(23, 59, 59, 999);
+                const activeExpiry = getActiveExpiryDate(p);
 
-                    if (expiryDate < todayStart || expiryDate > sixMonthsFromNow) {
-                        return false;
-                    }
-                } else if (expiryTimeFilter === 'year') {
-                    if (expiryDate.getFullYear() !== now.getFullYear()) {
-                        return false;
+                // Time filtering logic
+                if (expiryTimeFilter !== 'all') {
+                    if (!activeExpiry) return false;
+                    const expiryDate = new Date(activeExpiry);
+
+                    if (expiryTimeFilter === 'week') {
+                        if (expiryDate < lastWeekLimit! || expiryDate > now) {
+                            return false;
+                        }
+                    } else if (expiryTimeFilter === 'month') {
+                        if (expiryDate.getMonth() !== now.getMonth() || expiryDate.getFullYear() !== now.getFullYear()) {
+                            return false;
+                        }
+                    } else if (expiryTimeFilter === 'sixMonths') {
+                        if (expiryDate < todayLimit || expiryDate > sixMonthsLimit!) {
+                            return false;
+                        }
+                    } else if (expiryTimeFilter === 'year') {
+                        if (expiryDate.getFullYear() !== now.getFullYear()) {
+                            return false;
+                        }
                     }
                 }
-            }
 
-            if (statusFilter === 'all') return true;
+                if (statusFilter === 'all') return true;
 
-            const days = getDaysRemaining(activeExpiry);
-            if (days === undefined) return false;
+                const days = getDaysRemaining(activeExpiry);
+                if (days === undefined) return false;
 
-            if (statusFilter === 'expired') return days < 0;
-            if (statusFilter === 'soon') return days >= 0 && days <= 180;
-            if (statusFilter === 'safe') return days > 180;
+                if (statusFilter === 'expired') return days < 0;
+                if (statusFilter === 'soon') return days >= 0 && days <= 180;
+                if (statusFilter === 'safe') return days > 180;
 
-            return true;
-        })
-        .sort((a, b) => {
-            const activeA = getActiveExpiryDate(a);
-            const activeB = getActiveExpiryDate(b);
-            if (!activeA) return 1;
-            if (!activeB) return -1;
-            return new Date(activeA).getTime() - new Date(activeB).getTime();
-        });
+                return true;
+            })
+            .sort((a, b) => {
+                const activeA = getActiveExpiryDate(a);
+                const activeB = getActiveExpiryDate(b);
+                if (!activeA) return 1;
+                if (!activeB) return -1;
+                return new Date(activeA).getTime() - new Date(activeB).getTime();
+            });
+    }, [products, searchTerm, statusFilter, expiryTimeFilter]);
 
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
     const paginatedProducts = filteredProducts.slice(
