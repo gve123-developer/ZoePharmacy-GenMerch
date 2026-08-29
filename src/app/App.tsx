@@ -265,7 +265,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    // âœ… Audit: log logout event
+    // ✅ Audit: log logout event
     if (currentUser) {
       logAuditAction(currentUser.name, 'Logout', `User "${currentUser.username}" logged out.`);
     }
@@ -549,7 +549,7 @@ function App() {
                       onClick={downloadPDF}
                       className="bg-red-600 hover:bg-red-700 text-white shadow-sm"
                     >
-                      <span className="mr-2">ðŸ“„</span>
+                      <span className="mr-2">📄</span>
                       Download
                     </Button>
                   )}
@@ -666,6 +666,8 @@ function App() {
 }
 
 export default App;
+
+
 
 
 
