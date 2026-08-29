@@ -1,4 +1,5 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { setupPdfPesoFont } from './utils/pdfFont';
+import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
@@ -280,15 +281,18 @@ function App() {
 
   const lowStockProducts = purchaseOrderItems; // Re-use the list for reports
 
-  const downloadPDF = (): void => {
+  const downloadPDF = async (): Promise<void> => {
     if (!currentUser) return;
     try {
       const doc = new jsPDF();
+      await setupPdfPesoFont(doc);
+      console.log('PDF FONT LIST:', doc.getFontList());
+      console.log('CURRENT PDF FONT:', doc.getFont());
       let yPosition = 25;
 
       // Helper for structured layout
       const drawProductHeader = (y: number) => {
-        doc.setFont('helvetica', 'bold');
+        doc.setFont('NotoSans', 'normal');
         doc.setFontSize(9);
         doc.setTextColor(0, 0, 0);
         doc.setFillColor(245, 245, 245);
@@ -304,7 +308,7 @@ function App() {
         return y + 8;
       };
 
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('NotoSans', 'normal');
       doc.setFontSize(18);
       doc.setTextColor(0, 0, 0);
       doc.text('Zoe Pharmacy & General Merchandise', 14, yPosition);
@@ -314,21 +318,21 @@ function App() {
       doc.text('PURCHASE ORDER REPORT', 14, yPosition);
       yPosition += 12;
 
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('NotoSans', 'normal');
       doc.setFontSize(10);
       doc.text(`Generated: ${new Date().toLocaleString()}`, 14, yPosition);
       yPosition += 15;
 
       if (lowStockProducts.length > 0) {
         yPosition = drawProductHeader(yPosition);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont('NotoSans', 'normal');
 
         lowStockProducts.forEach((product) => {
           if (yPosition > 280) {
             doc.addPage();
             yPosition = 30;
             yPosition = drawProductHeader(yPosition);
-            doc.setFont('helvetica', 'normal');
+            doc.setFont('NotoSans', 'normal');
           }
 
           doc.setDrawColor(0, 0, 0);
@@ -346,7 +350,7 @@ function App() {
           doc.text(product.reorderLevel.toString(), 127, yPosition);
           const recommendation = (product as any).forecast?.reorderRecommendation || 0;
           doc.text(recommendation.toString(), 157, yPosition);
-          doc.text(`P${product.cost.toFixed(2)}`, 182, yPosition);
+          doc.text(`₱${product.cost.toFixed(2)}`, 182, yPosition);
           yPosition += 8;
         });
       } else {
@@ -579,7 +583,7 @@ function App() {
                             </td>
                             <td className="px-6 py-4 border text-sm text-gray-600">{product.reorderLevel}</td>
                             <td className="px-6 py-4 border text-sm text-blue-700 font-black">{(product as any).forecast?.reorderRecommendation || 0}</td>
-                            <td className="px-6 py-4 border text-sm text-gray-900">â‚±{product.cost.toFixed(2)}</td>
+                            <td className="px-6 py-4 border text-sm text-gray-900">₱{product.cost.toFixed(2)}</td>
                           </tr>
                         ))
                       ) : (
@@ -664,3 +668,10 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
