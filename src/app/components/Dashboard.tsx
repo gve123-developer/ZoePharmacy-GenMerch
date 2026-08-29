@@ -6,7 +6,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/app/components/ui/alert-dialog';
 import { User, Product, Transaction } from '@/app/App';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { Package, PhilippinePeso, TrendingUp, AlertTriangle, Calendar, Receipt, Plus, TrendingDown, CloudRain } from 'lucide-react';
+import { Package, PhilippinePeso, TrendingUp, AlertTriangle, Calendar, ReceiptText, Plus, TrendingDown, CloudRain } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/app/components/ui/table';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 
@@ -594,7 +594,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
             <Card className="bg-blue-50 border-2 border-blue-200 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-bold text-blue-900">Transactions</CardTitle>
-                <Receipt className="size-6 text-blue-600" />
+                <ReceiptText className="size-6 text-blue-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-black text-blue-700">{formatNumber(stats.todayTransactionsCount)}</div>

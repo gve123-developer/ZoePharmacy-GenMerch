@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
 import { Dialog, DialogContent } from '@/app/components/ui/dialog';
-import { Search, Receipt, Eye, Download, ChevronLeft, ChevronRight, Calendar, Trash2 } from 'lucide-react';
+import { Search, ReceiptText, Eye, Download, ChevronLeft, ChevronRight, Calendar, Trash2 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
@@ -381,7 +381,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
           <CardHeader className="border-b border-gray-50 py-4 px-6">
             <CardTitle className="text-sm font-bold flex items-center gap-2 text-gray-700">
               <div className="p-1.5 bg-gray-100 rounded-md">
-                <Receipt className="size-4 text-gray-600" />
+                <ReceiptText className="size-4 text-gray-600" />
               </div>
               Transactions ({filteredTransactions.length})
             </CardTitle>
@@ -481,7 +481,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   {paginated.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-16 text-gray-400">
-                        <Receipt className="size-10 mx-auto mb-3 opacity-20" />
+                        <ReceiptText className="size-10 mx-auto mb-3 opacity-20" />
                         <p className="font-medium">No transactions found</p>
                       </TableCell>
                     </TableRow>

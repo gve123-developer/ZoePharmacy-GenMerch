@@ -1,4 +1,4 @@
-﻿import { setupPdfPesoFont } from './utils/pdfFont';
+import { setupPdfPesoFont } from './utils/pdfFont';
 import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -19,7 +19,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { getForecast } from '@/app/utils/forecastingUtils';
 import { Toaster } from '@/app/components/ui/sonner';
 import { Button } from '@/app/components/ui/button';
-import { LogOut, LayoutDashboard, Package, ShoppingCart, Receipt, BarChart3, Users, Menu, X, Calendar, ChevronLeft, ChevronRight, TrendingUp, ClipboardList } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, ShoppingCart, ReceiptText, BarChart3, Users, Menu, X, Calendar, ChevronLeft, ChevronRight, TrendingUp, ClipboardList } from 'lucide-react';
 import { logAuditAction } from '@/app/utils/auditUtils';
 import { installErrorLogger } from '@/app/utils/errorLogger';
 
@@ -436,7 +436,7 @@ function App() {
                   { tab: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="size-[18px]" /> },
                   { tab: 'pos', label: 'Point of Sale', icon: <ShoppingCart className="size-[18px]" /> },
                   { tab: 'inventory', label: 'Inventory', icon: <Package className="size-[18px]" /> },
-                  { tab: 'transactions', label: 'Transactions', icon: <Receipt className="size-[18px]" /> },
+                  { tab: 'transactions', label: 'Transactions', icon: <ReceiptText className="size-[18px]" /> },
                   { tab: 'purchaseOrder', label: 'Purchase Order', icon: <ShoppingCart className="size-[18px]" /> },
                   { tab: 'expiry', label: 'Expiry Tracker', icon: <Calendar className="size-[18px]" /> },
                   { tab: 'reports', label: 'Reports', icon: <BarChart3 className="size-[18px]" /> },
