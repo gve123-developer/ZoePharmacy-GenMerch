@@ -147,8 +147,8 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
             if (days === undefined) return false;
 
             if (statusFilter === 'expired') return days < 0;
-            if (statusFilter === 'soon') return days >= 0 && days <= 30;
-            if (statusFilter === 'safe') return days > 30;
+            if (statusFilter === 'soon') return days >= 0 && days <= 180;
+            if (statusFilter === 'safe') return days > 180;
 
             return true;
         })
@@ -190,8 +190,7 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
         if (diffDays === undefined) return { label: 'No Date', color: 'bg-gray-100 text-gray-800', icon: null };
 
         if (diffDays < 0) return { label: 'Expired', color: 'bg-red-100 text-red-800', icon: <AlertTriangle className="size-3 mr-1" />, days: diffDays };
-        if (diffDays <= 30) return { label: 'Expiring Soon', color: 'bg-orange-100 text-orange-800', icon: <AlertTriangle className="size-3 mr-1" />, days: diffDays };
-        if (diffDays <= 90) return { label: 'Caution', color: 'bg-yellow-100 text-yellow-800', icon: <AlertTriangle className="size-3 mr-1" />, days: diffDays };
+        if (diffDays <= 180) return { label: 'Expiring Soon', color: 'bg-orange-100 text-orange-800', icon: <AlertTriangle className="size-3 mr-1" />, days: diffDays };
         return { label: 'Safe', color: 'bg-green-100 text-green-800', icon: <CheckCircle2 className="size-3 mr-1" />, days: diffDays };
     };
 
@@ -225,10 +224,10 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                                 <div className={`text-3xl font-black ${statusFilter === 'safe' ? 'text-green-800' : 'text-green-700'}`}>
                                     {products.filter(p => {
                                         const days = getDaysRemaining(getActiveExpiryDate(p));
-                                        return days !== undefined && days > 30;
+                                        return days !== undefined && days > 180;
                                     }).length}
                                 </div>
-                                <p className="text-xs font-semibold text-green-600 mt-1 uppercase tracking-wider">Valid for more than 30 days</p>
+                                <p className="text-xs font-semibold text-green-600 mt-1 uppercase tracking-wider">Valid for more than 6 months</p>
                             </CardContent>
                         </Card>
 
@@ -249,10 +248,10 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                                 <div className={`text-3xl font-black ${statusFilter === 'soon' ? 'text-orange-800' : 'text-orange-700'}`}>
                                     {products.filter(p => {
                                         const days = getDaysRemaining(getActiveExpiryDate(p));
-                                        return days !== undefined && days >= 0 && days <= 30;
+                                        return days !== undefined && days >= 0 && days <= 180;
                                     }).length}
                                 </div>
-                                <p className="text-xs font-semibold text-orange-600 mt-1 uppercase tracking-wider">Within next 30 days</p>
+                                <p className="text-xs font-semibold text-orange-600 mt-1 uppercase tracking-wider">Within next 6 months</p>
                             </CardContent>
                         </Card>
 
