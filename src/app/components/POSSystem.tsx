@@ -300,7 +300,42 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
     await setupPdfPesoFont(doc);
 
-    doc.setFont("NotoSans", "normal");
+    const drawPesoRight = (
+      amount: string,
+      xRight: number,
+      yPos: number,
+      style: "normal" | "bold" = "normal"
+    ) => {
+      doc.setFont("courier", style);
+      const amountWidth = doc.getTextWidth(amount);
+      doc.text(amount, xRight, yPos, { align: "right" });
+
+      doc.setFont("NotoSans", "normal");
+      const pesoWidth = doc.getTextWidth("₱");
+      doc.text("₱", xRight - amountWidth - pesoWidth, yPos);
+
+      doc.setFont("courier", style);
+    };
+
+    const drawPesoInline = (
+      prefix: string,
+      amount: string,
+      xPos: number,
+      yPos: number
+    ) => {
+      doc.setFont("courier", "normal");
+      doc.text(prefix, xPos, yPos);
+      const prefixWidth = doc.getTextWidth(prefix);
+
+      doc.setFont("NotoSans", "normal");
+      doc.text("₱", xPos + prefixWidth, yPos);
+      const pesoWidth = doc.getTextWidth("₱");
+
+      doc.setFont("courier", "normal");
+      doc.text(amount, xPos + prefixWidth + pesoWidth, yPos);
+    };
+
+    doc.setFont("courier", "bold");
     doc.setFontSize(10);
 
     let y = 10;
@@ -313,7 +348,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     doc.text('METRO MANILA', 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(10);
 
-    doc.setFont("NotoSans", "normal");
+    doc.setFont("courier", "normal");
     doc.text('----------------------------------', 40, y, { align: 'center' }); y += 6;
 
     doc.text(`TRANS ID: ${t.id}`, 4, y); y += 4;
@@ -336,31 +371,31 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     t.items.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
-      doc.text(`₱${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
-      doc.text(`${it.quantity} units x ₱${it.price.toFixed(2)}`, 4, y); y += 6;
+      drawPesoRight((it.price * it.quantity).toFixed(2), 76, y, "normal"); y += 4;
+      drawPesoInline(`${it.quantity} units x `, it.price.toFixed(2), 4, y); y += 6;
     });
 
     doc.text('__________________________________', 40, y, { align: 'center' }); y += 8;
 
-    doc.setFont("NotoSans", "normal");
+    doc.setFont("courier", "bold");
     doc.text(`TOTAL AMOUNT`, 4, y);
-    doc.text(`₱${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
+    drawPesoRight(t.total.toFixed(2), 76, y, "bold"); y += 8;
 
-    doc.setFont("NotoSans", "normal");
+    doc.setFont("courier", "normal");
     const amountReceivedVal = t.amountReceived || t.total;
     const changeVal = t.change || 0;
 
     doc.text(`CASH RECEIVED`, 4, y);
-    doc.text(`₱${amountReceivedVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
-    doc.setFont("NotoSans", "normal");
+    drawPesoRight(amountReceivedVal.toFixed(2), 76, y, "normal"); y += 6;
+    doc.setFont("courier", "bold");
     doc.text(`CHANGE DUE`, 4, y);
-    doc.text(`₱${changeVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
+    drawPesoRight(changeVal.toFixed(2), 76, y, "bold"); y += 10;
 
     doc.text(`THANK YOU FOR YOUR TRUST!`, 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(8);
-    doc.setFont("NotoSans", "normal");
+    doc.setFont("courier", "normal");
     doc.text(`--- NO REFUND WITHOUT TRANSACTION DETAILS ---`, 40, y, { align: 'center' }); y += 4;
-    doc.setFont("NotoSans", "normal");
+    doc.setFont("courier", "italic");
     doc.text(`This is not an official transaction record.`, 40, y, { align: 'center' });
 
     doc.save(`receipt_${t.id}.pdf`);
@@ -750,8 +785,4 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     </ErrorBoundary >
   );
 }
-
-
-
-
 
