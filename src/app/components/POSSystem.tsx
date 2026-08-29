@@ -277,7 +277,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         logAuditAction(
           currentUser.name,
           'POS Sale',
-          `Completed sale #${data.id}. Total: â‚±${transaction.total.toFixed(2)} | Items: ${itemSummary}`
+          `Completed sale #${data.id}. Total: ₱${transaction.total.toFixed(2)} | Items: ${itemSummary}`
         );
       } else {
         toast.error('Failed to save transaction: ' + data.error);
@@ -452,7 +452,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                           </div>
 
                           <div className="flex justify-between items-center mt-2">
-                            <span className="text-lg font-black text-blue-700">â‚±{product.price.toFixed(2)}</span>
+                            <span className="text-lg font-black text-blue-700">₱{product.price.toFixed(2)}</span>
                             <Button size="sm" variant="outline" disabled={(Number(product.quantity) + Number(product.newStockQuantity || 0)) <= 0} className="border-2 border-blue-100 hover:bg-blue-600 hover:text-white transition-all">
                               <Plus className="size-4" />
                             </Button>
@@ -509,7 +509,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                                   <div className="flex-1 min-w-0 pr-6">
                                     <h4 className="font-bold text-sm text-gray-800 truncate uppercase tracking-tight">{item.product.name}</h4>
                                     <p className="text-[10px] text-gray-400 font-mono">{item.product.sku}</p>
-                                    <p className="text-[11px] text-[#2b59c3] font-medium mt-1">â‚±{item.product.price.toFixed(2)} each</p>
+                                    <p className="text-[11px] text-[#2b59c3] font-medium mt-1">₱{item.product.price.toFixed(2)} each</p>
                                   </div>
                                   <button
                                     onClick={() => removeFromCart(item.product.id)}
@@ -547,7 +547,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                                   <div className="text-right">
                                     <p className="text-[10px] text-gray-400 font-medium">Subtotal</p>
                                     <p className="font-black text-base text-gray-900 leading-none">
-                                      â‚±{(item.product.price * item.quantity).toFixed(2)}
+                                      ₱{(item.product.price * item.quantity).toFixed(2)}
                                     </p>
                                   </div>
                                 </div>
@@ -572,7 +572,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                       <div className="bg-[#f8fafc] p-4 rounded-xl border border-blue-50 flex items-center justify-between">
                         <div className="flex flex-col">
                           <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Grand Total</span>
-                          <span className="text-3xl font-black text-[#2b59c3]">â‚±{calculateTotal().toFixed(2)}</span>
+                          <span className="text-3xl font-black text-[#2b59c3]">₱{calculateTotal().toFixed(2)}</span>
                         </div>
                         <div className="text-right">
                            <Badge variant="outline" className="text-[9px] font-bold text-blue-500 border-blue-100 bg-blue-50/10">
@@ -610,7 +610,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                         {paymentMethod === 'cash' && amountReceived && (
                            <div className="flex justify-between items-center px-1 bg-green-50/50 p-2 rounded-lg border border-green-100/50">
                              <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">Change Due</span>
-                             <span className="text-xl font-black text-green-700">â‚±{calculateChange().toFixed(2)}</span>
+                             <span className="text-xl font-black text-green-700">₱{calculateChange().toFixed(2)}</span>
                            </div>
                         )}
                       </div>
@@ -684,10 +684,10 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                     <div key={idx} className="flex flex-col gap-1">
                       <div className="flex justify-between text-xs items-start">
                         <span className="font-bold flex-1 pr-4">{item.productName}</span>
-                        <span className="font-bold">â‚±{(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-bold">₱{(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                       <div className="text-[10px] text-gray-400">
-                        {item.quantity} units x â‚±{item.price.toFixed(2)}
+                        {item.quantity} units x ₱{item.price.toFixed(2)}
                       </div>
                     </div>
                   ))}
@@ -698,18 +698,18 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
               <div className="border-t-2 border-dashed border-gray-900 pt-4 space-y-2">
                 <div className="flex justify-between text-sm font-black">
                   <span className="uppercase tracking-wider">TOTAL AMOUNT</span>
-                  <span className="text-base">â‚±{completedTransaction?.total.toFixed(2)}</span>
+                  <span className="text-base">₱{completedTransaction?.total.toFixed(2)}</span>
                 </div>
 
                 {completedTransaction?.paymentMethod === 'cash' && (
                   <div className="space-y-1 mt-3 pt-3 border-t border-gray-100">
                     <div className="flex justify-between text-[11px] text-gray-600">
                       <span className="uppercase">CASH RECEIVED</span>
-                      <span>â‚±{completedTransaction.amountReceived?.toFixed(2)}</span>
+                      <span>₱{completedTransaction.amountReceived?.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
                       <span className="uppercase tracking-tighter">CHANGE DUE</span>
-                      <span>â‚±{completedTransaction.change?.toFixed(2)}</span>
+                      <span>₱{completedTransaction.change?.toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -750,6 +750,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     </ErrorBoundary >
   );
 }
+
 
 
 
