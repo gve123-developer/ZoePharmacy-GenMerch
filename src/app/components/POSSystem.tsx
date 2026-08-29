@@ -1,6 +1,5 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
-import { setupPdfPesoFont } from '@/app/utils/pdfFont';
 import { speak } from '@/app/utils/voiceUtils';
 import { User, Product, Transaction } from '@/app/App';
 import { Button } from '@/app/components/ui/button';
@@ -293,47 +292,11 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     setAmountReceived('');
   };
 
-  const generatePDF = async (t: Transaction): Promise<void> => {
+  const generatePDF = (t: Transaction) => {
     // Calculate required height: Base height (approx 150mm) + 12mm per item
     const itemsCount = t.items.length;
     const estimatedHeight = 150 + (itemsCount * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
-    await setupPdfPesoFont(doc);
-
-    const drawPesoRight = (
-      amount: string,
-      xRight: number,
-      yPos: number,
-      style: "normal" | "bold" = "normal"
-    ) => {
-      doc.setFont("courier", style);
-      const amountWidth = doc.getTextWidth(amount);
-      doc.text(amount, xRight, yPos, { align: "right" });
-
-      doc.setFont("NotoSans", "normal");
-      const pesoWidth = doc.getTextWidth("₱");
-      doc.text("₱", xRight - amountWidth - pesoWidth, yPos);
-
-      doc.setFont("courier", style);
-    };
-
-    const drawPesoInline = (
-      prefix: string,
-      amount: string,
-      xPos: number,
-      yPos: number
-    ) => {
-      doc.setFont("courier", "normal");
-      doc.text(prefix, xPos, yPos);
-      const prefixWidth = doc.getTextWidth(prefix);
-
-      doc.setFont("NotoSans", "normal");
-      doc.text("₱", xPos + prefixWidth, yPos);
-      const pesoWidth = doc.getTextWidth("₱");
-
-      doc.setFont("courier", "normal");
-      doc.text(amount, xPos + prefixWidth + pesoWidth, yPos);
-    };
 
     doc.setFont("courier", "bold");
     doc.setFontSize(10);
@@ -371,25 +334,25 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     t.items.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
-      drawPesoRight((it.price * it.quantity).toFixed(2), 76, y, "normal"); y += 4;
-      drawPesoInline(`${it.quantity} units x `, it.price.toFixed(2), 4, y); y += 6;
+      doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
+      doc.text(`${it.quantity} units x P${it.price.toFixed(2)}`, 4, y); y += 6;
     });
 
     doc.text('__________________________________', 40, y, { align: 'center' }); y += 8;
 
     doc.setFont("courier", "bold");
     doc.text(`TOTAL AMOUNT`, 4, y);
-    drawPesoRight(t.total.toFixed(2), 76, y, "bold"); y += 8;
+    doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
 
     doc.setFont("courier", "normal");
     const amountReceivedVal = t.amountReceived || t.total;
     const changeVal = t.change || 0;
 
     doc.text(`CASH RECEIVED`, 4, y);
-    drawPesoRight(amountReceivedVal.toFixed(2), 76, y, "normal"); y += 6;
+    doc.text(`P${amountReceivedVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
     doc.setFont("courier", "bold");
     doc.text(`CHANGE DUE`, 4, y);
-    drawPesoRight(changeVal.toFixed(2), 76, y, "bold"); y += 10;
+    doc.text(`P${changeVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
 
     doc.text(`THANK YOU FOR YOUR TRUST!`, 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(8);
@@ -785,4 +748,3 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     </ErrorBoundary >
   );
 }
-
