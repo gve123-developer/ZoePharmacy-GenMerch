@@ -286,8 +286,6 @@ function App() {
     try {
       const doc = new jsPDF();
       await setupPdfPesoFont(doc);
-      console.log('PDF FONT LIST:', doc.getFontList());
-      console.log('CURRENT PDF FONT:', doc.getFont());
       let yPosition = 25;
 
       // Helper for structured layout
@@ -668,6 +666,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

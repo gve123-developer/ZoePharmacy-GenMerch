@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
+import { setupPdfPesoFont } from '@/app/utils/pdfFont';
 import { speak } from '@/app/utils/voiceUtils';
 import { User, Product, Transaction } from '@/app/App';
 import { Button } from '@/app/components/ui/button';
@@ -276,7 +277,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         logAuditAction(
           currentUser.name,
           'POS Sale',
-          `Completed sale #${data.id}. Total: ₱${transaction.total.toFixed(2)} | Items: ${itemSummary}`
+          `Completed sale #${data.id}. Total: â‚±${transaction.total.toFixed(2)} | Items: ${itemSummary}`
         );
       } else {
         toast.error('Failed to save transaction: ' + data.error);
@@ -292,13 +293,14 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     setAmountReceived('');
   };
 
-  const generatePDF = (t: Transaction) => {
+  const generatePDF = async (t: Transaction): Promise<void> => {
     // Calculate required height: Base height (approx 150mm) + 12mm per item
     const itemsCount = t.items.length;
     const estimatedHeight = 150 + (itemsCount * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
+    await setupPdfPesoFont(doc);
 
-    doc.setFont("courier", "bold");
+    doc.setFont("NotoSans", "normal");
     doc.setFontSize(10);
 
     let y = 10;
@@ -311,7 +313,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     doc.text('METRO MANILA', 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(10);
 
-    doc.setFont("courier", "normal");
+    doc.setFont("NotoSans", "normal");
     doc.text('----------------------------------', 40, y, { align: 'center' }); y += 6;
 
     doc.text(`TRANS ID: ${t.id}`, 4, y); y += 4;
@@ -334,31 +336,31 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     t.items.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
-      doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
-      doc.text(`${it.quantity} units x P${it.price.toFixed(2)}`, 4, y); y += 6;
+      doc.text(`₱${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
+      doc.text(`${it.quantity} units x ₱${it.price.toFixed(2)}`, 4, y); y += 6;
     });
 
     doc.text('__________________________________', 40, y, { align: 'center' }); y += 8;
 
-    doc.setFont("courier", "bold");
+    doc.setFont("NotoSans", "normal");
     doc.text(`TOTAL AMOUNT`, 4, y);
-    doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
+    doc.text(`₱${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
 
-    doc.setFont("courier", "normal");
+    doc.setFont("NotoSans", "normal");
     const amountReceivedVal = t.amountReceived || t.total;
     const changeVal = t.change || 0;
 
     doc.text(`CASH RECEIVED`, 4, y);
-    doc.text(`P${amountReceivedVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
-    doc.setFont("courier", "bold");
+    doc.text(`₱${amountReceivedVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
+    doc.setFont("NotoSans", "normal");
     doc.text(`CHANGE DUE`, 4, y);
-    doc.text(`P${changeVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
+    doc.text(`₱${changeVal.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
 
     doc.text(`THANK YOU FOR YOUR TRUST!`, 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(8);
-    doc.setFont("courier", "normal");
+    doc.setFont("NotoSans", "normal");
     doc.text(`--- NO REFUND WITHOUT TRANSACTION DETAILS ---`, 40, y, { align: 'center' }); y += 4;
-    doc.setFont("courier", "italic");
+    doc.setFont("NotoSans", "normal");
     doc.text(`This is not an official transaction record.`, 40, y, { align: 'center' });
 
     doc.save(`receipt_${t.id}.pdf`);
@@ -450,7 +452,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                           </div>
 
                           <div className="flex justify-between items-center mt-2">
-                            <span className="text-lg font-black text-blue-700">₱{product.price.toFixed(2)}</span>
+                            <span className="text-lg font-black text-blue-700">â‚±{product.price.toFixed(2)}</span>
                             <Button size="sm" variant="outline" disabled={(Number(product.quantity) + Number(product.newStockQuantity || 0)) <= 0} className="border-2 border-blue-100 hover:bg-blue-600 hover:text-white transition-all">
                               <Plus className="size-4" />
                             </Button>
@@ -507,7 +509,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                                   <div className="flex-1 min-w-0 pr-6">
                                     <h4 className="font-bold text-sm text-gray-800 truncate uppercase tracking-tight">{item.product.name}</h4>
                                     <p className="text-[10px] text-gray-400 font-mono">{item.product.sku}</p>
-                                    <p className="text-[11px] text-[#2b59c3] font-medium mt-1">₱{item.product.price.toFixed(2)} each</p>
+                                    <p className="text-[11px] text-[#2b59c3] font-medium mt-1">â‚±{item.product.price.toFixed(2)} each</p>
                                   </div>
                                   <button
                                     onClick={() => removeFromCart(item.product.id)}
@@ -545,7 +547,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                                   <div className="text-right">
                                     <p className="text-[10px] text-gray-400 font-medium">Subtotal</p>
                                     <p className="font-black text-base text-gray-900 leading-none">
-                                      ₱{(item.product.price * item.quantity).toFixed(2)}
+                                      â‚±{(item.product.price * item.quantity).toFixed(2)}
                                     </p>
                                   </div>
                                 </div>
@@ -570,7 +572,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                       <div className="bg-[#f8fafc] p-4 rounded-xl border border-blue-50 flex items-center justify-between">
                         <div className="flex flex-col">
                           <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Grand Total</span>
-                          <span className="text-3xl font-black text-[#2b59c3]">₱{calculateTotal().toFixed(2)}</span>
+                          <span className="text-3xl font-black text-[#2b59c3]">â‚±{calculateTotal().toFixed(2)}</span>
                         </div>
                         <div className="text-right">
                            <Badge variant="outline" className="text-[9px] font-bold text-blue-500 border-blue-100 bg-blue-50/10">
@@ -608,7 +610,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                         {paymentMethod === 'cash' && amountReceived && (
                            <div className="flex justify-between items-center px-1 bg-green-50/50 p-2 rounded-lg border border-green-100/50">
                              <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">Change Due</span>
-                             <span className="text-xl font-black text-green-700">₱{calculateChange().toFixed(2)}</span>
+                             <span className="text-xl font-black text-green-700">â‚±{calculateChange().toFixed(2)}</span>
                            </div>
                         )}
                       </div>
@@ -682,10 +684,10 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                     <div key={idx} className="flex flex-col gap-1">
                       <div className="flex justify-between text-xs items-start">
                         <span className="font-bold flex-1 pr-4">{item.productName}</span>
-                        <span className="font-bold">₱{(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-bold">â‚±{(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                       <div className="text-[10px] text-gray-400">
-                        {item.quantity} units x ₱{item.price.toFixed(2)}
+                        {item.quantity} units x â‚±{item.price.toFixed(2)}
                       </div>
                     </div>
                   ))}
@@ -696,18 +698,18 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
               <div className="border-t-2 border-dashed border-gray-900 pt-4 space-y-2">
                 <div className="flex justify-between text-sm font-black">
                   <span className="uppercase tracking-wider">TOTAL AMOUNT</span>
-                  <span className="text-base">₱{completedTransaction?.total.toFixed(2)}</span>
+                  <span className="text-base">â‚±{completedTransaction?.total.toFixed(2)}</span>
                 </div>
 
                 {completedTransaction?.paymentMethod === 'cash' && (
                   <div className="space-y-1 mt-3 pt-3 border-t border-gray-100">
                     <div className="flex justify-between text-[11px] text-gray-600">
                       <span className="uppercase">CASH RECEIVED</span>
-                      <span>₱{completedTransaction.amountReceived?.toFixed(2)}</span>
+                      <span>â‚±{completedTransaction.amountReceived?.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
                       <span className="uppercase tracking-tighter">CHANGE DUE</span>
-                      <span>₱{completedTransaction.change?.toFixed(2)}</span>
+                      <span>â‚±{completedTransaction.change?.toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -748,3 +750,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
     </ErrorBoundary >
   );
 }
+
+
+
+
