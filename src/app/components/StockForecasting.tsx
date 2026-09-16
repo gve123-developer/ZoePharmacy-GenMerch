@@ -27,7 +27,7 @@ interface StockForecastingProps {
     transactions: Transaction[];
 }
 
-import { getForecast, calculateDailyAccuracyMetrics } from '@/app/utils/forecastingUtils';
+import { getForecast, calculateDailyAccuracyMetrics, formatDurationLeft } from '@/app/utils/forecastingUtils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export function StockForecasting({ products, transactions }: StockForecastingProps) {
@@ -363,7 +363,7 @@ export function StockForecasting({ products, transactions }: StockForecastingPro
                                             <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center">Daily Velocity</TableHead>
                                             <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center">Current Stock</TableHead>
                                             <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center">Stock Status</TableHead>
-                                            <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center text-red-600">Days Left</TableHead>
+                                            <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center text-red-600">Days / Months Left</TableHead>
                                             <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center">Stockout Date</TableHead>
                                             <TableHead className="px-1 py-3 font-black text-gray-700 uppercase text-[9px] text-center">Reorder Date</TableHead>
                                             <TableHead className="px-2 py-3 font-black text-gray-700 uppercase text-[9px] text-right">Recommendation</TableHead>
@@ -408,11 +408,11 @@ export function StockForecasting({ products, transactions }: StockForecastingPro
                                                             <Badge className="bg-green-100 text-green-800 border-none px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest leading-none">OPTIMAL</Badge>
                                                         )}
                                                     </TableCell>
-                                                    <TableCell className="px-6 py-4 border-r border-gray-200 text-center">
-                                                        <span className={`font-black text-sm ${(forecast as any).daysRemaining <= 7 || (Number(p.quantity) + Number(p.newStockQuantity || 0)) === 0 ? 'text-red-600' :
+                                                    <TableCell className="px-4 py-4 border-r border-gray-200 text-center">
+                                                        <span className={`font-black text-xs md:text-sm whitespace-nowrap ${(forecast as any).daysRemaining <= 7 || (Number(p.quantity) + Number(p.newStockQuantity || 0)) === 0 ? 'text-red-600' :
                                                             ((forecast as any).daysRemaining <= 14 || (Number(p.quantity) + Number(p.newStockQuantity || 0)) <= p.reorderLevel) ? 'text-orange-600' : 'text-green-600'
                                                             }`}>
-                                                            {(Number(p.quantity) + Number(p.newStockQuantity || 0)) === 0 ? '0' : ((forecast as any).daysRemaining === Infinity ? 'STABLE' : (forecast as any).daysRemaining)}
+                                                            {formatDurationLeft((forecast as any).daysRemaining, Number(p.quantity) + Number(p.newStockQuantity || 0))}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="px-6 py-4 border-r border-gray-200 text-center">

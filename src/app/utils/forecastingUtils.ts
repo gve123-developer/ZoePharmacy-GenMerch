@@ -1,4 +1,4 @@
-﻿import { Product, Transaction } from '@/app/App';
+import { Product, Transaction } from '@/app/App';
 
 
 export const calculateVelocity = (productId: string, transactions: Transaction[]) => {
@@ -48,8 +48,9 @@ export const calculateVelocity = (productId: string, transactions: Transaction[]
 export const getForecast = (product: Product, transactions: Transaction[], upcomingRain: boolean) => {
     const total = (Number(product.quantity) + Number(product.newStockQuantity || 0));
     const velocity = calculateVelocity(product.id, transactions);
-    const daysRemaining = velocity > 0
-        ? Math.floor(total / velocity)
+    const roundedVelocity = parseFloat(velocity.toFixed(2));
+    const daysRemaining = roundedVelocity > 0
+        ? Math.floor(total / roundedVelocity)
         : (total === 0 ? 0 : Infinity);
 
     // Determine if product is Fast-Moving or Slow-Moving based on velocity
@@ -86,6 +87,56 @@ export const getForecast = (product: Product, transactions: Transaction[], upcom
         recommendedBuyDate: daysRemaining === Infinity ? 'N/A' : buyDate.toLocaleDateString(),
         stockOutDate: daysRemaining === Infinity ? 'N/A' : new Date(Date.now() + daysRemaining * 86400000).toLocaleDateString()
     };
+};
+
+/**
+ * Format days left into a user-friendly readable string (days / months / years)
+ * e.g., "5 days", "1 month and 3 days", "2 months and 3 days", "1 year, 2 months and 5 days"
+ */
+export const formatDurationLeft = (daysRemaining: number, totalQuantity: number = 1): string => {
+    if (totalQuantity <= 0 || daysRemaining <= 0) {
+        return '0 days';
+    }
+
+    if (daysRemaining === Infinity || !isFinite(daysRemaining) || daysRemaining >= 1825) {
+        return 'STABLE';
+    }
+
+    // Less than 30 days
+    if (daysRemaining < 30) {
+        return `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}`;
+    }
+
+    // 1 year or more (>= 365 days)
+    if (daysRemaining >= 365) {
+        const years = Math.floor(daysRemaining / 365);
+        const remDaysAfterYears = daysRemaining % 365;
+        const months = Math.floor(remDaysAfterYears / 30);
+        const days = remDaysAfterYears % 30;
+
+        const parts: string[] = [];
+        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+        if (months > 0) {
+            parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+        }
+        if (days > 0) {
+            parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+        }
+
+        if (parts.length === 1) return parts[0];
+        if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+        return `${parts[0]}, ${parts[1]} and ${parts[2]}`;
+    }
+
+    // 30 days to 364 days: Break down into months and days
+    const months = Math.floor(daysRemaining / 30);
+    const days = daysRemaining % 30;
+
+    if (days === 0) {
+        return `${months} ${months === 1 ? 'month' : 'months'}`;
+    }
+
+    return `${months} ${months === 1 ? 'month' : 'months'} and ${days} ${days === 1 ? 'day' : 'days'}`;
 };
 
 export const calculateAccuracyMetrics = (productId: string, transactions: Transaction[], testDays: number = 30) => {
