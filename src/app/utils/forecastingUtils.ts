@@ -98,7 +98,8 @@ export const formatDurationLeft = (daysRemaining: number, totalQuantity: number 
         return '0 days';
     }
 
-    if (daysRemaining === Infinity || !isFinite(daysRemaining) || daysRemaining >= 1825) {
+    // 7 months and above (> 180 days / > 6 months) or infinite: Considered STABLE
+    if (daysRemaining === Infinity || !isFinite(daysRemaining) || daysRemaining > 180) {
         return 'STABLE';
     }
 
@@ -107,28 +108,7 @@ export const formatDurationLeft = (daysRemaining: number, totalQuantity: number 
         return `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'}`;
     }
 
-    // 1 year or more (>= 365 days)
-    if (daysRemaining >= 365) {
-        const years = Math.floor(daysRemaining / 365);
-        const remDaysAfterYears = daysRemaining % 365;
-        const months = Math.floor(remDaysAfterYears / 30);
-        const days = remDaysAfterYears % 30;
-
-        const parts: string[] = [];
-        parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
-        if (months > 0) {
-            parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
-        }
-        if (days > 0) {
-            parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
-        }
-
-        if (parts.length === 1) return parts[0];
-        if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
-        return `${parts[0]}, ${parts[1]} and ${parts[2]}`;
-    }
-
-    // 30 days to 364 days: Break down into months and days
+    // 1 to 6 months (30 to 180 days): Break down into months and days
     const months = Math.floor(daysRemaining / 30);
     const days = daysRemaining % 30;
 
