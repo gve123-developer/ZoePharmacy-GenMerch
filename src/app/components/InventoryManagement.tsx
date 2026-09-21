@@ -45,6 +45,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [productToAuthEdit, setProductToAuthEdit] = useState<Product | null>(null);
+  const [productToAuthDelete, setProductToAuthDelete] = useState<Product | null>(null);
 
   const handleAddProduct = async () => {
     if (!formData.name || !formData.sku || !formData.category || !formData.price || !formData.cost || !formData.quantity || !formData.reorderLevel) {
@@ -207,7 +208,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
               <DialogDescription className="pt-2">
                 Are you sure you want to delete <span className="font-bold text-gray-900">&ldquo;{productToDelete?.name}&rdquo;</span>?
                 <br />
-                <span className="text-red-500 text-xs mt-1 block">This action cannot be undone. All associated sales history will also be removed.</span>
+                <span className="text-red-500 text-xs mt-1 block">This action cannot be undone. Product will be removed and archived in deleted products records.</span>
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="mt-4 gap-2">
@@ -534,7 +535,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                               <Button variant="ghost" size="sm" onClick={() => setProductToAuthEdit(product)} className="h-8 w-8 p-0" title="Edit Product (Requires Owner Passcode)">
                                 <Edit className="size-4 text-blue-600" />
                               </Button>
-                              <Button variant="ghost" size="sm" onClick={() => handleDeleteProduct(product)} className="h-8 w-8 p-0">
+                              <Button variant="ghost" size="sm" onClick={() => setProductToAuthDelete(product)} className="h-8 w-8 p-0" title="Delete Product (Requires Owner Passcode)">
                                 <Trash2 className="size-4 text-red-600" />
                               </Button>
                             </div>
@@ -749,6 +750,21 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
             }
           }}
           onClose={() => setProductToAuthEdit(null)}
+        />
+
+        {/* Owner Passcode Authorization for Delete */}
+        <OwnerPasscodeModal
+          isOpen={!!productToAuthDelete}
+          actionTitle={`Delete Product: ${productToAuthDelete?.name || ''}`}
+          actionDescription="Owner authorization required before deleting a product from inventory."
+          onSuccess={() => {
+            if (productToAuthDelete) {
+              const p = productToAuthDelete;
+              setProductToAuthDelete(null);
+              setProductToDelete(p);
+            }
+          }}
+          onClose={() => setProductToAuthDelete(null)}
         />
       </div>
     </ErrorBoundary>
