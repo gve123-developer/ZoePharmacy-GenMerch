@@ -200,4 +200,16 @@ INSERT INTO `categories` (`name`, `description`) VALUES
 ('Pharmaceutical', 'Medicines and drugs'),
 ('Non-pharmaceutical', 'General merchandise and equipment');
 
+-- 11. System Settings table (for Owner Passcode and System Config)
+DROP TABLE IF EXISTS `system_settings`;
+CREATE TABLE `system_settings` (
+  `key` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `system_settings` (`key`, `value`) VALUES
+('owner_passcode', '$2y$12$M8wltWnN9/2BcW5bhXC60uQsN7hCbIRd2ihlQPwwUrpnri2x7Nd26');
+
 COMMIT;
