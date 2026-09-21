@@ -13,6 +13,16 @@ import { Plus, Edit, Trash2, Search, Package, ChevronLeft, ChevronRight, Layers 
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { logAuditAction } from '@/app/utils/auditUtils';
 import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/app/components/ui/alert-dialog';
 
 interface InventoryManagementProps {
   currentUser: User;
@@ -29,6 +39,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState<Partial<Product>>({});
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -668,11 +679,62 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => { setIsEditDialogOpen(false); setFormData({}); setEditingProduct(null); }}>Cancel</Button>
-                <Button onClick={handleEditProduct}>Save Changes</Button>
+                <Button onClick={() => setShowSaveConfirm(true)}>Save Changes</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </ErrorBoundary>
+
+        {/* Confirm Save Changes Dialog */}
+        <AlertDialog open={showSaveConfirm} onOpenChange={setShowSaveConfirm}>
+          <AlertDialogContent className="max-w-md bg-white border-0 shadow-2xl p-6 rounded-2xl">
+            <AlertDialogHeader className="flex flex-col items-center text-center">
+              <div className="size-14 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
+                <Package className="size-7 text-indigo-600" />
+              </div>
+              <AlertDialogTitle className="text-xl font-black text-gray-900">
+                Save Product Changes?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm text-gray-600 mt-2">
+                Are you sure you want to save changes for{' '}
+                <span className="font-bold text-gray-900">"{formData.name || editingProduct?.name}"</span>?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-3.5 my-3 text-xs text-gray-700 space-y-1.5">
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Product Name:</span>
+                <span className="font-bold text-gray-900">{formData.name || editingProduct?.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Selling Price:</span>
+                <span className="font-bold text-gray-900">₱{Number(formData.price ?? editingProduct?.price ?? 0).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Base Quantity:</span>
+                <span className="font-bold text-gray-900">{formData.quantity ?? editingProduct?.quantity} units</span>
+              </div>
+            </div>
+
+            <AlertDialogFooter className="flex gap-2 sm:gap-3 mt-4">
+              <AlertDialogCancel
+                onClick={() => setShowSaveConfirm(false)}
+                className="flex-1 font-bold rounded-xl"
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  setShowSaveConfirm(false);
+                  handleEditProduct();
+                }}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
+              >
+                Yes, Save Changes
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Owner Passcode Authorization for Edit */}
         <OwnerPasscodeModal

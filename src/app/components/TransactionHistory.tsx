@@ -468,7 +468,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                               {t.status !== 'voided' && currentUser.role === 'admin' && (
                                 <button
                                   className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-700 transition-colors"
-                                  onClick={(e) => { e.stopPropagation(); setTransactionToVoid(t); }}
+                                  onClick={(e) => { e.stopPropagation(); setTransactionWaitingPasscode(t); }}
                                 >
                                   <Trash2 className="size-3.5" /> Void
                                 </button>
@@ -630,8 +630,9 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                 {transactionToVoid && (
                   <SwipeToVoid
                     onVoid={() => {
-                      setTransactionWaitingPasscode(transactionToVoid);
+                      const id = transactionToVoid.id;
                       setTransactionToVoid(null);
+                      handleVoidTransaction(id);
                     }}
                   />
                 )}
@@ -647,15 +648,16 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
           </DialogContent>
         </Dialog>
 
-        {/* Owner Passcode Authorization for Void */}
+        {/* Owner Passcode Authorization for Void (Prompted FIRST before Swipe) */}
         <OwnerPasscodeModal
           isOpen={!!transactionWaitingPasscode}
           actionTitle={`Void Transaction #${transactionWaitingPasscode?.id.padStart(7, '0') || ''}`}
-          actionDescription={`Authorizing cancellation of ₱${transactionWaitingPasscode?.total.toFixed(2) || '0.00'} and restoring inventory stock.`}
+          actionDescription={`Owner authorization required before voiding ₱${transactionWaitingPasscode?.total.toFixed(2) || '0.00'} and restoring inventory stock.`}
           onSuccess={() => {
             if (transactionWaitingPasscode) {
-              handleVoidTransaction(transactionWaitingPasscode.id);
+              const t = transactionWaitingPasscode;
               setTransactionWaitingPasscode(null);
+              setTransactionToVoid(t);
             }
           }}
           onClose={() => setTransactionWaitingPasscode(null)}

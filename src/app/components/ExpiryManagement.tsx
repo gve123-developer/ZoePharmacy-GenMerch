@@ -5,11 +5,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/app/components/ui/badge';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
-import { Search, Calendar, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Search, Calendar, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, X, Trash2 } from 'lucide-react';
 import { User, Product, LossEntry } from '@/app/App';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
 import { speak } from '@/app/utils/voiceUtils';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from '@/app/components/ui/alert-dialog';
 
 interface ExpiryManagementProps {
     currentUser: User;
@@ -19,6 +29,7 @@ interface ExpiryManagementProps {
 
 export function ExpiryManagement({ currentUser, products, onProductsChange }: ExpiryManagementProps) {
     const [productToDispose, setProductToDispose] = useState<Product | null>(null);
+    const [productToConfirmDispose, setProductToConfirmDispose] = useState<Product | null>(null);
 
     const handleDispose = async (product: Product) => {
         const loss = product.quantity * (product.cost || 0);
@@ -503,16 +514,76 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                 <OwnerPasscodeModal
                     isOpen={!!productToDispose}
                     actionTitle={`Dispose Product: ${productToDispose?.name || ''}`}
-                    actionDescription="This action will permanently set stock to 0 and record the loss in inventory loss records."
+                    actionDescription="Owner authorization required to dispose expired product and record inventory loss."
                     onSuccess={() => {
                         if (productToDispose) {
                             const p = productToDispose;
                             setProductToDispose(null);
-                            handleDispose(p);
+                            setProductToConfirmDispose(p);
                         }
                     }}
                     onClose={() => setProductToDispose(null)}
                 />
+
+                {/* Final Confirmation Dialog after Owner Passcode */}
+                <AlertDialog
+                    open={!!productToConfirmDispose}
+                    onOpenChange={(open) => !open && setProductToConfirmDispose(null)}
+                >
+                    <AlertDialogContent className="max-w-md bg-white border-0 shadow-2xl p-6 rounded-2xl">
+                        <AlertDialogHeader className="flex flex-col items-center text-center">
+                            <div className="size-14 rounded-full bg-red-100 flex items-center justify-center mb-3">
+                                <AlertTriangle className="size-7 text-red-600" />
+                            </div>
+                            <AlertDialogTitle className="text-xl font-black text-gray-900">
+                                Confirm Product Disposal
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm text-gray-600 mt-2">
+                                Are you sure you really want to dispose{' '}
+                                <span className="font-bold text-gray-900">"{productToConfirmDispose?.name}"</span>?
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        {productToConfirmDispose && (
+                            <div className="bg-red-50/80 border border-red-200/80 rounded-xl p-4 my-3 text-sm space-y-2">
+                                <div className="flex justify-between items-center text-gray-700">
+                                    <span className="font-medium">Quantity to Dispose:</span>
+                                    <span className="font-bold text-red-700">{productToConfirmDispose.quantity} units</span>
+                                </div>
+                                <div className="flex justify-between items-center text-gray-700">
+                                    <span className="font-medium">Estimated Financial Loss:</span>
+                                    <span className="font-bold text-red-700">
+                                        ₱{(productToConfirmDispose.quantity * (productToConfirmDispose.cost || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-red-600/90 pt-1 font-medium border-t border-red-200/60">
+                                    * Stock will be permanently set to 0 and recorded in inventory loss records.
+                                </p>
+                            </div>
+                        )}
+
+                        <AlertDialogFooter className="flex gap-2 sm:gap-3 mt-4">
+                            <AlertDialogCancel
+                                onClick={() => setProductToConfirmDispose(null)}
+                                className="flex-1 font-bold rounded-xl"
+                            >
+                                Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => {
+                                    if (productToConfirmDispose) {
+                                        const p = productToConfirmDispose;
+                                        setProductToConfirmDispose(null);
+                                        handleDispose(p);
+                                    }
+                                }}
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl"
+                            >
+                                Yes, Dispose Product
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </ErrorBoundary>
     );
