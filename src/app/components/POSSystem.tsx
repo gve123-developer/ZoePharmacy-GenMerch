@@ -26,8 +26,67 @@ interface CartItem {
   quantity: number;
 }
 
+const HEALTH_CONDITIONS = [
+  { id: 'all', label: 'All Health Uses (Lahat)' },
+  { id: 'fever', label: 'For Fever & Pain (Lagnat at Sakit)', keywords: ['biogesic', 'paracetamol', 'advil', 'alaxan', 'medicol', 'tempra', 'calpol', 'ibuprofen', 'mefenamic', 'ponstan', 'arcoxia', 'aspilets', 'fever', 'pain', 'headache', 'toothache'] },
+  { id: 'cough_cold', label: 'For Cough, Cold & Flu (Ubo at Sipon)', keywords: ['bioflu', 'neozep', 'decolgen', 'solmux', 'ascof', 'robitussin', 'tuseran', 'ambroxol', 'carbocisteine', 'benadryl', 'bisolvon', 'ambrolex', 'asmalin', 'symdek', 'cough', 'cold', 'flu', 'phlegm'] },
+  { id: 'allergy', label: 'For Allergy & Itch (Pangangati)', keywords: ['allerkid', 'allerta', 'alnix', 'allerzet', 'cetirizine', 'loratadine', 'virlix', 'zyrtec', 'antihistamine', 'allergy', 'itch', 'hives'] },
+  { id: 'headache', label: 'For Headache & Migraine (Sakit ng Ulo)', keywords: ['biogesic', 'paracetamol', 'advil', 'saridon', 'panadol', 'headache', 'migraine', 'tension'] },
+  { id: 'stomach', label: 'For Stomach & Acid (Tiyan at Acid)', keywords: ['buscopan', 'kremil', 'gaviscon', 'omeprazole', 'loperamide', 'imodium', 'antacid', 'stomach', 'diarrhea', 'acid', 'ulcer'] },
+  { id: 'antibiotic', label: 'For Antibiotics & Infection (Impeksyon)', keywords: ['amoxicillin', 'augmentin', 'cefalexin', 'azithromycin', 'zithromax', 'bactidol', 'bactroban', 'clamox', 'cefuroxime', 'ciprofloxacin', 'antibiotic', 'infection'] },
+  { id: 'vitamins', label: 'For Vitamins & Energy (Bitamina)', keywords: ['enervon', 'centrum', 'poten', 'appebon', 'ascorbic', 'vitamin', 'ferrous', 'calcium', 'zinc', 'revitonic', 'multivitamin', 'iron'] },
+  { id: 'first_aid', label: 'For Wounds & Antiseptic (Sugat at First Aid)', keywords: ['betadine', 'alcoplus', 'agua oxigenada', 'alcohol', 'antiseptic', 'bioderm', 'salve', 'wound'] },
+  { id: 'hypertension', label: 'For Maintenance / Heart (Presyon)', keywords: ['amvasc', 'amlodipine', 'losartan', 'metoprolol', 'captopril', 'maintenance', 'hypertension', 'blood pressure'] }
+];
+
+const POPULAR_BRANDS = [
+  'All Brands',
+  'Advil',
+  'Alaxan',
+  'Alcoplus',
+  'Allerkid',
+  'Allerta',
+  'Alnix',
+  'Ambrolex',
+  'Amoxicillin',
+  'Amvasc',
+  'Arcoxia',
+  'Ascof',
+  'Augmentin',
+  'Bactidol',
+  'Bactroban',
+  'Benadryl',
+  'Bench',
+  'Betadine',
+  'Bioderm',
+  'Bioflu',
+  'Biogesic',
+  'Bisolvon',
+  'Bonakid',
+  'Bonamine',
+  'Buscopan',
+  'Calpol',
+  'Centrum',
+  'Decolgen',
+  'Enervon',
+  'Gaviscon',
+  'Kremil-S',
+  'Medicol',
+  'Neozep',
+  'Ponstan',
+  'Poten-Cee',
+  'Robitussin',
+  'Solmux',
+  'Tempra',
+  'Tuseran',
+  'Zithromax',
+  'Zykast'
+];
+
 export function POSSystem({ currentUser, products, onProductsChange }: POSSystemProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterCondition, setFilterCondition] = useState('all');
+  const [filterBrand, setFilterBrand] = useState('all');
   const [filterType, setFilterType] = useState('all');
   const [selectedLetter, setSelectedLetter] = useState('ALL');
   const [sortBy, setSortBy] = useState('a-z');
@@ -36,6 +95,17 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const [amountReceived, setAmountReceived] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [completedTransaction, setCompletedTransaction] = useState<Transaction | null>(null);
+
+  const resetAllFilters = () => {
+    setSearchQuery('');
+    setFilterCondition('all');
+    setFilterBrand('all');
+    setFilterType('all');
+    setSelectedLetter('ALL');
+    setSortBy('a-z');
+  };
+
+  const hasActiveFilters = searchQuery !== '' || filterCondition !== 'all' || filterBrand !== 'all' || filterType !== 'all' || selectedLetter !== 'ALL' || sortBy !== 'a-z';
 
 
   const startVoiceSearch = () => {
@@ -106,30 +176,46 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
           if (firstChar !== selectedLetter) return false;
         }
 
+        const nameLower = product.name.toLowerCase();
+        const descLower = (product.description || '').toLowerCase();
+        const combinedText = `${nameLower} ${descLower}`;
+
+        // Health Condition / Purpose Filter (e.g. For Fever, For Cough, etc.)
+        if (filterCondition !== 'all') {
+          const condition = HEALTH_CONDITIONS.find(c => c.id === filterCondition);
+          if (condition && condition.keywords) {
+            const matchesCondition = condition.keywords.some(k => combinedText.includes(k));
+            if (!matchesCondition) return false;
+          }
+        }
+
+        // Brand Filter
+        if (filterBrand !== 'all') {
+          const cleanBrand = filterBrand.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const cleanName = nameLower.replace(/[^a-z0-9]/g, '');
+          if (!cleanName.includes(cleanBrand)) return false;
+        }
+
         // Types of Medicine filter
         if (filterType !== 'all') {
-          const nameLower = product.name.toLowerCase();
-          const descLower = (product.description || '').toLowerCase();
-          const text = `${nameLower} ${descLower}`;
-
           if (filterType === 'Pharmaceutical') {
             if (product.category !== 'Pharmaceutical') return false;
           } else if (filterType === 'Non-pharmaceutical') {
             if (product.category !== 'Non-pharmaceutical') return false;
           } else if (filterType === 'Tablet') {
-            if (!text.includes('tablet') && !text.includes('tab')) return false;
+            if (!combinedText.includes('tablet') && !combinedText.includes('tab')) return false;
           } else if (filterType === 'Capsule') {
-            if (!text.includes('capsule') && !text.includes('cap')) return false;
+            if (!combinedText.includes('capsule') && !combinedText.includes('cap')) return false;
           } else if (filterType === 'Syrup') {
-            if (!text.includes('syrup') && !text.includes('syr')) return false;
+            if (!combinedText.includes('syrup') && !combinedText.includes('syr')) return false;
           } else if (filterType === 'Suspension') {
-            if (!text.includes('suspension') && !text.includes('susp')) return false;
+            if (!combinedText.includes('suspension') && !combinedText.includes('susp')) return false;
           } else if (filterType === 'Drops') {
-            if (!text.includes('drop')) return false;
+            if (!combinedText.includes('drop')) return false;
           } else if (filterType === 'Cream & Ointment') {
-            if (!text.includes('cream') && !text.includes('ointment') && !text.includes('gel')) return false;
+            if (!combinedText.includes('cream') && !combinedText.includes('ointment') && !combinedText.includes('gel')) return false;
           } else if (filterType === 'Spray & Solution') {
-            if (!text.includes('spray') && !text.includes('solution')) return false;
+            if (!combinedText.includes('spray') && !combinedText.includes('solution')) return false;
           }
         }
 
@@ -149,7 +235,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         }
         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
-  }, [products, searchQuery, filterType, selectedLetter, sortBy]);
+  }, [products, searchQuery, filterCondition, filterBrand, filterType, selectedLetter, sortBy]);
 
   const addToCart = (product: Product) => {
     const totalAvailable = Number(product.quantity) + Number(product.newStockQuantity || 0);
@@ -456,11 +542,12 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
             <ErrorBoundary fallbackTitle="Product Selection Error">
               <Card>
                 <CardHeader className="space-y-3 pb-3">
-                  <div className="flex flex-col md:flex-row gap-3">
+                  {/* Top Row: Search and Sort */}
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-gray-400" />
                       <Input
-                        placeholder="Search medicines by name or SKU..."
+                        placeholder="Search medicines by name, brand, or SKU..."
                         value={searchQuery}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                         className="pl-10 pr-10"
@@ -476,28 +563,9 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                       </Button>
                     </div>
 
-                    {/* Types of Medicine Filter */}
-                    <Select value={filterType} onValueChange={setFilterType}>
-                      <SelectTrigger className="w-full md:w-56">
-                        <SelectValue placeholder="Types of Medicine" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Types of Medicine</SelectItem>
-                        <SelectItem value="Tablet">Tablets</SelectItem>
-                        <SelectItem value="Capsule">Capsules</SelectItem>
-                        <SelectItem value="Syrup">Syrups</SelectItem>
-                        <SelectItem value="Suspension">Suspensions</SelectItem>
-                        <SelectItem value="Drops">Drops</SelectItem>
-                        <SelectItem value="Cream & Ointment">Creams & Ointments</SelectItem>
-                        <SelectItem value="Spray & Solution">Sprays & Solutions</SelectItem>
-                        <SelectItem value="Pharmaceutical">Pharmaceutical (All)</SelectItem>
-                        <SelectItem value="Non-pharmaceutical">Non-pharmaceutical</SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    {/* Sort Order */}
+                    {/* Sort Order Dropdown */}
                     <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-full md:w-44">
+                      <SelectTrigger className="w-full sm:w-44">
                         <SelectValue placeholder="Sort A-Z" />
                       </SelectTrigger>
                       <SelectContent>
@@ -510,31 +578,91 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                     </Select>
                   </div>
 
-                  {/* A-Z Quick Alphabetical Letter Filter */}
-                  <div className="flex items-center gap-1 overflow-x-auto pb-1 pt-1 scrollbar-none">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLetter('ALL')}
-                      className={`px-2.5 py-1 text-[11px] font-black rounded-lg transition-all shrink-0 uppercase tracking-wider ${selectedLetter === 'ALL'
-                        ? 'bg-gray-900 text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                    >
-                      All (A-Z)
-                    </button>
-                    {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => (
+                  {/* Middle Row: Purpose (e.g. For Fever), Brand, and Dosage Form Filters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {/* Health Condition / Purpose Filter */}
+                    <Select value={filterCondition} onValueChange={setFilterCondition}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="For Fever, Cough, etc." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {HEALTH_CONDITIONS.map(cond => (
+                          <SelectItem key={cond.id} value={cond.id}>{cond.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Brand Filter */}
+                    <Select value={filterBrand} onValueChange={setFilterBrand}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Filter by Brand" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        {POPULAR_BRANDS.map(brand => (
+                          <SelectItem key={brand} value={brand === 'All Brands' ? 'all' : brand}>
+                            {brand === 'All Brands' ? 'All Brands (Lahat ng Brand)' : `Brand: ${brand}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Dosage Form / Medicine Type */}
+                    <Select value={filterType} onValueChange={setFilterType}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Dosage Form" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-72">
+                        <SelectItem value="all">All Forms (Tablets, Syrups...)</SelectItem>
+                        <SelectItem value="Tablet">Tablets</SelectItem>
+                        <SelectItem value="Capsule">Capsules</SelectItem>
+                        <SelectItem value="Syrup">Syrups</SelectItem>
+                        <SelectItem value="Suspension">Suspensions</SelectItem>
+                        <SelectItem value="Drops">Drops</SelectItem>
+                        <SelectItem value="Cream & Ointment">Creams & Ointments</SelectItem>
+                        <SelectItem value="Spray & Solution">Sprays & Solutions</SelectItem>
+                        <SelectItem value="Pharmaceutical">All Pharmaceutical</SelectItem>
+                        <SelectItem value="Non-pharmaceutical">Non-pharmaceutical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Bottom Row: A-Z Quick Letter Filter & Reset */}
+                  <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
-                        key={letter}
                         type="button"
-                        onClick={() => setSelectedLetter(prev => prev === letter ? 'ALL' : letter)}
-                        className={`size-6 flex items-center justify-center text-[11px] font-black rounded-md transition-all shrink-0 ${selectedLetter === letter
-                          ? 'bg-[#8bb300] text-white shadow-sm scale-105'
+                        onClick={() => setSelectedLetter('ALL')}
+                        className={`px-2.5 py-1 text-[11px] font-black rounded-lg transition-all shrink-0 uppercase tracking-wider ${selectedLetter === 'ALL'
+                          ? 'bg-gray-900 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
                       >
-                        {letter}
+                        All (A-Z)
                       </button>
-                    ))}
+                      {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => (
+                        <button
+                          key={letter}
+                          type="button"
+                          onClick={() => setSelectedLetter(prev => prev === letter ? 'ALL' : letter)}
+                          className={`size-6 flex items-center justify-center text-[11px] font-black rounded-md transition-all shrink-0 ${selectedLetter === letter
+                            ? 'bg-[#8bb300] text-white shadow-sm scale-105'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                        >
+                          {letter}
+                        </button>
+                      ))}
+                    </div>
+
+                    {hasActiveFilters && (
+                      <button
+                        type="button"
+                        onClick={resetAllFilters}
+                        className="text-[11px] text-red-600 hover:text-red-800 font-black whitespace-nowrap px-2 py-1 bg-red-50 hover:bg-red-100 rounded-md transition-all shrink-0 ml-2"
+                      >
+                        Reset Filters
+                      </button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
