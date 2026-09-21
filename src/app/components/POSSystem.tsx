@@ -28,7 +28,9 @@ interface CartItem {
 
 export function POSSystem({ currentUser, products, onProductsChange }: POSSystemProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterType, setFilterType] = useState('all');
+  const [selectedLetter, setSelectedLetter] = useState('ALL');
+  const [sortBy, setSortBy] = useState('a-z');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [amountReceived, setAmountReceived] = useState('');
@@ -93,24 +95,61 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const filteredProducts = useMemo(() => {
     return products
       .filter(product => {
+        // Search query (name or sku)
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.sku.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
-        return matchesSearch && matchesCategory;
-      })
-      .sort((a, b) => {
-        // Sort by category first: Pharmaceutical (0) then Non-pharmaceutical (1)
-        const catPriorityA = a.category === 'Pharmaceutical' ? 0 : 1;
-        const catPriorityB = b.category === 'Pharmaceutical' ? 0 : 1;
+        if (!matchesSearch) return false;
 
-        if (catPriorityA !== catPriorityB) {
-          return catPriorityA - catPriorityB;
+        // A-Z Letter filter
+        if (selectedLetter !== 'ALL') {
+          const firstChar = product.name.trim().charAt(0).toUpperCase();
+          if (firstChar !== selectedLetter) return false;
         }
 
-        // Secondary sort by ID descending (newest first)
-        return Number(b.id) - Number(a.id);
+        // Types of Medicine filter
+        if (filterType !== 'all') {
+          const nameLower = product.name.toLowerCase();
+          const descLower = (product.description || '').toLowerCase();
+          const text = `${nameLower} ${descLower}`;
+
+          if (filterType === 'Pharmaceutical') {
+            if (product.category !== 'Pharmaceutical') return false;
+          } else if (filterType === 'Non-pharmaceutical') {
+            if (product.category !== 'Non-pharmaceutical') return false;
+          } else if (filterType === 'Tablet') {
+            if (!text.includes('tablet') && !text.includes('tab')) return false;
+          } else if (filterType === 'Capsule') {
+            if (!text.includes('capsule') && !text.includes('cap')) return false;
+          } else if (filterType === 'Syrup') {
+            if (!text.includes('syrup') && !text.includes('syr')) return false;
+          } else if (filterType === 'Suspension') {
+            if (!text.includes('suspension') && !text.includes('susp')) return false;
+          } else if (filterType === 'Drops') {
+            if (!text.includes('drop')) return false;
+          } else if (filterType === 'Cream & Ointment') {
+            if (!text.includes('cream') && !text.includes('ointment') && !text.includes('gel')) return false;
+          } else if (filterType === 'Spray & Solution') {
+            if (!text.includes('spray') && !text.includes('solution')) return false;
+          }
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'a-z') {
+          return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+        } else if (sortBy === 'z-a') {
+          return b.name.localeCompare(a.name, undefined, { sensitivity: 'base' });
+        } else if (sortBy === 'price-low') {
+          return a.price - b.price;
+        } else if (sortBy === 'price-high') {
+          return b.price - a.price;
+        } else if (sortBy === 'newest') {
+          return Number(b.id) - Number(a.id);
+        }
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
-  }, [products, searchQuery, filterCategory]);
+  }, [products, searchQuery, filterType, selectedLetter, sortBy]);
 
   const addToCart = (product: Product) => {
     const totalAvailable = Number(product.quantity) + Number(product.newStockQuantity || 0);
@@ -416,12 +455,12 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
           <div className="lg:col-span-7 xl:col-span-8 space-y-4">
             <ErrorBoundary fallbackTitle="Product Selection Error">
               <Card>
-                <CardHeader>
+                <CardHeader className="space-y-3 pb-3">
                   <div className="flex flex-col md:flex-row gap-3">
                     <div className="relative flex-1">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-gray-400" />
                       <Input
-                        placeholder="Search products..."
+                        placeholder="Search medicines by name or SKU..."
                         value={searchQuery}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                         className="pl-10 pr-10"
@@ -436,16 +475,66 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                         <Mic className={`size-4 ${isListening ? 'fill-red-600' : ''}`} />
                       </Button>
                     </div>
-                    <Select value={filterCategory} onValueChange={setFilterCategory}>
-                      <SelectTrigger className=";w-full md:w-56">
-                        <SelectValue placeholder="Category" />
+
+                    {/* Types of Medicine Filter */}
+                    <Select value={filterType} onValueChange={setFilterType}>
+                      <SelectTrigger className="w-full md:w-56">
+                        <SelectValue placeholder="Types of Medicine" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="Pharmaceutical">Pharmaceutical</SelectItem>
+                        <SelectItem value="all">All Types of Medicine</SelectItem>
+                        <SelectItem value="Tablet">Tablets</SelectItem>
+                        <SelectItem value="Capsule">Capsules</SelectItem>
+                        <SelectItem value="Syrup">Syrups</SelectItem>
+                        <SelectItem value="Suspension">Suspensions</SelectItem>
+                        <SelectItem value="Drops">Drops</SelectItem>
+                        <SelectItem value="Cream & Ointment">Creams & Ointments</SelectItem>
+                        <SelectItem value="Spray & Solution">Sprays & Solutions</SelectItem>
+                        <SelectItem value="Pharmaceutical">Pharmaceutical (All)</SelectItem>
                         <SelectItem value="Non-pharmaceutical">Non-pharmaceutical</SelectItem>
                       </SelectContent>
                     </Select>
+
+                    {/* Sort Order */}
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-full md:w-44">
+                        <SelectValue placeholder="Sort A-Z" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="a-z">Sort: A to Z</SelectItem>
+                        <SelectItem value="z-a">Sort: Z to A</SelectItem>
+                        <SelectItem value="price-low">Price: Low to High</SelectItem>
+                        <SelectItem value="price-high">Price: High to Low</SelectItem>
+                        <SelectItem value="newest">Newest Added</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* A-Z Quick Alphabetical Letter Filter */}
+                  <div className="flex items-center gap-1 overflow-x-auto pb-1 pt-1 scrollbar-none">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedLetter('ALL')}
+                      className={`px-2.5 py-1 text-[11px] font-black rounded-lg transition-all shrink-0 uppercase tracking-wider ${selectedLetter === 'ALL'
+                        ? 'bg-gray-900 text-white shadow-sm'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                    >
+                      All (A-Z)
+                    </button>
+                    {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => (
+                      <button
+                        key={letter}
+                        type="button"
+                        onClick={() => setSelectedLetter(prev => prev === letter ? 'ALL' : letter)}
+                        className={`size-6 flex items-center justify-center text-[11px] font-black rounded-md transition-all shrink-0 ${selectedLetter === letter
+                          ? 'bg-[#8bb300] text-white shadow-sm scale-105'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                      >
+                        {letter}
+                      </button>
+                    ))}
                   </div>
                 </CardHeader>
                 <CardContent>
