@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Plus, Edit, Trash2, Search, Package, ChevronLeft, ChevronRight, Layers } from 'lucide-react';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { logAuditAction } from '@/app/utils/auditUtils';
+import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
 
 interface InventoryManagementProps {
   currentUser: User;
@@ -32,6 +33,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [formData, setFormData] = useState<Partial<Product>>({});
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [productToAuthEdit, setProductToAuthEdit] = useState<Product | null>(null);
 
   const handleAddProduct = async () => {
     if (!formData.name || !formData.sku || !formData.category || !formData.price || !formData.cost || !formData.quantity || !formData.reorderLevel) {
@@ -518,7 +520,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                                   Rot. Stock
                                 </Button>
                               )}
-                              <Button variant="ghost" size="sm" onClick={() => openEditDialog(product)} className="h-8 w-8 p-0">
+                              <Button variant="ghost" size="sm" onClick={() => setProductToAuthEdit(product)} className="h-8 w-8 p-0" title="Edit Product (Requires Owner Passcode)">
                                 <Edit className="size-4 text-blue-600" />
                               </Button>
                               <Button variant="ghost" size="sm" onClick={() => handleDeleteProduct(product)} className="h-8 w-8 p-0">
@@ -671,6 +673,21 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
             </DialogContent>
           </Dialog>
         </ErrorBoundary>
+
+        {/* Owner Passcode Authorization for Edit */}
+        <OwnerPasscodeModal
+          isOpen={!!productToAuthEdit}
+          actionTitle={`Edit Product: ${productToAuthEdit?.name || ''}`}
+          actionDescription="Owner authorization required to modify inventory product details or pricing."
+          onSuccess={() => {
+            if (productToAuthEdit) {
+              const p = productToAuthEdit;
+              setProductToAuthEdit(null);
+              openEditDialog(p);
+            }
+          }}
+          onClose={() => setProductToAuthEdit(null)}
+        />
       </div>
     </ErrorBoundary>
   );

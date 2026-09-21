@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { toast } from 'sonner';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
+import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
 
 interface TransactionHistoryProps {
   currentUser: User;
@@ -34,20 +35,19 @@ const SwipeToVoid = ({ onVoid }: { onVoid: () => void }) => {
         max="100"
         value={val}
         onChange={(e) => {
-          const v = parseInt(e.target.value);
+          const v = Number(e.target.value);
           setVal(v);
           if (v > 92) { onVoid(); setVal(0); }
         }}
-        onMouseUp={() => setVal(0)}
-        onPointerUp={() => setVal(0)}
-        onTouchEnd={() => setVal(0)}
-        className="absolute inset-0 w-full opacity-0 cursor-ew-resize m-0 p-0"
+        onMouseUp={() => { if (val <= 92) setVal(0); }}
+        onTouchEnd={() => { if (val <= 92) setVal(0); }}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
       />
       <div
-        className="absolute top-0 bottom-0 w-14 bg-red-600 flex items-center justify-center pointer-events-none py-1"
-        style={{ left: `calc(${val}% - ${(val / 100) * 56}px)` }}
+        className="absolute top-1 bottom-1 w-10 bg-red-600 rounded flex items-center justify-center shadow-md pointer-events-none text-white font-bold transition-all duration-75"
+        style={{ left: `calc(${val * 0.85}% + 4px)` }}
       >
-        <Trash2 className="size-5 text-white" />
+        &gt;
       </div>
     </div>
   );
@@ -60,6 +60,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const [selectedTransactionIds, setSelectedTransactionIds] = useState<Set<string>>(new Set());
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [transactionToVoid, setTransactionToVoid] = useState<Transaction | null>(null);
+  const [transactionWaitingPasscode, setTransactionWaitingPasscode] = useState<Transaction | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -626,7 +627,14 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
               </div>
 
               <div className="w-full pt-2 pb-2 mt-auto">
-                {transactionToVoid && <SwipeToVoid onVoid={() => handleVoidTransaction(transactionToVoid.id)} />}
+                {transactionToVoid && (
+                  <SwipeToVoid
+                    onVoid={() => {
+                      setTransactionWaitingPasscode(transactionToVoid);
+                      setTransactionToVoid(null);
+                    }}
+                  />
+                )}
               </div>
 
               <button
@@ -638,6 +646,20 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Owner Passcode Authorization for Void */}
+        <OwnerPasscodeModal
+          isOpen={!!transactionWaitingPasscode}
+          actionTitle={`Void Transaction #${transactionWaitingPasscode?.id.padStart(7, '0') || ''}`}
+          actionDescription={`Authorizing cancellation of ₱${transactionWaitingPasscode?.total.toFixed(2) || '0.00'} and restoring inventory stock.`}
+          onSuccess={() => {
+            if (transactionWaitingPasscode) {
+              handleVoidTransaction(transactionWaitingPasscode.id);
+              setTransactionWaitingPasscode(null);
+            }
+          }}
+          onClose={() => setTransactionWaitingPasscode(null)}
+        />
       </div>
     </ErrorBoundary>
   );

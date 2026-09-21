@@ -8,6 +8,8 @@ import { Button } from '@/app/components/ui/button';
 import { Search, Calendar, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { User, Product, LossEntry } from '@/app/App';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
+import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
+import { speak } from '@/app/utils/voiceUtils';
 
 interface ExpiryManagementProps {
     currentUser: User;
@@ -15,9 +17,8 @@ interface ExpiryManagementProps {
     onProductsChange: (products: Product[]) => void;
 }
 
-import { speak } from '@/app/utils/voiceUtils';
-
 export function ExpiryManagement({ currentUser, products, onProductsChange }: ExpiryManagementProps) {
+    const [productToDispose, setProductToDispose] = useState<Product | null>(null);
 
     const handleDispose = async (product: Product) => {
         const loss = product.quantity * (product.cost || 0);
@@ -414,8 +415,9 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                                                                 <Button
                                                                     size="sm"
                                                                     variant="destructive"
-                                                                    onClick={() => handleDispose(product)}
+                                                                    onClick={() => setProductToDispose(product)}
                                                                     className="bg-red-600 hover:bg-red-700 font-bold text-xs uppercase tracking-tighter"
+                                                                    title="Dispose Expired Product (Requires Owner Passcode)"
                                                                 >
                                                                     <X className="size-3 mr-1" /> Dispose
                                                                 </Button>
@@ -496,6 +498,21 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                         )}
                     </Card>
                 </ErrorBoundary>
+
+                {/* Owner Passcode Authorization for Dispose */}
+                <OwnerPasscodeModal
+                    isOpen={!!productToDispose}
+                    actionTitle={`Dispose Product: ${productToDispose?.name || ''}`}
+                    actionDescription="This action will permanently set stock to 0 and record the loss in inventory loss records."
+                    onSuccess={() => {
+                        if (productToDispose) {
+                            const p = productToDispose;
+                            setProductToDispose(null);
+                            handleDispose(p);
+                        }
+                    }}
+                    onClose={() => setProductToDispose(null)}
+                />
             </div>
         </ErrorBoundary>
     );
