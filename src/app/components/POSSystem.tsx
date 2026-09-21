@@ -322,31 +322,39 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
       }
     }
 
-    // Prepare data for API
-    const formData = new FormData();
+    // Prepare clean JSON payload for API
     const cartData = cart.map(item => ({
-      id: item.product.id,
+      id: parseInt(item.product.id, 10) || item.product.id,
       qty: item.quantity,
       price: item.product.price
     }));
-    formData.append('cart', JSON.stringify(cartData));
-    formData.append('payment_method', paymentMethod);
-    formData.append('total', calculateTotal().toString());
-    formData.append('cashier_id', currentUser.id);
-    if (paymentMethod === 'cash') {
-      formData.append('amount_received', receivedNum.toString());
-      formData.append('change', calculateChange().toString());
-    }
+
+    const cashierId = currentUser?.id ? parseInt(currentUser.id, 10) : 1;
+    const cashierName = currentUser?.name || 'Zoe Owner';
+    const totalAmount = calculateTotal();
+    const changeDue = calculateChange();
+
+    const payload = {
+      cart: cartData,
+      payment_method: paymentMethod,
+      total: totalAmount,
+      cashier_id: cashierId,
+      amount_received: paymentMethod === 'cash' ? receivedNum : totalAmount,
+      change: paymentMethod === 'cash' ? changeDue : 0
+    };
 
     try {
       const response = await fetch('/api/save_transaction.php', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
 
-      if (data.success) {
+      const data = await response.json().catch(() => null);
+
+      if (response.ok && data?.success) {
         // Create local transaction object for the UI summary
         const transaction: Transaction = {
           id: data.id.toString(),
@@ -358,11 +366,11 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
             price: item.product.price,
             cost: item.product.cost,
           })),
-          total: calculateTotal(),
+          total: totalAmount,
           paymentMethod,
-          cashier: currentUser.name,
+          cashier: cashierName,
           amountReceived: paymentMethod === 'cash' ? receivedNum : undefined,
-          change: paymentMethod === 'cash' ? (receivedNum - calculateTotal()) : undefined,
+          change: paymentMethod === 'cash' ? (receivedNum - totalAmount) : undefined,
         };
 
         // Update inventory locally (App.tsx will refetch soon anyway, but this keeps UI snappy)
@@ -411,16 +419,17 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
           .map(i => `${i.productName} x${i.quantity}`)
           .join(', ');
         logAuditAction(
-          currentUser.name,
+          cashierName,
           'POS Sale',
           `Completed sale #${data.id}. Total: ₱${transaction.total.toFixed(2)} | Items: ${itemSummary}`
         );
       } else {
-        toast.error('Failed to save transaction: ' + data.error);
+        const errorMsg = data?.error || data?.message || `HTTP ${response.status}`;
+        toast.error('Failed to save transaction: ' + errorMsg);
       }
     } catch (error) {
-      console.error(error);
-      toast.error('Error connecting to transaction API');
+      console.error('POS Checkout Error:', error);
+      toast.error('Error connecting to transaction API: ' + (error instanceof Error ? error.message : 'Check connection'));
     }
   };
 

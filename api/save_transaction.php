@@ -5,7 +5,7 @@ header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-User-Name");
 header("Content-Type: application/json; charset=UTF-8");
 
-include '../includes/db_connect.php';
+include_once __DIR__ . '/../includes/db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -45,16 +45,16 @@ try {
             (float)($jsonData['total'] ?? 0);
 
         $amount_received =
-            isset($jsonData['amount_received'])
+            (isset($jsonData['amount_received']) && $jsonData['amount_received'] !== '')
             ? (float)$jsonData['amount_received']
             : (
-                isset($jsonData['amountReceived'])
+                (isset($jsonData['amountReceived']) && $jsonData['amountReceived'] !== '')
                 ? (float)$jsonData['amountReceived']
                 : null
             );
 
         $change_amount =
-            isset($jsonData['change'])
+            (isset($jsonData['change']) && $jsonData['change'] !== '')
             ? (float)$jsonData['change']
             : null;
 
@@ -69,10 +69,17 @@ try {
 
     } else {
 
-        $cart =
-            isset($_POST['cart'])
-            ? json_decode($_POST['cart'], true)
-            : [];
+        $rawCart = $_POST['cart'] ?? '';
+        if (is_array($rawCart)) {
+            $cart = $rawCart;
+        } elseif (is_string($rawCart) && $rawCart !== '') {
+            $cart = json_decode($rawCart, true);
+            if (!is_array($cart)) {
+                $cart = json_decode(stripslashes($rawCart), true);
+            }
+        } else {
+            $cart = [];
+        }
 
         $payment_method =
             $_POST['payment_method']
@@ -82,12 +89,12 @@ try {
             (float)($_POST['total'] ?? 0);
 
         $amount_received =
-            isset($_POST['amount_received'])
+            (isset($_POST['amount_received']) && $_POST['amount_received'] !== '')
             ? (float)$_POST['amount_received']
             : null;
 
         $change_amount =
-            isset($_POST['change'])
+            (isset($_POST['change']) && $_POST['change'] !== '')
             ? (float)$_POST['change']
             : null;
 
@@ -113,19 +120,23 @@ try {
 
     /*
     |--------------------------------------------------------------------------
-    | Resolve cashier
+    | Resolve cashier (validate against users table to prevent FK errors)
     |--------------------------------------------------------------------------
     */
 
-    if (!$cashier_id) {
+    if ($cashier_id) {
+        $cCheck = $conn->prepare("SELECT id FROM users WHERE id = :id LIMIT 1");
+        $cCheck->execute([':id' => $cashier_id]);
+        $cashier_id = $cCheck->fetchColumn();
+    }
 
+    if (!$cashier_id) {
         $userStmt = $conn->query(
             "SELECT id
              FROM users
-             ORDER BY id
+             ORDER BY id ASC
              LIMIT 1"
         );
-
         $cashier_id = $userStmt->fetchColumn();
 
         if (!$cashier_id) {
@@ -362,6 +373,9 @@ try {
         | Update product
         |--------------------------------------------------------------------------
         */
+
+        $expiryDate = !empty($expiryDate) ? $expiryDate : null;
+        $newStockExpiry = !empty($newStockExpiry) ? $newStockExpiry : null;
 
         $updateStockStmt->execute([
             ':quantity' => $oldQty,
