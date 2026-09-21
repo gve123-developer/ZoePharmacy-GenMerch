@@ -31,6 +31,19 @@ if (!$isCli) {
     }
 }
 
+$action = $_GET['action'] ?? $_POST['action'] ?? ($argv[1] ?? 'seed');
+
+if ($action === 'check') {
+    $cashiers = $conn->query("
+        SELECT coalesce(u.full_name, 'Unknown') as cashier, count(*) as count 
+        FROM transactions t 
+        LEFT JOIN users u ON t.cashier_id = u.id 
+        GROUP BY u.full_name
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode(['success' => true, 'cashiers' => $cashiers], $isCli ? JSON_PRETTY_PRINT : 0) . ($isCli ? PHP_EOL : '');
+    exit();
+}
+
 try {
     $conn->beginTransaction();
 
@@ -55,18 +68,6 @@ try {
     // 3. Fetch Owner ID (owner is the sole operator)
     $ownerStmt = $conn->query("SELECT id FROM users WHERE username = 'owner' OR full_name ILIKE '%owner%' ORDER BY id ASC LIMIT 1");
     $ownerId = $ownerStmt->fetchColumn() ?: 1;
-
-    $action = $_GET['action'] ?? $_POST['action'] ?? 'seed';
-    if ($action === 'update_cashier_only') {
-        $updateStmt = $conn->prepare("UPDATE transactions SET cashier_id = :owner_id");
-        $updateStmt->execute([':owner_id' => $ownerId]);
-        $conn->commit();
-        echo json_encode([
-            'success' => true,
-            'message' => "Successfully updated all transactions to Owner cashier (ID: {$ownerId})."
-        ], $isCli ? JSON_PRETTY_PRINT : 0) . ($isCli ? PHP_EOL : '');
-        exit();
-    }
 
     $insertTxStmt = $conn->prepare("
         INSERT INTO transactions (
