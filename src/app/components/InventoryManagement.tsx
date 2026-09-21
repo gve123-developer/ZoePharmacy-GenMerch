@@ -385,181 +385,167 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
         <ErrorBoundary fallbackTitle="Inventory Table Error">
           <Card>
             {/* INLINE COMPACT FILTERS */}
-            <CardContent className="p-4 border-b border-gray-100 bg-gray-50/20">
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                {/* Category Filter */}
-                <div className="space-y-2">
-                  <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Category Filter</h3>
-                  <div className="flex gap-1.5 flex-wrap">
-                    <Button
-                      size="sm"
-                      variant={filterCategory === 'all' ? 'default' : 'outline'}
-                      onClick={() => { setFilterCategory('all'); setCurrentPage(1); }}
-                      className="h-8 text-[10px] font-bold px-3 rounded-md"
-                    >
-                      ALL ({products.length})
-                    </Button>
-                    {categories.map(cat => {
-                      const count = products.filter(p => p.category === cat).length;
-                      return (
-                        <Button
-                          key={cat}
-                          size="sm"
-                          variant={filterCategory === cat ? 'default' : 'outline'}
-                          onClick={() => { setFilterCategory(cat); setCurrentPage(1); }}
-                          className="h-8 text-[10px] font-bold px-3 rounded-md"
-                        >
-                          {cat.toUpperCase()} ({count})
-                        </Button>
-                      );
-                    })}
+            <CardContent className="p-4 border-b border-gray-100 bg-gray-50/30">
+              <div className="space-y-4">
+                {/* Row 1: Filters (Category & Stock Status) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-3.5 border-b border-gray-200/70">
+                  {/* Category Filter */}
+                  <div className="space-y-1.5">
+                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Category Filter</h3>
+                    <div className="flex gap-1.5 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant={filterCategory === 'all' ? 'default' : 'outline'}
+                        onClick={() => { setFilterCategory('all'); setCurrentPage(1); }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        ALL ({products.length})
+                      </Button>
+                      {categories.map(cat => {
+                        const count = products.filter(p => p.category === cat).length;
+                        return (
+                          <Button
+                            key={cat}
+                            size="sm"
+                            variant={filterCategory === cat ? 'default' : 'outline'}
+                            onClick={() => { setFilterCategory(cat); setCurrentPage(1); }}
+                            className="h-8 text-[11px] font-bold px-3 rounded-md"
+                          >
+                            {cat.toUpperCase()} ({count})
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Stock Status Filter */}
+                  <div className="space-y-1.5">
+                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Stock Status</h3>
+                    <div className="flex gap-1.5 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant={filterStockStatus === 'all' ? 'default' : 'outline'}
+                        onClick={() => { setFilterStockStatus('all'); setCurrentPage(1); }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        ALL LEVELS
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={filterStockStatus === 'in' ? 'default' : 'outline'}
+                        onClick={() => { setFilterStockStatus('in'); setCurrentPage(1); }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        IN STOCK
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={filterStockStatus === 'low' ? 'default' : 'outline'}
+                        onClick={() => { setFilterStockStatus('low'); setCurrentPage(1); }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        LOW STOCK
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={filterStockStatus === 'out' ? 'default' : 'outline'}
+                        onClick={() => { setFilterStockStatus('out'); setCurrentPage(1); }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        OUT OF STOCK
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Stock Status Filter */}
-                <div className="space-y-2">
-                  <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Stock Status</h3>
-                  <div className="flex gap-1.5 flex-wrap">
-                    <Button
-                      size="sm"
-                      onClick={() => { setFilterStockStatus('all'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'all'
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'bg-white text-gray-500 border-gray-200'
-                        }`}
-                    >
-                      ALL LEVELS
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => { setFilterStockStatus('in'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'in'
-                          ? 'bg-green-600 text-white shadow-sm'
-                          : 'bg-white text-green-700 border-green-100'
-                        }`}
-                    >
-                      IN STOCK
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => { setFilterStockStatus('low'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'low'
-                          ? 'bg-orange-500 text-white shadow-sm'
-                          : 'bg-white text-orange-700 border-orange-200'
-                        }`}
-                    >
-                      LOW STOCK
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => { setFilterStockStatus('out'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'out'
-                          ? 'bg-red-600 text-white shadow-sm'
-                          : 'bg-white text-red-700 border-red-200'
-                        }`}
-                    >
-                      OUT OF STOCK
-                    </Button>
+                {/* Row 2: Sorting (Alphabetical & Stock Level Order) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Alphabetical Order (A-Z / Z-A) */}
+                  <div className="space-y-1.5">
+                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Alphabetical (A-Z)</h3>
+                    <div className="flex gap-1.5 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant={sortName === 'none' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSortName('none');
+                          setPrimarySort(sortStock !== 'none' ? 'stock' : 'none');
+                          setCurrentPage(1);
+                        }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        DEFAULT
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={sortName === 'a-z' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSortName('a-z');
+                          setPrimarySort('name');
+                          setCurrentPage(1);
+                        }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        A → Z
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={sortName === 'z-a' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSortName('z-a');
+                          setPrimarySort('name');
+                          setCurrentPage(1);
+                        }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        Z → A
+                      </Button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Alphabetical Order (A-Z / Z-A) Filter */}
-                <div className="space-y-2">
-                  <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Alphabetical (A-Z)</h3>
-                  <div className="flex gap-1.5 flex-wrap">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSortName('none');
-                        setPrimarySort(sortStock !== 'none' ? 'stock' : 'none');
-                        setCurrentPage(1);
-                      }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortName === 'none'
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
-                        }`}
-                    >
-                      DEFAULT
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSortName('a-z');
-                        setPrimarySort('name');
-                        setCurrentPage(1);
-                      }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortName === 'a-z'
-                          ? 'bg-indigo-600 text-white shadow-sm'
-                          : 'bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50'
-                        }`}
-                    >
-                      A → Z
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSortName('z-a');
-                        setPrimarySort('name');
-                        setCurrentPage(1);
-                      }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortName === 'z-a'
-                          ? 'bg-indigo-600 text-white shadow-sm'
-                          : 'bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50'
-                        }`}
-                    >
-                      Z → A
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Stock Quantity Sort Filter */}
-                <div className="space-y-2">
-                  <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Stock Level Order</h3>
-                  <div className="flex gap-1.5 flex-wrap">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSortStock('none');
-                        setPrimarySort(sortName !== 'none' ? 'name' : 'none');
-                        setCurrentPage(1);
-                      }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortStock === 'none'
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
-                        }`}
-                    >
-                      DEFAULT
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSortStock('low-high');
-                        setPrimarySort('stock');
-                        setCurrentPage(1);
-                      }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortStock === 'low-high'
-                          ? 'bg-purple-600 text-white shadow-sm'
-                          : 'bg-white text-purple-700 border-purple-200 hover:bg-purple-50'
-                        }`}
-                      title="Sort from lowest stock quantity to highest"
-                    >
-                      LOWEST → HIGHEST
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSortStock('high-low');
-                        setPrimarySort('stock');
-                        setCurrentPage(1);
-                      }}
-                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortStock === 'high-low'
-                          ? 'bg-purple-600 text-white shadow-sm'
-                          : 'bg-white text-purple-700 border-purple-200 hover:bg-purple-50'
-                        }`}
-                      title="Sort from highest stock quantity to lowest"
-                    >
-                      HIGHEST → LOWEST
-                    </Button>
+                  {/* Stock Quantity Sort Filter */}
+                  <div className="space-y-1.5">
+                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Stock Level Order</h3>
+                    <div className="flex gap-1.5 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant={sortStock === 'none' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSortStock('none');
+                          setPrimarySort(sortName !== 'none' ? 'name' : 'none');
+                          setCurrentPage(1);
+                        }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                      >
+                        DEFAULT
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={sortStock === 'low-high' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSortStock('low-high');
+                          setPrimarySort('stock');
+                          setCurrentPage(1);
+                        }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                        title="Sort from lowest stock quantity to highest"
+                      >
+                        LOWEST → HIGHEST
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={sortStock === 'high-low' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSortStock('high-low');
+                          setPrimarySort('stock');
+                          setCurrentPage(1);
+                        }}
+                        className="h-8 text-[11px] font-bold px-3 rounded-md"
+                        title="Sort from highest stock quantity to lowest"
+                      >
+                        HIGHEST → LOWEST
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -570,27 +556,27 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">Active:</span>
                     {filterCategory !== 'all' && (
-                      <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-700 border-blue-200">
+                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
                         Category: {filterCategory}
                       </Badge>
                     )}
                     {filterStockStatus !== 'all' && (
-                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
-                        Stock: {filterStockStatus.toUpperCase()}
+                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                        Stock: {filterStockStatus === 'in' ? 'In Stock' : filterStockStatus === 'low' ? 'Low Stock' : 'Out of Stock'}
                       </Badge>
                     )}
                     {sortName !== 'none' && (
-                      <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200">
-                        Name: {sortName.toUpperCase()}
+                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                        Alphabetical: {sortName === 'a-z' ? 'A → Z' : 'Z → A'}
                       </Badge>
                     )}
                     {sortStock !== 'none' && (
-                      <Badge variant="outline" className="text-[10px] bg-purple-50 text-purple-700 border-purple-200">
-                        Stock: {sortStock === 'low-high' ? 'Lowest First' : 'Highest First'}
+                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                        Stock Order: {sortStock === 'low-high' ? 'Lowest → Highest' : 'Highest → Lowest'}
                       </Badge>
                     )}
                     {searchQuery && (
-                      <Badge variant="outline" className="text-[10px] bg-gray-100 text-gray-700 border-gray-300">
+                      <Badge variant="outline" className="text-[10px] bg-gray-100 text-gray-700 border-gray-300 font-semibold">
                         Search: "{searchQuery}"
                       </Badge>
                     )}
@@ -647,8 +633,8 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                       >
                         <div className="flex items-center gap-1.5">
                           <span>Product Details</span>
-                          {sortName === 'a-z' && <span className="text-indigo-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowUp className="size-3" /> A-Z</span>}
-                          {sortName === 'z-a' && <span className="text-indigo-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowDown className="size-3" /> Z-A</span>}
+                          {sortName === 'a-z' && <span className="text-green-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowUp className="size-3" /> A-Z</span>}
+                          {sortName === 'z-a' && <span className="text-green-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowDown className="size-3" /> Z-A</span>}
                           {sortName === 'none' && <ArrowUpDown className="size-3 text-gray-400 opacity-60" />}
                         </div>
                       </TableHead>
@@ -664,8 +650,8 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                       >
                         <div className="flex items-center justify-center gap-1.5">
                           <span>Old Stock</span>
-                          {sortStock === 'low-high' && <span className="text-purple-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowUp className="size-3" /> Low</span>}
-                          {sortStock === 'high-low' && <span className="text-purple-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowDown className="size-3" /> High</span>}
+                          {sortStock === 'low-high' && <span className="text-green-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowUp className="size-3" /> Low</span>}
+                          {sortStock === 'high-low' && <span className="text-green-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowDown className="size-3" /> High</span>}
                           {sortStock === 'none' && <ArrowUpDown className="size-3 text-gray-400 opacity-60" />}
                         </div>
                       </TableHead>
