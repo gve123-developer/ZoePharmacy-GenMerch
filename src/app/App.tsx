@@ -375,6 +375,7 @@ function App() {
   if (!currentUser) {
     return (
       <ErrorBoundary fallbackTitle="Login Page Error">
+        <Toaster position="top-right" />
         <LoginPage onLogin={handleLogin} />
       </ErrorBoundary>
     );
@@ -382,7 +383,7 @@ function App() {
 
   return (
     <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
-      <Toaster />
+      <Toaster position="top-right" />
 
       {/* Header */}
       <ErrorBoundary fallbackTitle="Header Error">
