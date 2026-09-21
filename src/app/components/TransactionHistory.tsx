@@ -398,7 +398,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200">Total</TableHead>
                     <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center">Payment</TableHead>
                     <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200">Cashier</TableHead>
-                    <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center whitespace-nowrap w-56">
+                    <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center whitespace-nowrap w-44">
                       <div className="flex items-center justify-center gap-2">
                         <Checkbox
                           checked={selectedTransactionIds.size === filteredTransactions.length && filteredTransactions.length > 0}
@@ -445,7 +445,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                         <TableCell className="px-6 py-4 border-r border-gray-200 text-sm text-gray-600 font-medium whitespace-nowrap">
                           {t.cashier || 'Zoe Owner'}
                         </TableCell>
-                        <TableCell className="px-6 py-4 text-left whitespace-nowrap w-56">
+                        <TableCell className="px-6 py-4 text-left whitespace-nowrap w-44">
                           <div className="flex items-center justify-start gap-3">
                             <Checkbox
                               checked={selectedTransactionIds.has(t.id)}
@@ -456,12 +456,6 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                               onClick={() => { setSelectedTransaction(t); setIsDetailDialogOpen(true); }}
                             >
                               <Eye className="size-3.5" /> View
-                            </button>
-                            <button
-                              className="flex items-center gap-1.5 text-xs font-bold text-[#3b82f6] hover:text-blue-700 transition-colors min-w-[70px]"
-                              onClick={(e) => { e.stopPropagation(); generatePDF(t); }}
-                            >
-                              <Download className="size-3.5" /> Download
                             </button>
 
                             <div className="w-[70px] flex justify-start pl-3 ml-1 border-l-2 border-gray-100 h-5 items-center">
