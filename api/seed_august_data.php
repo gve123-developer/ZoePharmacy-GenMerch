@@ -40,21 +40,34 @@ if ($action === 'check') {
         LEFT JOIN users u ON t.cashier_id = u.id 
         GROUP BY u.full_name
     ")->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode(['success' => true, 'cashiers' => $cashiers], $isCli ? JSON_PRETTY_PRINT : 0) . ($isCli ? PHP_EOL : '');
+    $payments = $conn->query("
+        SELECT payment_method, count(*) as count 
+        FROM transactions 
+        GROUP BY payment_method
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    $losses = $conn->query("SELECT count(*) as count, coalesce(sum(quantity * cost_at_loss), 0) as total_loss FROM inventory_loss")->fetch(PDO::FETCH_ASSOC);
+    echo json_encode([
+        'success' => true,
+        'cashiers' => $cashiers,
+        'payments' => $payments,
+        'inventory_loss' => $losses
+    ], $isCli ? JSON_PRETTY_PRINT : 0) . ($isCli ? PHP_EOL : '');
     exit();
 }
 
 try {
     $conn->beginTransaction();
 
-    // 1. Wipe all existing transactions and items
+    // 1. Wipe all existing transactions, items, and inventory losses
     $conn->exec("DELETE FROM transaction_items");
     $conn->exec("DELETE FROM transactions");
+    $conn->exec("DELETE FROM inventory_loss");
 
     // Reset sequences
     try {
         $conn->exec("ALTER SEQUENCE transactions_id_seq RESTART WITH 1");
         $conn->exec("ALTER SEQUENCE transaction_items_id_seq RESTART WITH 1");
+        $conn->exec("ALTER SEQUENCE inventory_loss_id_seq RESTART WITH 1");
     } catch (Throwable $seqEx) {
         // In case sequences differ across installations
     }
@@ -175,34 +188,28 @@ try {
                 $voidCreatedForDay = true;
             }
 
-            // Payment method
-            $isCash = rand(1, 100) <= 85;
-            $paymentMethod = $isCash ? 'cash' : 'gcash';
+            // Payment method - 100% Cash only (no gcash)
+            $paymentMethod = 'cash';
 
-            if ($isCash) {
-                if ($txTotal <= 50) {
-                    $denominations = [50, 100];
-                } elseif ($txTotal <= 100) {
-                    $denominations = [100, 200];
-                } elseif ($txTotal <= 200) {
-                    $denominations = [200, 500];
-                } elseif ($txTotal <= 500) {
-                    $denominations = [500, 1000];
-                } else {
-                    $denominations = [ceil($txTotal / 100) * 100, ceil($txTotal / 500) * 500, ceil($txTotal / 1000) * 1000];
-                }
-
-                if (rand(1, 4) === 1) {
-                    $amountReceived = $txTotal;
-                } else {
-                    $possible = array_filter($denominations, fn($d) => $d >= $txTotal);
-                    $amountReceived = !empty($possible) ? (float)min($possible) : (float)(ceil($txTotal / 100) * 100);
-                }
-                $changeAmount = round(max(0, $amountReceived - $txTotal), 2);
+            if ($txTotal <= 50) {
+                $denominations = [50, 100];
+            } elseif ($txTotal <= 100) {
+                $denominations = [100, 200];
+            } elseif ($txTotal <= 200) {
+                $denominations = [200, 500];
+            } elseif ($txTotal <= 500) {
+                $denominations = [500, 1000];
             } else {
-                $amountReceived = $txTotal;
-                $changeAmount = 0.00;
+                $denominations = [ceil($txTotal / 100) * 100, ceil($txTotal / 500) * 500, ceil($txTotal / 1000) * 1000];
             }
+
+            if (rand(1, 4) === 1) {
+                $amountReceived = $txTotal;
+            } else {
+                $possible = array_filter($denominations, fn($d) => $d >= $txTotal);
+                $amountReceived = !empty($possible) ? (float)min($possible) : (float)(ceil($txTotal / 100) * 100);
+            }
+            $changeAmount = round(max(0, $amountReceived - $txTotal), 2);
 
             $cashierId = $ownerId;
 

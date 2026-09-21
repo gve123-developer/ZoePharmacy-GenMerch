@@ -1,7 +1,7 @@
 <?php
 
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, X-User-Name");
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -253,8 +253,24 @@ elseif ($method === 'GET') {
         );
     }
 }
+elseif ($method === 'DELETE') {
 
+    try {
+        $conn->exec("DELETE FROM inventory_loss");
 
+        try {
+            $conn->exec("ALTER SEQUENCE inventory_loss_id_seq RESTART WITH 1");
+        } catch (Throwable $e) {}
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'All inventory loss records cleared successfully'
+        ]);
+
+    } catch (Throwable $e) {
+        apiError(500, 'Failed to clear inventory loss records', $e->getMessage());
+    }
+}
 else {
 
     apiError(
