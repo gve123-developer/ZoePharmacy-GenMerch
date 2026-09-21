@@ -27,7 +27,7 @@ interface CartItem {
 }
 
 const HEALTH_CONDITIONS = [
-  { id: 'all', label: 'All Health Uses (Lahat)' },
+  { id: 'all', label: 'All Health Uses' },
   { id: 'fever', label: 'For Fever & Pain (Lagnat at Sakit)', keywords: ['biogesic', 'paracetamol', 'advil', 'alaxan', 'medicol', 'tempra', 'calpol', 'ibuprofen', 'mefenamic', 'ponstan', 'arcoxia', 'aspilets', 'fever', 'pain', 'headache', 'toothache'] },
   { id: 'cough_cold', label: 'For Cough, Cold & Flu (Ubo at Sipon)', keywords: ['bioflu', 'neozep', 'decolgen', 'solmux', 'ascof', 'robitussin', 'tuseran', 'ambroxol', 'carbocisteine', 'benadryl', 'bisolvon', 'ambrolex', 'asmalin', 'symdek', 'cough', 'cold', 'flu', 'phlegm'] },
   { id: 'allergy', label: 'For Allergy & Itch (Pangangati)', keywords: ['allerkid', 'allerta', 'alnix', 'allerzet', 'cetirizine', 'loratadine', 'virlix', 'zyrtec', 'antihistamine', 'allergy', 'itch', 'hives'] },
@@ -589,7 +589,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                     {/* Health Condition / Purpose Filter */}
                     <Select value={filterCondition} onValueChange={setFilterCondition}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="For Fever, Cough, etc." />
+                        <SelectValue placeholder="All Health Uses" />
                       </SelectTrigger>
                       <SelectContent className="max-h-72">
                         {HEALTH_CONDITIONS.map(cond => (
