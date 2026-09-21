@@ -40,13 +40,14 @@ const HEALTH_CONDITIONS = [
 ];
 
 const POPULAR_BRANDS = [
-  'All Brands',
   'Advil',
   'Alaxan',
   'Alcoplus',
   'Allerkid',
   'Allerta',
+  'Allerzet',
   'Alnix',
+  'Althea',
   'Ambrolex',
   'Amoxicillin',
   'Amvasc',
@@ -55,6 +56,7 @@ const POPULAR_BRANDS = [
   'Augmentin',
   'Bactidol',
   'Bactroban',
+  'Band-Aid',
   'Benadryl',
   'Bench',
   'Betadine',
@@ -87,7 +89,6 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCondition, setFilterCondition] = useState('all');
   const [filterBrand, setFilterBrand] = useState('all');
-  const [filterType, setFilterType] = useState('all');
   const [selectedLetter, setSelectedLetter] = useState('ALL');
   const [sortBy, setSortBy] = useState('a-z');
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -96,16 +97,44 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const [isListening, setIsListening] = useState(false);
   const [completedTransaction, setCompletedTransaction] = useState<Transaction | null>(null);
 
+  // Dynamically extract and sort all brands from products + popular brands
+  const allBrands = useMemo(() => {
+    const brandMap = new Map<string, string>();
+
+    // 1. Add well-known brands
+    POPULAR_BRANDS.forEach((brand) => {
+      const key = brand.toLowerCase().replace(/[^a-z0-9]/g, '');
+      brandMap.set(key, brand);
+    });
+
+    // 2. Dynamically extract brands from all products in the database
+    products.forEach((product) => {
+      if (!product.name) return;
+      const rawFirst = product.name.trim().split(/[\s/]+/)[0] || '';
+      const clean = rawFirst.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+      if (clean.length >= 2 && !/^\d+$/.test(clean)) {
+        const key = clean.toLowerCase();
+        if (!brandMap.has(key)) {
+          const display = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+          brandMap.set(key, display);
+        }
+      }
+    });
+
+    return Array.from(brandMap.values()).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: 'base' })
+    );
+  }, [products]);
+
   const resetAllFilters = () => {
     setSearchQuery('');
     setFilterCondition('all');
     setFilterBrand('all');
-    setFilterType('all');
     setSelectedLetter('ALL');
     setSortBy('a-z');
   };
 
-  const hasActiveFilters = searchQuery !== '' || filterCondition !== 'all' || filterBrand !== 'all' || filterType !== 'all' || selectedLetter !== 'ALL' || sortBy !== 'a-z';
+  const hasActiveFilters = searchQuery !== '' || filterCondition !== 'all' || filterBrand !== 'all' || selectedLetter !== 'ALL' || sortBy !== 'a-z';
 
 
   const startVoiceSearch = () => {
@@ -196,29 +225,6 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
           if (!cleanName.includes(cleanBrand)) return false;
         }
 
-        // Types of Medicine filter
-        if (filterType !== 'all') {
-          if (filterType === 'Pharmaceutical') {
-            if (product.category !== 'Pharmaceutical') return false;
-          } else if (filterType === 'Non-pharmaceutical') {
-            if (product.category !== 'Non-pharmaceutical') return false;
-          } else if (filterType === 'Tablet') {
-            if (!combinedText.includes('tablet') && !combinedText.includes('tab')) return false;
-          } else if (filterType === 'Capsule') {
-            if (!combinedText.includes('capsule') && !combinedText.includes('cap')) return false;
-          } else if (filterType === 'Syrup') {
-            if (!combinedText.includes('syrup') && !combinedText.includes('syr')) return false;
-          } else if (filterType === 'Suspension') {
-            if (!combinedText.includes('suspension') && !combinedText.includes('susp')) return false;
-          } else if (filterType === 'Drops') {
-            if (!combinedText.includes('drop')) return false;
-          } else if (filterType === 'Cream & Ointment') {
-            if (!combinedText.includes('cream') && !combinedText.includes('ointment') && !combinedText.includes('gel')) return false;
-          } else if (filterType === 'Spray & Solution') {
-            if (!combinedText.includes('spray') && !combinedText.includes('solution')) return false;
-          }
-        }
-
         return true;
       })
       .sort((a, b) => {
@@ -235,7 +241,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         }
         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
-  }, [products, searchQuery, filterCondition, filterBrand, filterType, selectedLetter, sortBy]);
+  }, [products, searchQuery, filterCondition, filterBrand, selectedLetter, sortBy]);
 
   const addToCart = (product: Product) => {
     const totalAvailable = Number(product.quantity) + Number(product.newStockQuantity || 0);
@@ -578,8 +584,8 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                     </Select>
                   </div>
 
-                  {/* Middle Row: Purpose (e.g. For Fever), Brand, and Dosage Form Filters */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {/* Middle Row: Purpose (e.g. For Fever) and Brand Filters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {/* Health Condition / Purpose Filter */}
                     <Select value={filterCondition} onValueChange={setFilterCondition}>
                       <SelectTrigger className="w-full">
@@ -595,33 +601,15 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                     {/* Brand Filter */}
                     <Select value={filterBrand} onValueChange={setFilterBrand}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Filter by Brand" />
+                        <SelectValue placeholder="All Brands" />
                       </SelectTrigger>
                       <SelectContent className="max-h-72">
-                        {POPULAR_BRANDS.map(brand => (
-                          <SelectItem key={brand} value={brand === 'All Brands' ? 'all' : brand}>
-                            {brand === 'All Brands' ? 'All Brands (Lahat ng Brand)' : `Brand: ${brand}`}
+                        <SelectItem value="all">All Brands</SelectItem>
+                        {allBrands.map(brand => (
+                          <SelectItem key={brand} value={brand}>
+                            {brand}
                           </SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-
-                    {/* Dosage Form / Medicine Type */}
-                    <Select value={filterType} onValueChange={setFilterType}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Dosage Form" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-72">
-                        <SelectItem value="all">All Forms (Tablets, Syrups...)</SelectItem>
-                        <SelectItem value="Tablet">Tablets</SelectItem>
-                        <SelectItem value="Capsule">Capsules</SelectItem>
-                        <SelectItem value="Syrup">Syrups</SelectItem>
-                        <SelectItem value="Suspension">Suspensions</SelectItem>
-                        <SelectItem value="Drops">Drops</SelectItem>
-                        <SelectItem value="Cream & Ointment">Creams & Ointments</SelectItem>
-                        <SelectItem value="Spray & Solution">Sprays & Solutions</SelectItem>
-                        <SelectItem value="Pharmaceutical">All Pharmaceutical</SelectItem>
-                        <SelectItem value="Non-pharmaceutical">Non-pharmaceutical</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -666,7 +654,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto pr-2">
                     {filteredProducts.map((product) => (
                       <Card
                         key={product.id}
@@ -738,7 +726,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
 
                 <CardContent className="flex flex-col flex-1 overflow-hidden p-5 space-y-6">
                   {/* Cart Items Area - Scrollable */}
-                  <div className="flex-1 overflow-y-auto space-y-5 pr-1 custom-scrollbar">
+                  <div className="flex-1 overflow-y-auto space-y-5 pr-2">
                     {cart.length > 0 ? (
                       <>
                         {/* Customer Purchase Info Box */}
