@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Badge } from '@/app/components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Search, Package, ChevronLeft, ChevronRight, Layers } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Package, ChevronLeft, ChevronRight, Layers, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { logAuditAction } from '@/app/utils/auditUtils';
 import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
@@ -36,6 +36,9 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStockStatus, setFilterStockStatus] = useState('all');
+  const [sortName, setSortName] = useState<'none' | 'a-z' | 'z-a'>('none');
+  const [sortStock, setSortStock] = useState<'none' | 'low-high' | 'high-low'>('none');
+  const [primarySort, setPrimarySort] = useState<'name' | 'stock' | 'none'>('none');
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -162,13 +165,52 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
     return 'in';
   };
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
-    const matchesStock = filterStockStatus === 'all' || checkStockStatus(product) === filterStockStatus;
-    return matchesSearch && matchesCategory && matchesStock;
-  });
+  const filteredProducts = products
+    .filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
+      const matchesStock = filterStockStatus === 'all' || checkStockStatus(product) === filterStockStatus;
+      return matchesSearch && matchesCategory && matchesStock;
+    })
+    .sort((a, b) => {
+      const stockA = Number(a.quantity) + Number(a.newStockQuantity || 0);
+      const stockB = Number(b.quantity) + Number(b.newStockQuantity || 0);
+
+      // If Stock sorting was prioritized
+      if (primarySort === 'stock' && sortStock !== 'none') {
+        const stockDiff = sortStock === 'low-high' ? stockA - stockB : stockB - stockA;
+        if (stockDiff !== 0) return stockDiff;
+        if (sortName === 'a-z') return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+        if (sortName === 'z-a') return b.name.localeCompare(a.name, undefined, { sensitivity: 'base' });
+        return 0;
+      }
+
+      // If Name sorting was prioritized
+      if (primarySort === 'name' && sortName !== 'none') {
+        const nameDiff = sortName === 'a-z'
+          ? a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+          : b.name.localeCompare(a.name, undefined, { sensitivity: 'base' });
+        if (nameDiff !== 0) return nameDiff;
+        if (sortStock === 'low-high') return stockA - stockB;
+        if (sortStock === 'high-low') return stockB - stockA;
+        return 0;
+      }
+
+      // If only one of the sorts is active
+      if (sortStock !== 'none') {
+        const stockDiff = sortStock === 'low-high' ? stockA - stockB : stockB - stockA;
+        if (stockDiff !== 0) return stockDiff;
+      }
+
+      if (sortName !== 'none') {
+        return sortName === 'a-z'
+          ? a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+          : b.name.localeCompare(a.name, undefined, { sensitivity: 'base' });
+      }
+
+      return 0;
+    });
 
   const itemsPerPage = 10;
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
@@ -344,11 +386,11 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
           <Card>
             {/* INLINE COMPACT FILTERS */}
             <CardContent className="p-4 border-b border-gray-100 bg-gray-50/20">
-              <div className="flex flex-col lg:flex-row gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                 {/* Category Filter */}
-                <div className="flex-1 space-y-2">
+                <div className="space-y-2">
                   <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Category Filter</h3>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-1.5 flex-wrap">
                     <Button
                       size="sm"
                       variant={filterCategory === 'all' ? 'default' : 'outline'}
@@ -375,13 +417,13 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                 </div>
 
                 {/* Stock Status Filter */}
-                <div className="flex-1 space-y-2">
+                <div className="space-y-2">
                   <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Stock Status</h3>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-1.5 flex-wrap">
                     <Button
                       size="sm"
                       onClick={() => { setFilterStockStatus('all'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-3 rounded-md ${filterStockStatus === 'all'
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'all'
                           ? 'bg-blue-600 text-white shadow-sm'
                           : 'bg-white text-gray-500 border-gray-200'
                         }`}
@@ -391,39 +433,186 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                     <Button
                       size="sm"
                       onClick={() => { setFilterStockStatus('in'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-3 rounded-md ${filterStockStatus === 'in'
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'in'
                           ? 'bg-green-600 text-white shadow-sm'
                           : 'bg-white text-green-700 border-green-100'
                         }`}
                     >
-                      IN STOCK ({products.filter(p => (Number(p.quantity) + Number(p.newStockQuantity || 0)) > Number(p.reorderLevel)).length})
+                      IN STOCK
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => { setFilterStockStatus('low'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-3 rounded-md ${filterStockStatus === 'low'
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'low'
                           ? 'bg-orange-500 text-white shadow-sm'
                           : 'bg-white text-orange-700 border-orange-200'
                         }`}
                     >
-                      LOW STOCK ({products.filter(p => {
-                        const total = Number(p.quantity) + Number(p.newStockQuantity || 0);
-                        return total > 0 && total <= Number(p.reorderLevel);
-                      }).length})
+                      LOW STOCK
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => { setFilterStockStatus('out'); setCurrentPage(1); }}
-                      className={`h-8 text-[10px] font-bold px-3 rounded-md ${filterStockStatus === 'out'
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${filterStockStatus === 'out'
                           ? 'bg-red-600 text-white shadow-sm'
                           : 'bg-white text-red-700 border-red-200'
                         }`}
                     >
-                      OUT OF STOCK ({products.filter(p => (Number(p.quantity) + Number(p.newStockQuantity || 0)) === 0).length})
+                      OUT OF STOCK
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Alphabetical Order (A-Z / Z-A) Filter */}
+                <div className="space-y-2">
+                  <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Alphabetical (A-Z)</h3>
+                  <div className="flex gap-1.5 flex-wrap">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSortName('none');
+                        setPrimarySort(sortStock !== 'none' ? 'stock' : 'none');
+                        setCurrentPage(1);
+                      }}
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortName === 'none'
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+                        }`}
+                    >
+                      DEFAULT
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSortName('a-z');
+                        setPrimarySort('name');
+                        setCurrentPage(1);
+                      }}
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortName === 'a-z'
+                          ? 'bg-indigo-600 text-white shadow-sm'
+                          : 'bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50'
+                        }`}
+                    >
+                      A → Z
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSortName('z-a');
+                        setPrimarySort('name');
+                        setCurrentPage(1);
+                      }}
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortName === 'z-a'
+                          ? 'bg-indigo-600 text-white shadow-sm'
+                          : 'bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50'
+                        }`}
+                    >
+                      Z → A
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Stock Quantity Sort Filter */}
+                <div className="space-y-2">
+                  <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Stock Level Order</h3>
+                  <div className="flex gap-1.5 flex-wrap">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSortStock('none');
+                        setPrimarySort(sortName !== 'none' ? 'name' : 'none');
+                        setCurrentPage(1);
+                      }}
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortStock === 'none'
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+                        }`}
+                    >
+                      DEFAULT
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSortStock('low-high');
+                        setPrimarySort('stock');
+                        setCurrentPage(1);
+                      }}
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortStock === 'low-high'
+                          ? 'bg-purple-600 text-white shadow-sm'
+                          : 'bg-white text-purple-700 border-purple-200 hover:bg-purple-50'
+                        }`}
+                      title="Sort from lowest stock quantity to highest"
+                    >
+                      LOWEST → HIGHEST
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSortStock('high-low');
+                        setPrimarySort('stock');
+                        setCurrentPage(1);
+                      }}
+                      className={`h-8 text-[10px] font-bold px-2.5 rounded-md ${sortStock === 'high-low'
+                          ? 'bg-purple-600 text-white shadow-sm'
+                          : 'bg-white text-purple-700 border-purple-200 hover:bg-purple-50'
+                        }`}
+                      title="Sort from highest stock quantity to lowest"
+                    >
+                      HIGHEST → LOWEST
                     </Button>
                   </div>
                 </div>
               </div>
+
+              {/* Active Filter Indicators & Reset */}
+              {(filterCategory !== 'all' || filterStockStatus !== 'all' || sortName !== 'none' || sortStock !== 'none' || searchQuery !== '') && (
+                <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-200/60 text-xs text-gray-500 flex-wrap gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">Active:</span>
+                    {filterCategory !== 'all' && (
+                      <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-700 border-blue-200">
+                        Category: {filterCategory}
+                      </Badge>
+                    )}
+                    {filterStockStatus !== 'all' && (
+                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                        Stock: {filterStockStatus.toUpperCase()}
+                      </Badge>
+                    )}
+                    {sortName !== 'none' && (
+                      <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200">
+                        Name: {sortName.toUpperCase()}
+                      </Badge>
+                    )}
+                    {sortStock !== 'none' && (
+                      <Badge variant="outline" className="text-[10px] bg-purple-50 text-purple-700 border-purple-200">
+                        Stock: {sortStock === 'low-high' ? 'Lowest First' : 'Highest First'}
+                      </Badge>
+                    )}
+                    {searchQuery && (
+                      <Badge variant="outline" className="text-[10px] bg-gray-100 text-gray-700 border-gray-300">
+                        Search: "{searchQuery}"
+                      </Badge>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setFilterCategory('all');
+                      setFilterStockStatus('all');
+                      setSortName('none');
+                      setSortStock('none');
+                      setPrimarySort('none');
+                      setSearchQuery('');
+                      setCurrentPage(1);
+                    }}
+                    className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 font-bold"
+                  >
+                    Reset All Filters
+                  </Button>
+                </div>
+              )}
             </CardContent>
 
             <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6">
@@ -446,8 +635,40 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                 <Table className="min-w-[800px]">
                   <TableHeader>
                     <TableRow className="bg-gray-50 border-b border-gray-200">
-                      <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200">Product Details</TableHead>
-                      <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center">Old Stock</TableHead>
+                      <TableHead
+                        onClick={() => {
+                          const next = sortName === 'a-z' ? 'z-a' : sortName === 'z-a' ? 'none' : 'a-z';
+                          setSortName(next);
+                          setPrimarySort(next === 'none' ? (sortStock !== 'none' ? 'stock' : 'none') : 'name');
+                          setCurrentPage(1);
+                        }}
+                        className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 cursor-pointer hover:bg-gray-100/80 transition-colors select-none"
+                        title="Click to sort by Name (A-Z / Z-A)"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Product Details</span>
+                          {sortName === 'a-z' && <span className="text-indigo-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowUp className="size-3" /> A-Z</span>}
+                          {sortName === 'z-a' && <span className="text-indigo-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowDown className="size-3" /> Z-A</span>}
+                          {sortName === 'none' && <ArrowUpDown className="size-3 text-gray-400 opacity-60" />}
+                        </div>
+                      </TableHead>
+                      <TableHead
+                        onClick={() => {
+                          const next = sortStock === 'low-high' ? 'high-low' : sortStock === 'high-low' ? 'none' : 'low-high';
+                          setSortStock(next);
+                          setPrimarySort(next === 'none' ? (sortName !== 'none' ? 'name' : 'none') : 'stock');
+                          setCurrentPage(1);
+                        }}
+                        className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center cursor-pointer hover:bg-gray-100/80 transition-colors select-none"
+                        title="Click to sort by Stock Quantity (Lowest-Highest / Highest-Lowest)"
+                      >
+                        <div className="flex items-center justify-center gap-1.5">
+                          <span>Old Stock</span>
+                          {sortStock === 'low-high' && <span className="text-purple-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowUp className="size-3" /> Low</span>}
+                          {sortStock === 'high-low' && <span className="text-purple-600 font-bold text-[10px] flex items-center gap-0.5"><ArrowDown className="size-3" /> High</span>}
+                          {sortStock === 'none' && <ArrowUpDown className="size-3 text-gray-400 opacity-60" />}
+                        </div>
+                      </TableHead>
                       <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center">New Stock</TableHead>
                       <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200">Price/Cost</TableHead>
                       <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200">Status</TableHead>
