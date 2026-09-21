@@ -26,6 +26,7 @@ patch_forecasting_voided_transactions.ps1
 # Product migration scripts
 zoe_apply_final_product_details.sql
 zoe_bulk_master_sync.sql
+zoe_pos_system_database_backup.sql
 
 # Local database/import artifacts
 *.dump
