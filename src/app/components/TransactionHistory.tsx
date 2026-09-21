@@ -99,6 +99,14 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       toast.success(`Transaction #${id} voided successfully`);
       setTransactionToVoid(null);
 
+      setSelectedTransactionIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+
+      setSelectedTransaction(prev => prev && prev.id === id ? { ...prev, status: 'voided' } : prev);
+
       setTransactions(prev => prev.map(t =>
         t.id === id ? { ...t, status: 'voided' } : t
       ));
@@ -173,15 +181,20 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const startShowing = ((currentPage - 1) * itemsPerPage) + 1;
   const endShowing = Math.min(currentPage * itemsPerPage, filteredTransactions.length);
 
+  const validFilteredTransactions = filteredTransactions.filter(t => t.status !== 'voided');
+
   const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedTransactionIds(new Set(filteredTransactions.map(t => t.id)));
+      setSelectedTransactionIds(new Set(validFilteredTransactions.map(t => t.id)));
     } else {
       setSelectedTransactionIds(new Set());
     }
   };
 
   const toggleSelect = (id: string) => {
+    const target = filteredTransactions.find(t => t.id === id);
+    if (target?.status === 'voided') return;
+
     const newSet = new Set(selectedTransactionIds);
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
@@ -189,6 +202,11 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   };
 
   const generatePDF = (t: Transaction) => {
+    if (t.status === 'voided') {
+      toast.error('Voided transactions cannot be downloaded.');
+      return;
+    }
+
     // Calculate required height: Base height (approx 120mm) + 10mm per item
     const itemsCount = t.items.length;
     // Increased base to 150mm and per-item to 12mm to provide plenty of space
@@ -254,11 +272,16 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   };
 
   const exportAllPDF = () => {
-    const transactionsToExport = selectedTransactionIds.size > 0
+    const rawToExport = selectedTransactionIds.size > 0
       ? filteredTransactions.filter(t => selectedTransactionIds.has(t.id))
       : filteredTransactions;
 
-    if (transactionsToExport.length === 0) return;
+    const transactionsToExport = rawToExport.filter(t => t.status !== 'voided');
+
+    if (transactionsToExport.length === 0) {
+      toast.error(selectedTransactionIds.size > 0 ? 'Selected transaction(s) are voided and cannot be downloaded.' : 'No valid transactions available to download.');
+      return;
+    }
 
     // We'll create the document with the height of the first transaction, 
     // but the actual page sizes will be added individually in the loop.
@@ -401,7 +424,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center whitespace-nowrap w-44">
                       <div className="flex items-center justify-center gap-2">
                         <Checkbox
-                          checked={selectedTransactionIds.size === filteredTransactions.length && filteredTransactions.length > 0}
+                          checked={validFilteredTransactions.length > 0 && selectedTransactionIds.size === validFilteredTransactions.length}
+                          disabled={validFilteredTransactions.length === 0}
                           onCheckedChange={(checked) => toggleSelectAll(!!checked)}
                         />
                         <span className="ml-1">Actions</span>
@@ -449,7 +473,9 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                           <div className="flex items-center justify-start gap-3">
                             <Checkbox
                               checked={selectedTransactionIds.has(t.id)}
+                              disabled={t.status === 'voided'}
                               onCheckedChange={() => toggleSelect(t.id)}
+                              title={t.status === 'voided' ? 'Voided transactions cannot be downloaded' : undefined}
                             />
                             <button
                               className="flex items-center gap-1.5 text-xs font-bold text-[#1f2937] hover:text-black transition-colors min-w-[50px]"
@@ -556,6 +582,12 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   </p>
                 </div>
                 <div className="border-y border-dashed border-gray-300 py-3 text-[10px] space-y-1 mb-4 font-bold text-gray-700">
+                  {selectedTransaction.status === 'voided' && (
+                    <div className="flex justify-between items-center text-red-600 font-black py-1 px-2 mb-2 bg-red-50 border border-red-200 rounded text-[11px] tracking-wider">
+                      <span>STATUS:</span>
+                      <span>*** VOIDED TRANSACTION ***</span>
+                    </div>
+                  )}
                   <div className="flex justify-between"><span>TRANS ID:</span><span>{selectedTransaction.id}</span></div>
                   <div className="flex justify-between"><span>DATE:</span><span>{formatDate(selectedTransaction.date)}</span></div>
                   <div className="flex justify-between font-bold"><span>CASHIER:</span><span className="uppercase">{selectedTransaction.cashier || 'Admin'}</span></div>
@@ -606,22 +638,31 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   <p className="text-[9px]">--- NO REFUND WITHOUT TRANSACTION DETAILS ---</p>
                   <p className="text-[9px] italic text-gray-500">This is not an official transaction record.</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                {selectedTransaction.status === 'voided' ? (
                   <Button
-                    variant="outline"
-                    className="border-gray-300 hover:bg-gray-100 rounded-none h-11 uppercase text-[10px] font-bold tracking-widest flex items-center justify-center gap-1.5"
-                    onClick={() => generatePDF(selectedTransaction)}
-                  >
-                    <Download className="size-3.5" />
-                    Download
-                  </Button>
-                  <Button
-                    className="bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
+                    className="w-full bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
                     onClick={() => setIsDetailDialogOpen(false)}
                   >
                     Close Record
                   </Button>
-                </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="outline"
+                      className="border-gray-300 hover:bg-gray-100 rounded-none h-11 uppercase text-[10px] font-bold tracking-widest flex items-center justify-center gap-1.5"
+                      onClick={() => generatePDF(selectedTransaction)}
+                    >
+                      <Download className="size-3.5" />
+                      Download
+                    </Button>
+                    <Button
+                      className="bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
+                      onClick={() => setIsDetailDialogOpen(false)}
+                    >
+                      Close Record
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
             <div className="w-full h-2 bg-gray-200" style={{ backgroundImage: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%)', backgroundSize: '12px 24px' }}></div>
