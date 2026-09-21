@@ -9,7 +9,18 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Badge } from '@/app/components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Search, Package, ChevronLeft, ChevronRight, Layers, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Package, ChevronLeft, ChevronRight, Layers, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ArrowDownAZ, RotateCcw } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/app/components/ui/dropdown-menu';
+import { cn } from '@/app/components/ui/utils';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { logAuditAction } from '@/app/utils/auditUtils';
 import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
@@ -384,219 +395,234 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
 
         <ErrorBoundary fallbackTitle="Inventory Table Error">
           <Card>
-            {/* INLINE COMPACT FILTERS */}
-            <CardContent className="p-4 border-b border-gray-100 bg-gray-50/30">
-              <div className="space-y-4">
-                {/* Row 1: Filters (Category & Stock Status) */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-3.5 border-b border-gray-200/70">
-                  {/* Category Filter */}
-                  <div className="space-y-1.5">
-                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Category Filter</h3>
-                    <div className="flex gap-1.5 flex-wrap">
-                      <Button
-                        size="sm"
-                        variant={filterCategory === 'all' ? 'default' : 'outline'}
-                        onClick={() => { setFilterCategory('all'); setCurrentPage(1); }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        ALL ({products.length})
-                      </Button>
-                      {categories.map(cat => {
-                        const count = products.filter(p => p.category === cat).length;
-                        return (
-                          <Button
-                            key={cat}
-                            size="sm"
-                            variant={filterCategory === cat ? 'default' : 'outline'}
-                            onClick={() => { setFilterCategory(cat); setCurrentPage(1); }}
-                            className="h-8 text-[11px] font-bold px-3 rounded-md"
-                          >
-                            {cat.toUpperCase()} ({count})
-                          </Button>
-                        );
-                      })}
-                    </div>
+            {/* INLINE COMPACT DROPDOWN FILTERS (Matching user's requested segmented bar style) */}
+            <CardContent className="p-3.5 border-b border-gray-100 bg-gray-50/40">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* SEGMENTED DROPDOWNS BAR */}
+                  <div className="inline-flex flex-wrap items-center rounded-lg border border-gray-200 bg-white shadow-2xs divide-x divide-gray-200 overflow-hidden">
+                    {/* Category Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "h-9 px-3.5 text-xs font-semibold flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 transition-colors focus:outline-none select-none",
+                            filterCategory !== 'all' && "bg-green-50/90 text-green-900 font-bold hover:bg-green-100/80"
+                          )}
+                        >
+                          <Package className={cn("size-3.5 shrink-0", filterCategory !== 'all' ? "text-green-600" : "text-gray-400")} />
+                          <span>
+                            {filterCategory === 'all' ? 'Category' : `Category: ${filterCategory}`}
+                          </span>
+                          {filterCategory === 'all' && (
+                            <span className="text-[10px] text-gray-400 font-normal">({products.length})</span>
+                          )}
+                          <ChevronDown className={cn("size-3.5 shrink-0 opacity-60 ml-0.5", filterCategory !== 'all' && "text-green-700 opacity-100")} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56 p-1 bg-white border border-gray-200 shadow-lg rounded-lg z-50">
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase text-gray-400 tracking-wider px-2 py-1.5">
+                          Filter by Category
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={filterCategory} onValueChange={(val) => { setFilterCategory(val); setCurrentPage(1); }}>
+                          <DropdownMenuRadioItem value="all" className="text-xs cursor-pointer py-2 font-medium">
+                            All Categories ({products.length})
+                          </DropdownMenuRadioItem>
+                          {categories.map((cat) => {
+                            const count = products.filter((p) => p.category === cat).length;
+                            return (
+                              <DropdownMenuRadioItem key={cat} value={cat} className="text-xs cursor-pointer py-2 font-medium">
+                                {cat} ({count})
+                              </DropdownMenuRadioItem>
+                            );
+                          })}
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Stock Status Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "h-9 px-3.5 text-xs font-semibold flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 transition-colors focus:outline-none select-none",
+                            filterStockStatus !== 'all' && "bg-green-50/90 text-green-900 font-bold hover:bg-green-100/80"
+                          )}
+                        >
+                          <Layers className={cn("size-3.5 shrink-0", filterStockStatus !== 'all' ? "text-green-600" : "text-gray-400")} />
+                          <span>
+                            {filterStockStatus === 'all'
+                              ? 'Stock Status'
+                              : `Stock: ${filterStockStatus === 'in' ? 'In Stock' : filterStockStatus === 'low' ? 'Low Stock' : 'Out of Stock'}`}
+                          </span>
+                          <ChevronDown className={cn("size-3.5 shrink-0 opacity-60 ml-0.5", filterStockStatus !== 'all' && "text-green-700 opacity-100")} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-52 p-1 bg-white border border-gray-200 shadow-lg rounded-lg z-50">
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase text-gray-400 tracking-wider px-2 py-1.5">
+                          Filter by Stock Status
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={filterStockStatus} onValueChange={(val) => { setFilterStockStatus(val); setCurrentPage(1); }}>
+                          <DropdownMenuRadioItem value="all" className="text-xs cursor-pointer py-2 font-medium">
+                            All Stock Levels
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="in" className="text-xs cursor-pointer py-2 font-medium">
+                            In Stock
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="low" className="text-xs cursor-pointer py-2 font-medium">
+                            Low Stock
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="out" className="text-xs cursor-pointer py-2 font-medium">
+                            Out of Stock
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Alphabetical Order Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "h-9 px-3.5 text-xs font-semibold flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 transition-colors focus:outline-none select-none",
+                            sortName !== 'none' && "bg-green-50/90 text-green-900 font-bold hover:bg-green-100/80"
+                          )}
+                        >
+                          <ArrowDownAZ className={cn("size-3.5 shrink-0", sortName !== 'none' ? "text-green-600" : "text-gray-400")} />
+                          <span>
+                            {sortName === 'none' ? 'Alphabetical' : `Sort: ${sortName === 'a-z' ? 'A → Z' : 'Z → A'}`}
+                          </span>
+                          <ChevronDown className={cn("size-3.5 shrink-0 opacity-60 ml-0.5", sortName !== 'none' && "text-green-700 opacity-100")} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-52 p-1 bg-white border border-gray-200 shadow-lg rounded-lg z-50">
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase text-gray-400 tracking-wider px-2 py-1.5">
+                          Alphabetical Sorting
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup
+                          value={sortName}
+                          onValueChange={(val: any) => {
+                            setSortName(val);
+                            setPrimarySort(val === 'none' ? (sortStock !== 'none' ? 'stock' : 'none') : 'name');
+                            setCurrentPage(1);
+                          }}
+                        >
+                          <DropdownMenuRadioItem value="none" className="text-xs cursor-pointer py-2 font-medium">
+                            Default (Original Order)
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="a-z" className="text-xs cursor-pointer py-2 font-medium">
+                            A → Z (Alphabetical)
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="z-a" className="text-xs cursor-pointer py-2 font-medium">
+                            Z → A (Reverse Alphabetical)
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Stock Level Order Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "h-9 px-3.5 text-xs font-semibold flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 transition-colors focus:outline-none select-none",
+                            sortStock !== 'none' && "bg-green-50/90 text-green-900 font-bold hover:bg-green-100/80"
+                          )}
+                        >
+                          <ArrowUpDown className={cn("size-3.5 shrink-0", sortStock !== 'none' ? "text-green-600" : "text-gray-400")} />
+                          <span>
+                            {sortStock === 'none'
+                              ? 'Stock Level Order'
+                              : `Stock: ${sortStock === 'low-high' ? 'Lowest → Highest' : 'Highest → Lowest'}`}
+                          </span>
+                          <ChevronDown className={cn("size-3.5 shrink-0 opacity-60 ml-0.5", sortStock !== 'none' && "text-green-700 opacity-100")} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56 p-1 bg-white border border-gray-200 shadow-lg rounded-lg z-50">
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase text-gray-400 tracking-wider px-2 py-1.5">
+                          Stock Quantity Sorting
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup
+                          value={sortStock}
+                          onValueChange={(val: any) => {
+                            setSortStock(val);
+                            setPrimarySort(val === 'none' ? (sortName !== 'none' ? 'name' : 'none') : 'stock');
+                            setCurrentPage(1);
+                          }}
+                        >
+                          <DropdownMenuRadioItem value="none" className="text-xs cursor-pointer py-2 font-medium">
+                            Default (Original Order)
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="low-high" className="text-xs cursor-pointer py-2 font-medium">
+                            Lowest → Highest Stock
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="high-low" className="text-xs cursor-pointer py-2 font-medium">
+                            Highest → Lowest Stock
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
-                  {/* Stock Status Filter */}
-                  <div className="space-y-1.5">
-                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Stock Status</h3>
-                    <div className="flex gap-1.5 flex-wrap">
-                      <Button
-                        size="sm"
-                        variant={filterStockStatus === 'all' ? 'default' : 'outline'}
-                        onClick={() => { setFilterStockStatus('all'); setCurrentPage(1); }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        ALL LEVELS
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStockStatus === 'in' ? 'default' : 'outline'}
-                        onClick={() => { setFilterStockStatus('in'); setCurrentPage(1); }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        IN STOCK
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStockStatus === 'low' ? 'default' : 'outline'}
-                        onClick={() => { setFilterStockStatus('low'); setCurrentPage(1); }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        LOW STOCK
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStockStatus === 'out' ? 'default' : 'outline'}
-                        onClick={() => { setFilterStockStatus('out'); setCurrentPage(1); }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        OUT OF STOCK
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Row 2: Sorting (Alphabetical & Stock Level Order) */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* Alphabetical Order (A-Z / Z-A) */}
-                  <div className="space-y-1.5">
-                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Alphabetical (A-Z)</h3>
-                    <div className="flex gap-1.5 flex-wrap">
-                      <Button
-                        size="sm"
-                        variant={sortName === 'none' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setSortName('none');
-                          setPrimarySort(sortStock !== 'none' ? 'stock' : 'none');
-                          setCurrentPage(1);
-                        }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        DEFAULT
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={sortName === 'a-z' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setSortName('a-z');
-                          setPrimarySort('name');
-                          setCurrentPage(1);
-                        }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        A → Z
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={sortName === 'z-a' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setSortName('z-a');
-                          setPrimarySort('name');
-                          setCurrentPage(1);
-                        }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        Z → A
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Stock Quantity Sort Filter */}
-                  <div className="space-y-1.5">
-                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-0.5">Stock Level Order</h3>
-                    <div className="flex gap-1.5 flex-wrap">
-                      <Button
-                        size="sm"
-                        variant={sortStock === 'none' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setSortStock('none');
-                          setPrimarySort(sortName !== 'none' ? 'name' : 'none');
-                          setCurrentPage(1);
-                        }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                      >
-                        DEFAULT
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={sortStock === 'low-high' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setSortStock('low-high');
-                          setPrimarySort('stock');
-                          setCurrentPage(1);
-                        }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                        title="Sort from lowest stock quantity to highest"
-                      >
-                        LOWEST → HIGHEST
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={sortStock === 'high-low' ? 'default' : 'outline'}
-                        onClick={() => {
-                          setSortStock('high-low');
-                          setPrimarySort('stock');
-                          setCurrentPage(1);
-                        }}
-                        className="h-8 text-[11px] font-bold px-3 rounded-md"
-                        title="Sort from highest stock quantity to lowest"
-                      >
-                        HIGHEST → LOWEST
-                      </Button>
-                    </div>
-                  </div>
+                  {/* Reset button if any filter/sort is active */}
+                  {(filterCategory !== 'all' || filterStockStatus !== 'all' || sortName !== 'none' || sortStock !== 'none') && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFilterCategory('all');
+                        setFilterStockStatus('all');
+                        setSortName('none');
+                        setSortStock('none');
+                        setPrimarySort('none');
+                        setCurrentPage(1);
+                      }}
+                      className="h-9 px-3 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 font-bold gap-1.5"
+                    >
+                      <RotateCcw className="size-3.5" />
+                      Reset Filters
+                    </Button>
+                  )}
                 </div>
               </div>
 
-              {/* Active Filter Indicators & Reset */}
+              {/* Active Filter Indicators */}
               {(filterCategory !== 'all' || filterStockStatus !== 'all' || sortName !== 'none' || sortStock !== 'none' || searchQuery !== '') && (
-                <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-200/60 text-xs text-gray-500 flex-wrap gap-2">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">Active:</span>
-                    {filterCategory !== 'all' && (
-                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
-                        Category: {filterCategory}
-                      </Badge>
-                    )}
-                    {filterStockStatus !== 'all' && (
-                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
-                        Stock: {filterStockStatus === 'in' ? 'In Stock' : filterStockStatus === 'low' ? 'Low Stock' : 'Out of Stock'}
-                      </Badge>
-                    )}
-                    {sortName !== 'none' && (
-                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
-                        Alphabetical: {sortName === 'a-z' ? 'A → Z' : 'Z → A'}
-                      </Badge>
-                    )}
-                    {sortStock !== 'none' && (
-                      <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
-                        Stock Order: {sortStock === 'low-high' ? 'Lowest → Highest' : 'Highest → Lowest'}
-                      </Badge>
-                    )}
-                    {searchQuery && (
-                      <Badge variant="outline" className="text-[10px] bg-gray-100 text-gray-700 border-gray-300 font-semibold">
-                        Search: "{searchQuery}"
-                      </Badge>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setFilterCategory('all');
-                      setFilterStockStatus('all');
-                      setSortName('none');
-                      setSortStock('none');
-                      setPrimarySort('none');
-                      setSearchQuery('');
-                      setCurrentPage(1);
-                    }}
-                    className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 font-bold"
-                  >
-                    Reset All Filters
-                  </Button>
+                <div className="flex items-center gap-1.5 pt-3 mt-3 border-t border-gray-200/60 text-xs text-gray-500 flex-wrap">
+                  <span className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">Active:</span>
+                  {filterCategory !== 'all' && (
+                    <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                      Category: {filterCategory}
+                    </Badge>
+                  )}
+                  {filterStockStatus !== 'all' && (
+                    <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                      Stock: {filterStockStatus === 'in' ? 'In Stock' : filterStockStatus === 'low' ? 'Low Stock' : 'Out of Stock'}
+                    </Badge>
+                  )}
+                  {sortName !== 'none' && (
+                    <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                      Alphabetical: {sortName === 'a-z' ? 'A → Z' : 'Z → A'}
+                    </Badge>
+                  )}
+                  {sortStock !== 'none' && (
+                    <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200 font-semibold">
+                      Stock Order: {sortStock === 'low-high' ? 'Lowest → Highest' : 'Highest → Lowest'}
+                    </Badge>
+                  )}
+                  {searchQuery && (
+                    <Badge variant="outline" className="text-[10px] bg-gray-100 text-gray-700 border-gray-300 font-semibold">
+                      Search: "{searchQuery}"
+                    </Badge>
+                  )}
                 </div>
               )}
             </CardContent>
