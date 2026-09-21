@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, ToasterProps } from "sonner";
 
-const Toaster = ({ position = "top-right", ...props }: ToasterProps) => {
+const Toaster = ({ position = "top-right", offset = { top: 100, right: 20 }, ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
 
   return (
@@ -11,6 +11,7 @@ const Toaster = ({ position = "top-right", ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position={position}
+      offset={offset}
       style={
         {
           "--normal-bg": "var(--popover)",
