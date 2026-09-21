@@ -494,7 +494,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
       hour12: true
     });
     doc.text(`DATE: ${dateStr}`, 4, y); y += 4;
-    doc.text(`CASHIER: ${(t.cashier || 'ADMINISTRATOR').toUpperCase()}`, 4, y); y += 8;
+    doc.text(`CASHIER: ${(t.cashier || 'ZOE OWNER').toUpperCase()}`, 4, y); y += 8;
 
     doc.text('----------------------------------', 40, y, { align: 'center' }); y += 6;
 
@@ -911,7 +911,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 uppercase">CASHIER:</span>
-                  <span className="uppercase">{completedTransaction?.cashier}</span>
+                  <span className="uppercase">{completedTransaction?.cashier || 'Zoe Owner'}</span>
                 </div>
               </div>
 

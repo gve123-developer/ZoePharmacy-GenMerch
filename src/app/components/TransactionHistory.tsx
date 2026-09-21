@@ -231,7 +231,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
     doc.text(`TRANS ID: ${t.id}`, 4, y); y += 4;
     doc.text(`DATE: ${formatDate(t.date)}`, 4, y); y += 4;
-    doc.text(`CASHIER: ${(t.cashier || 'ADMINISTRATOR').toUpperCase()}`, 4, y); y += 8;
+    doc.text(`CASHIER: ${(t.cashier || 'ZOE OWNER').toUpperCase()}`, 4, y); y += 8;
 
     doc.text('----------------------------------', 40, y, { align: 'center' }); y += 6;
 
@@ -315,7 +315,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
       doc.text(`TRANS ID: ${t.id}`, 4, y); y += 4;
       doc.text(`DATE: ${formatDate(t.date)}`, 4, y); y += 4;
-      doc.text(`CASHIER: ${(t.cashier || 'ADMINISTRATOR').toUpperCase()}`, 4, y); y += 8;
+      doc.text(`CASHIER: ${(t.cashier || 'ZOE OWNER').toUpperCase()}`, 4, y); y += 8;
 
       doc.text('----------------------------------', 40, y, { align: 'center' }); y += 6;
 
@@ -590,7 +590,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   )}
                   <div className="flex justify-between"><span>TRANS ID:</span><span>{selectedTransaction.id}</span></div>
                   <div className="flex justify-between"><span>DATE:</span><span>{formatDate(selectedTransaction.date)}</span></div>
-                  <div className="flex justify-between font-bold"><span>CASHIER:</span><span className="uppercase">{selectedTransaction.cashier || 'Admin'}</span></div>
+                  <div className="flex justify-between font-bold"><span>CASHIER:</span><span className="uppercase">{selectedTransaction.cashier || 'Zoe Owner'}</span></div>
                 </div>
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-xs font-bold border-b border-dashed pb-2"><span>ITEM NAME</span><span>TOTAL</span></div>

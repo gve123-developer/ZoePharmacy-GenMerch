@@ -97,7 +97,7 @@ if ($method === 'GET') {
                 'items' => $items,
                 'total' => (float)$row['total'],
                 'paymentMethod' => $row['payment_method'],
-                'cashier' => $row['cashier'] ?? 'Admin',
+                'cashier' => $row['cashier'] ?? 'Zoe Owner',
                 'amountReceived' =>
                     $row['amount_received'] !== null
                     ? (float)$row['amount_received']

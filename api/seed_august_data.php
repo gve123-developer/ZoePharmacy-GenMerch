@@ -52,9 +52,21 @@ try {
         throw new RuntimeException("No products found in inventory table to generate transactions.");
     }
 
-    // 3. Fetch cashiers
-    $users = $conn->query("SELECT id, username, full_name FROM users ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
-    $cashierIds = !empty($users) ? array_column($users, 'id') : [1];
+    // 3. Fetch Owner ID (owner is the sole operator)
+    $ownerStmt = $conn->query("SELECT id FROM users WHERE username = 'owner' OR full_name ILIKE '%owner%' ORDER BY id ASC LIMIT 1");
+    $ownerId = $ownerStmt->fetchColumn() ?: 1;
+
+    $action = $_GET['action'] ?? $_POST['action'] ?? 'seed';
+    if ($action === 'update_cashier_only') {
+        $updateStmt = $conn->prepare("UPDATE transactions SET cashier_id = :owner_id");
+        $updateStmt->execute([':owner_id' => $ownerId]);
+        $conn->commit();
+        echo json_encode([
+            'success' => true,
+            'message' => "Successfully updated all transactions to Owner cashier (ID: {$ownerId})."
+        ], $isCli ? JSON_PRETTY_PRINT : 0) . ($isCli ? PHP_EOL : '');
+        exit();
+    }
 
     $insertTxStmt = $conn->prepare("
         INSERT INTO transactions (
@@ -191,7 +203,7 @@ try {
                 $changeAmount = 0.00;
             }
 
-            $cashierId = $cashierIds[array_rand($cashierIds)];
+            $cashierId = $ownerId;
 
             // Insert transaction
             $insertTxStmt->execute([
