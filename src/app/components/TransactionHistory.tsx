@@ -577,23 +577,57 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     ))}
                   </div>
                 </div>
-                <div className="border-t-2 border-dashed border-gray-900 pt-4 mb-6">
+                <div className="border-t-2 border-dashed border-gray-900 pt-4 mb-6 space-y-2">
                   <div className="flex justify-between text-sm font-black text-gray-900 uppercase">
                     <span>Grand Total</span>
                     <span>₱{selectedTransaction.total.toFixed(2)}</span>
                   </div>
+
+                  {(!selectedTransaction.paymentMethod || selectedTransaction.paymentMethod.toLowerCase() === 'cash' || selectedTransaction.amountReceived != null) ? (
+                    <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
+                      <div className="flex justify-between text-[11px] text-gray-600 font-medium">
+                        <span className="uppercase">Cash Received</span>
+                        <span>₱{Number(selectedTransaction.amountReceived ?? selectedTransaction.total).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
+                        <span className="uppercase tracking-tighter">Change Due</span>
+                        <span>₱{Number(selectedTransaction.change ?? Math.max(0, (selectedTransaction.amountReceived ?? selectedTransaction.total) - selectedTransaction.total)).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
+                      <div className="flex justify-between text-[11px] text-gray-600 font-medium">
+                        <span className="uppercase">Payment Method</span>
+                        <span className="font-bold uppercase">{selectedTransaction.paymentMethod}</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-bold text-gray-800">
+                        <span className="uppercase">Amount Paid</span>
+                        <span>₱{selectedTransaction.total.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="text-center space-y-1 mb-6 text-gray-800">
                   <p className="font-bold text-xs">THANK YOU FOR YOUR TRUST!</p>
                   <p className="text-[9px]">--- NO REFUND WITHOUT TRANSACTION DETAILS ---</p>
                   <p className="text-[9px] italic text-gray-500">This is not an official transaction record.</p>
                 </div>
-                <Button
-                  className="w-full bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
-                  onClick={() => setIsDetailDialogOpen(false)}
-                >
-                  Close Record
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-gray-300 hover:bg-gray-100 rounded-none h-11 uppercase text-[10px] font-bold tracking-widest flex items-center justify-center gap-1.5"
+                    onClick={() => generatePDF(selectedTransaction)}
+                  >
+                    <Download className="size-3.5" />
+                    Download
+                  </Button>
+                  <Button
+                    className="bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
+                    onClick={() => setIsDetailDialogOpen(false)}
+                  >
+                    Close Record
+                  </Button>
+                </div>
               </div>
             )}
             <div className="w-full h-2 bg-gray-200" style={{ backgroundImage: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%)', backgroundSize: '12px 24px' }}></div>
