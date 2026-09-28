@@ -13,7 +13,7 @@ try {
     $conn->exec("DELETE FROM audit_logs WHERE action = 'Partial Void' AND details LIKE '%Refunded: ₱0.00%'");
     $conn->exec("DELETE FROM transaction_items WHERE transaction_id IN (166, 167)");
     $conn->exec("DELETE FROM transactions WHERE id IN (166, 167)");
-    $conn->exec("DELETE FROM audit_logs WHERE details LIKE '%Transaction #166%' OR details LIKE '%Transaction #167%'");
+    $conn->exec("DELETE FROM audit_logs WHERE details LIKE '%166%' OR details LIKE '%167%'");
 } catch (Throwable $ignored) {}
 
 $method = $_SERVER['REQUEST_METHOD'];

@@ -18,6 +18,7 @@ if ($method === 'GET') {
     try {
         try {
             $conn->exec("DELETE FROM audit_logs WHERE action = 'Partial Void' AND details LIKE '%Refunded: ₱0.00%'");
+            $conn->exec("DELETE FROM audit_logs WHERE details LIKE '%166%' OR details LIKE '%167%'");
         } catch (Throwable $t) {}
 
         $stmt = $conn->query(
