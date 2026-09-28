@@ -21,13 +21,31 @@ interface TransactionHistoryProps {
 const SwipeToVoid = ({
   onVoid,
   label = "SWIPE TO CONFIRM VOID >>>",
-  disabled = false
+  disabled = false,
+  isProcessing = false
 }: {
   onVoid: () => void;
   label?: string;
   disabled?: boolean;
+  isProcessing?: boolean;
 }) => {
   const [val, setVal] = useState(0);
+  const [hasTriggered, setHasTriggered] = useState(false);
+
+  useEffect(() => {
+    if (!isProcessing) {
+      setHasTriggered(false);
+      setVal(0);
+    }
+  }, [isProcessing, disabled]);
+
+  if (isProcessing) {
+    return (
+      <div className="relative w-full h-12 bg-red-50 rounded-lg overflow-hidden flex items-center justify-center shadow-inner mt-4 border border-red-300 text-red-800 text-xs font-black uppercase tracking-wider animate-pulse">
+        Processing Void... Please wait
+      </div>
+    );
+  }
 
   if (disabled) {
     return (
@@ -51,14 +69,20 @@ const SwipeToVoid = ({
         min="0"
         max="100"
         value={val}
+        disabled={disabled || hasTriggered || isProcessing}
         onChange={(e) => {
+          if (hasTriggered || isProcessing) return;
           const v = Number(e.target.value);
           setVal(v);
-          if (v > 92) { onVoid(); setVal(0); }
+          if (v > 92 && !hasTriggered) {
+            setHasTriggered(true);
+            setVal(100);
+            onVoid();
+          }
         }}
-        onMouseUp={() => { if (val <= 92) setVal(0); }}
-        onTouchEnd={() => { if (val <= 92) setVal(0); }}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+        onMouseUp={() => { if (val <= 92 && !hasTriggered) setVal(0); }}
+        onTouchEnd={() => { if (val <= 92 && !hasTriggered) setVal(0); }}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed"
       />
       <div
         className="absolute top-1 bottom-1 w-10 bg-red-600 rounded flex items-center justify-center shadow-md pointer-events-none text-white font-bold transition-all duration-75"
@@ -80,6 +104,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const [transactionWaitingPasscode, setTransactionWaitingPasscode] = useState<Transaction | null>(null);
   const [selectedItemIndicesToVoid, setSelectedItemIndicesToVoid] = useState<Set<number>>(new Set());
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [isVoiding, setIsVoiding] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   // Start with ALL UNCHECKED by default as requested
@@ -108,8 +133,10 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
   const handleVoidTransaction = async (
     id: string,
-    itemsToVoidList?: Array<{ productId: string; quantity: number; price: number; productName: string }>
+    itemsToVoidList?: Array<{ itemId?: number; productId: string; quantity: number; price: number; productName: string }>
   ) => {
+    if (isVoiding) return;
+    setIsVoiding(true);
     try {
       const activeItems = (transactionToVoid?.items || []).filter(it => it.status !== 'voided');
       const isFull = !itemsToVoidList || (activeItems.length > 0 && itemsToVoidList.length === activeItems.length);
@@ -165,6 +192,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     } catch (error: any) {
       console.error("Void Error:", error);
       toast.error(error.message || "Failed to void transaction");
+    } finally {
+      setIsVoiding(false);
     }
   };
   const parseDate = (ds: string) => {
@@ -906,7 +935,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   <div className="w-full pt-1 pb-2 mt-auto">
                     {transactionToVoid && (
                       <SwipeToVoid
-                        disabled={isNoneChecked}
+                        disabled={isNoneChecked || isVoiding}
+                        isProcessing={isVoiding}
                         label={
                           isAllChecked
                             ? "SWIPE TO VOID ENTIRE ORDER >>>"

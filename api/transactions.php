@@ -7,9 +7,10 @@ header("Content-Type: application/json; charset=UTF-8");
 
 include '../includes/db_connect.php';
 
-// Ensure status column exists on transaction_items
+// Ensure status column exists on transaction_items and clean up redundant 0.00 void logs
 try {
     $conn->exec("ALTER TABLE transaction_items ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'completed'");
+    $conn->exec("DELETE FROM audit_logs WHERE action = 'Partial Void' AND details LIKE '%Refunded: ₱0.00%'");
 } catch (Throwable $ignored) {}
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -648,6 +649,16 @@ elseif ($method === 'PATCH') {
                         ':cost_at_sale' => isset($matchedItem['cost_at_sale']) ? (float)$matchedItem['cost_at_sale'] : 0.0
                     ]);
                 }
+            }
+
+            if (empty($restored) || $totalRefund <= 0) {
+                $conn->rollBack();
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'No active items were eligible to be voided.'
+                ]);
+                exit();
             }
 
             // Check if any ACTIVE items remain in this transaction

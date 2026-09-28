@@ -15,8 +15,10 @@ if ($method === 'OPTIONS') {
 }
 
 if ($method === 'GET') {
-
     try {
+        try {
+            $conn->exec("DELETE FROM audit_logs WHERE action = 'Partial Void' AND details LIKE '%Refunded: ₱0.00%'");
+        } catch (Throwable $t) {}
 
         $stmt = $conn->query(
             "SELECT

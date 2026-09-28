@@ -5,9 +5,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/app/components/ui/badge';
 import { User } from '@/app/App';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
-import { ShieldCheck, RefreshCw, Info, ClipboardList, Search, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShieldCheck, RefreshCw, Info, ClipboardList, Search, Calendar, ChevronLeft, ChevronRight, Eye, Clock, UserCheck, CheckCircle2, RotateCcw } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/app/components/ui/dialog';
 
 interface AuditLogsProps {
     currentUser: User;
@@ -19,6 +20,7 @@ export function AuditLogs({ currentUser }: AuditLogsProps) {
     const [dateFilter, setDateFilter] = useState('today');
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedLog, setSelectedLog] = useState<any | null>(null);
     const itemsPerPage = 15;
 
     const fetchLogs = async () => {
@@ -148,31 +150,36 @@ export function AuditLogs({ currentUser }: AuditLogsProps) {
                         </div>
                     </CardHeader>
                     <CardContent className="p-0">
-                        <div className="min-h-[550px] overflow-x-auto w-full">
-                            <Table className="min-w-[800px]">
-                                <TableHeader className="bg-slate-50">
-                                    <TableRow className="border-b border-gray-200">
-                                        <TableHead className="w-[15%] font-black uppercase text-[10px] text-gray-500 py-4 pl-6">Staff Member</TableHead>
-                                        <TableHead className="w-[15%] font-black uppercase text-[10px] text-gray-500 py-4 text-center">Action Type</TableHead>
-                                        <TableHead className="w-[50%] font-black uppercase text-[10px] text-gray-500 py-4">Verification Details</TableHead>
-                                        <TableHead className="w-[20%] font-black uppercase text-[10px] text-gray-500 py-4 text-right pr-6">Date & Time</TableHead>
+                        <div className="min-h-[520px] overflow-x-auto w-full">
+                            <Table className="min-w-[850px]">
+                                <TableHeader className="bg-slate-50 border-b border-gray-200">
+                                    <TableRow>
+                                        <TableHead className="w-[15%] font-black uppercase text-[10px] text-gray-500 py-3.5 pl-6">Staff Member</TableHead>
+                                        <TableHead className="w-[14%] font-black uppercase text-[10px] text-gray-500 py-3.5 text-center">Action Type</TableHead>
+                                        <TableHead className="w-[43%] font-black uppercase text-[10px] text-gray-500 py-3.5">Action Summary</TableHead>
+                                        <TableHead className="w-[18%] font-black uppercase text-[10px] text-gray-500 py-3.5 text-right">Date & Time</TableHead>
+                                        <TableHead className="w-[10%] font-black uppercase text-[10px] text-gray-500 py-3.5 text-center pr-6">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody className="divide-y divide-gray-100">
                                     {paginatedLogs.length > 0 ? (
                                         paginatedLogs.map((log) => (
-                                            <TableRow key={log.id} className="hover:bg-slate-50/50 transition-all duration-200 group">
-                                                <TableCell className="py-4 pl-6 font-bold text-slate-900 text-xs">
+                                            <TableRow 
+                                                key={log.id} 
+                                                onClick={() => setSelectedLog(log)}
+                                                className="hover:bg-indigo-50/40 transition-colors cursor-pointer group"
+                                            >
+                                                <TableCell className="py-3 pl-6 font-bold text-slate-900 text-xs">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="size-6 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-[10px]">
+                                                        <div className="size-6 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-[10px] font-black shrink-0">
                                                             {log.userName.substring(0, 1).toUpperCase()}
                                                         </div>
-                                                        {log.userName}
+                                                        <span className="truncate max-w-[120px]">{log.userName}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="py-4 text-center">
+                                                <TableCell className="py-3 text-center">
                                                     <Badge variant="outline" className={`
-                                                        text-[9px] font-black uppercase h-5 px-2 border-none shadow-sm
+                                                        text-[9px] font-black uppercase h-5 px-2 border-none shadow-sm whitespace-nowrap
                                                         ${log.action.includes('Sale') ? 'bg-emerald-100 text-emerald-700' : 
                                                           log.action.includes('Void') ? 'bg-red-100 text-red-700' :
                                                           log.action.includes('Inventory') ? 'bg-blue-100 text-blue-700' : 
@@ -184,17 +191,30 @@ export function AuditLogs({ currentUser }: AuditLogsProps) {
                                                         {log.action}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="py-4 text-[11px] text-slate-600 font-medium leading-relaxed group-hover:text-slate-900">
-                                                    {log.details}
+                                                <TableCell className="py-3 text-[11px] text-slate-600 font-medium group-hover:text-slate-900">
+                                                    <p className="truncate max-w-[360px] lg:max-w-[480px]" title={log.details}>
+                                                        {log.details}
+                                                    </p>
                                                 </TableCell>
-                                                 <TableCell className="py-4 pr-6 text-[10px] text-slate-400 font-mono font-bold text-right">
-                                                     {log.timestamp ? new Date(log.timestamp.includes('T') ? log.timestamp : log.timestamp.replace(' ', 'T')).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : ''}
-                                                 </TableCell>
+                                                <TableCell className="py-3 text-[10px] text-slate-400 font-mono font-bold text-right whitespace-nowrap">
+                                                    {log.timestamp ? new Date(log.timestamp.includes('T') ? log.timestamp : log.timestamp.replace(' ', 'T')).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : ''}
+                                                </TableCell>
+                                                <TableCell className="py-3 pr-6 text-center">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={(e) => { e.stopPropagation(); setSelectedLog(log); }}
+                                                        className="h-7 px-2 text-[10px] font-bold text-indigo-600 hover:text-indigo-800 hover:bg-indigo-100/60 rounded-md flex items-center gap-1 mx-auto"
+                                                    >
+                                                        <Eye className="size-3" />
+                                                        <span>View</span>
+                                                    </Button>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="py-32 text-center">
+                                            <TableCell colSpan={5} className="py-32 text-center">
                                                 <div className="flex flex-col items-center gap-3 text-slate-200">
                                                     <Info className="size-16" />
                                                     <div className="space-y-1">
@@ -269,6 +289,146 @@ export function AuditLogs({ currentUser }: AuditLogsProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Audit Action Detailed Chronicle Dialog */}
+                <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+                    <DialogContent className="max-w-xl bg-white p-6 rounded-2xl shadow-2xl border-0 overflow-hidden">
+                        {selectedLog && (
+                            <div className="space-y-4">
+                                <DialogHeader className="pb-3 border-b border-gray-100 text-left">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-11 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow">
+                                                <ClipboardList className="size-6" />
+                                            </div>
+                                            <div>
+                                                <DialogTitle className="text-lg font-black text-gray-900">
+                                                    System Action Details
+                                                </DialogTitle>
+                                                <DialogDescription className="text-xs text-gray-500 font-medium">
+                                                    Audit Trail Record #{selectedLog.id}
+                                                </DialogDescription>
+                                            </div>
+                                        </div>
+                                        <Badge variant="outline" className={`
+                                            text-[10px] font-black uppercase px-2.5 py-1 border-none shadow-sm
+                                            ${selectedLog.action.includes('Sale') ? 'bg-emerald-100 text-emerald-700' : 
+                                              selectedLog.action.includes('Void') ? 'bg-red-100 text-red-700' :
+                                              selectedLog.action.includes('Inventory') ? 'bg-blue-100 text-blue-700' : 
+                                              selectedLog.action.includes('Delete') ? 'bg-rose-100 text-rose-700' : 
+                                              selectedLog.action.includes('Rotation') ? 'bg-amber-100 text-amber-700' :
+                                              selectedLog.action.includes('Purchase Order') ? 'bg-indigo-100 text-indigo-700' :
+                                              'bg-slate-100 text-slate-700'}
+                                        `}>
+                                            {selectedLog.action}
+                                        </Badge>
+                                    </div>
+                                </DialogHeader>
+
+                                {/* Staff & Timestamp Grid */}
+                                <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+                                    <div>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Staff Performed</span>
+                                        <span className="font-black text-gray-900 text-sm flex items-center gap-1.5 mt-0.5">
+                                            <UserCheck className="size-3.5 text-indigo-600" />
+                                            {selectedLog.userName}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Timestamp</span>
+                                        <span className="font-bold text-gray-800 font-mono text-xs flex items-center gap-1.5 mt-0.5">
+                                            <Clock className="size-3.5 text-slate-500" />
+                                            {selectedLog.timestamp ? new Date(selectedLog.timestamp.includes('T') ? selectedLog.timestamp : selectedLog.timestamp.replace(' ', 'T')).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }) : 'N/A'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Full Action Chronicle Box */}
+                                <div className="space-y-1.5 text-left">
+                                    <span className="text-[10px] font-black uppercase text-gray-500 tracking-wider">
+                                        Complete Action Chronicle
+                                    </span>
+                                    <div className="bg-slate-900 text-emerald-400 p-4 rounded-xl font-mono text-xs leading-relaxed border border-slate-800 max-h-56 overflow-y-auto whitespace-pre-wrap select-text shadow-inner">
+                                        {selectedLog.details}
+                                    </div>
+                                </div>
+
+                                {/* Visual Breakdown (Parsed Highlights if available) */}
+                                {(() => {
+                                    const text = String(selectedLog.details || '');
+                                    const txMatch = text.match(/Transaction #(\d+)/i);
+                                    const refundMatch = text.match(/Refunded:\s*([₱P]?[\d,.]+)/i);
+                                    const restoredMatch = text.match(/Restored items:\s*([^.]+?)(?=\.\s*Remaining|\.\s*Order|$)/i);
+                                    const remainingMatch = text.match(/Remaining Total:\s*([₱P]?[\d,.]+)/i);
+                                    const changeMatch = text.match(/Updated Change:\s*([₱P]?[\d,.]+)/i);
+
+                                    if (txMatch || refundMatch || restoredMatch || remainingMatch) {
+                                        return (
+                                            <div className="bg-gray-50 rounded-xl p-3 border border-gray-200 text-xs space-y-2 text-left">
+                                                <span className="text-[10px] font-black uppercase text-gray-500 tracking-wider block">
+                                                    Action Breakdown Summary
+                                                </span>
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                                    {txMatch && (
+                                                        <div className="bg-white p-2 rounded-lg border border-gray-200">
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase block">Transaction</span>
+                                                            <span className="font-black text-gray-900">#{txMatch[1]}</span>
+                                                        </div>
+                                                    )}
+                                                    {refundMatch && (
+                                                        <div className="bg-red-50 p-2 rounded-lg border border-red-200">
+                                                            <span className="text-[9px] font-bold text-red-600 uppercase block">Refund Amount</span>
+                                                            <span className="font-black text-red-700">{refundMatch[1].startsWith('₱') ? refundMatch[1] : `₱${refundMatch[1]}`}</span>
+                                                        </div>
+                                                    )}
+                                                    {remainingMatch && (
+                                                        <div className="bg-white p-2 rounded-lg border border-gray-200">
+                                                            <span className="text-[9px] font-bold text-gray-400 uppercase block">Remaining Total</span>
+                                                            <span className="font-black text-gray-900">{remainingMatch[1].startsWith('₱') ? remainingMatch[1] : `₱${remainingMatch[1]}`}</span>
+                                                        </div>
+                                                    )}
+                                                    {changeMatch && (
+                                                        <div className="bg-blue-50 p-2 rounded-lg border border-blue-200">
+                                                            <span className="text-[9px] font-bold text-blue-600 uppercase block">Updated Sukli</span>
+                                                            <span className="font-black text-blue-700">{changeMatch[1].startsWith('₱') ? changeMatch[1] : `₱${changeMatch[1]}`}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {restoredMatch && restoredMatch[1].trim() && (
+                                                    <div className="bg-white p-2.5 rounded-lg border border-gray-200 mt-2">
+                                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-1">Restored to Inventory</span>
+                                                        <div className="flex flex-wrap gap-1.5">
+                                                            {restoredMatch[1].split(',').map((it, idx) => (
+                                                                <span key={idx} className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
+                                                                    ✓ {it.trim()}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+
+                                <div className="flex justify-between items-center pt-2 border-t border-gray-100 text-[11px] text-gray-400 font-medium">
+                                    <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                                        <ShieldCheck className="size-4" />
+                                        Verified Immutable Audit Trail
+                                    </span>
+                                    <Button
+                                        onClick={() => setSelectedLog(null)}
+                                        className="bg-slate-900 hover:bg-black text-white font-bold h-9 px-5 rounded-lg text-xs"
+                                    >
+                                        Close
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
             </div>
         </ErrorBoundary>
     );
