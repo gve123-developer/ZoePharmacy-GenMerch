@@ -90,9 +90,9 @@ function App() {
   const [poCurrentPage, setPoCurrentPage] = useState(1);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  // On larger screens, default sidebar to open
+  // On desktop screens (>= 1024px), default sidebar to open
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)');
+    const mq = window.matchMedia('(min-width: 1024px)');
     setIsSidebarOpen(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsSidebarOpen(e.matches);
     mq.addEventListener('change', handler);
@@ -399,7 +399,7 @@ function App() {
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                   className="text-white hover:bg-white/15 shrink-0"
                 >
-                  <Menu className="size-6" />
+                  {isSidebarOpen ? <X className="size-6" /> : <Menu className="size-6" />}
                 </Button>
                 <div className="min-w-0">
                   <h1 className="font-bold text-xs sm:text-lg md:text-xl text-white uppercase truncate drop-shadow-sm">Zoe Pharmacy & General Merchandise</h1>
@@ -418,10 +418,10 @@ function App() {
       </ErrorBoundary>
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Mobile overlay backdrop */}
+        {/* Mobile & Tablet overlay backdrop */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 z-20 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden transition-opacity duration-300"
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
@@ -429,13 +429,28 @@ function App() {
         {/* Sidebar */}
         <ErrorBoundary fallbackTitle="Sidebar Error">
           <aside
-            className={`fixed md:relative top-0 left-0 h-full z-20 md:z-auto border-r border-gray-200 overflow-y-auto transition-all duration-300 ease-in-out flex-shrink-0
-              ${isSidebarOpen ? 'w-64 translate-x-0 opacity-100' : 'w-0 -translate-x-full opacity-0 overflow-hidden'}
-              md:top-auto
+            className={`fixed lg:relative top-0 left-0 h-full z-50 lg:z-auto border-r border-gray-200 overflow-y-auto transition-all duration-300 ease-in-out flex-shrink-0 shadow-2xl lg:shadow-none
+              ${isSidebarOpen ? 'w-72 sm:w-64 translate-x-0 opacity-100' : 'w-0 -translate-x-full opacity-0 pointer-events-none lg:pointer-events-auto overflow-hidden'}
             `}
             style={{ backgroundColor: '#eef8f0' }}
           >
-            <nav className="p-4 h-full flex flex-col">
+            {/* Drawer Header for Mobile & Tablet */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200/80 bg-[#54b768] text-white lg:hidden">
+              <div className="flex items-center gap-2.5">
+                <img src="/logo.jpg" alt="Zoe Pharmacy" className="h-8 w-auto rounded-md shadow-sm" />
+                <span className="font-bold text-sm uppercase tracking-wide">Menu</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-white hover:bg-white/20 h-8 w-8 rounded-full"
+              >
+                <X className="size-5" />
+              </Button>
+            </div>
+
+            <nav className="p-4 h-[calc(100%-60px)] lg:h-full flex flex-col">
               <div className="space-y-1">
                 {([
                   { tab: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="size-[18px]" /> },
@@ -452,8 +467,8 @@ function App() {
                     key={tab}
                     onClick={() => {
                       setActiveTab(tab);
-                      // Auto-close sidebar on mobile after selection
-                      if (window.innerWidth < 768) setIsSidebarOpen(false);
+                      // Auto-close sidebar on mobile/tablet after selection
+                      if (window.innerWidth < 1024) setIsSidebarOpen(false);
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === tab
                       ? 'text-white border-l-4 border-emerald-800 shadow-md'
@@ -471,7 +486,7 @@ function App() {
                 <button
                   onClick={() => {
                     setActiveTab('users');
-                    if (window.innerWidth < 768) setIsSidebarOpen(false);
+                    if (window.innerWidth < 1024) setIsSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200 ${activeTab === 'users'
                     ? 'text-white border-l-4 border-emerald-800 shadow-md'
@@ -496,7 +511,7 @@ function App() {
         </ErrorBoundary>
 
         {/* Main Content */}
-        <main className="flex-1 p-3 md:p-6 overflow-y-auto">
+        <main className="flex-1 w-full min-w-0 p-3 sm:p-4 md:p-6 overflow-y-auto">
           {activeTab === 'dashboard' && (
             <Dashboard
               currentUser={currentUser}

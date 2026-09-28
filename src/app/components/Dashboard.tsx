@@ -572,7 +572,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
 
         {/* Stats Cards - Primary Row */}
         <ErrorBoundary fallbackTitle="Primary Stats Error">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <Card className="bg-green-50 border-2 border-green-200 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-bold text-green-900">Total Sales</CardTitle>
@@ -621,7 +621,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
 
         {/* Stats Cards - Secondary Row */}
         <ErrorBoundary fallbackTitle="Secondary Stats Error">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <Card className="bg-slate-50 border-2 border-slate-200 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-bold text-slate-900">Total Products</CardTitle>
