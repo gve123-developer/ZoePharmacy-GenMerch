@@ -389,7 +389,7 @@ function App() {
 
       {/* Header */}
       <ErrorBoundary fallbackTitle="Header Error">
-        <header className="border-b border-gray-200 sticky top-0 z-30 flex-shrink-0" style={{ backgroundColor: '#d5ff47' }}>
+        <header className="border-b border-emerald-600/30 sticky top-0 z-30 flex-shrink-0" style={{ backgroundColor: '#54b768' }}>
           <div className="px-3 md:px-6 py-3 md:py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 md:gap-4 min-w-0">
@@ -397,19 +397,19 @@ function App() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  className="hover:bg-black/5 shrink-0"
+                  className="text-white hover:bg-white/15 shrink-0"
                 >
                   <Menu className="size-6" />
                 </Button>
                 <div className="min-w-0">
-                  <h1 className="font-semibold text-xs sm:text-lg md:text-xl text-gray-900 uppercase truncate">Zoe Pharmacy & General Merchandise</h1>
-                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-500">Inventory & POS System</p>
+                  <h1 className="font-bold text-xs sm:text-lg md:text-xl text-white uppercase truncate drop-shadow-sm">Zoe Pharmacy & General Merchandise</h1>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-emerald-100 font-medium">Inventory & POS System</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 md:gap-4 shrink-0">
                 <div className="text-right">
-                  <p className="font-bold text-xs md:text-lg text-gray-900 leading-tight">{currentUser.name}</p>
-                  <p className="text-xs md:text-sm font-semibold text-gray-600 capitalize tracking-wide hidden sm:block">{currentUser.role}</p>
+                  <p className="font-bold text-xs md:text-lg text-white leading-tight drop-shadow-sm">{currentUser.name}</p>
+                  <p className="text-xs md:text-sm font-semibold text-emerald-100 capitalize tracking-wide hidden sm:block">{currentUser.role}</p>
                 </div>
               </div>
             </div>
@@ -433,7 +433,7 @@ function App() {
               ${isSidebarOpen ? 'w-64 translate-x-0 opacity-100' : 'w-0 -translate-x-full opacity-0 overflow-hidden'}
               md:top-auto
             `}
-            style={{ backgroundColor: '#f1fec1' }}
+            style={{ backgroundColor: '#eef8f0' }}
           >
             <nav className="p-4 h-full flex flex-col">
               <div className="space-y-1">
@@ -456,10 +456,10 @@ function App() {
                       if (window.innerWidth < 768) setIsSidebarOpen(false);
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200 whitespace-nowrap ${activeTab === tab
-                      ? 'text-gray-900 border-l-4 border-gray-800 shadow-md'
-                      : 'text-gray-700 hover:bg-gray-50 hover:-translate-y-0.5 active:-translate-y-1'
+                      ? 'text-white border-l-4 border-emerald-800 shadow-md'
+                      : 'text-gray-700 hover:bg-emerald-100/60 hover:-translate-y-0.5 active:-translate-y-1'
                       }`}
-                    style={activeTab === tab ? { backgroundColor: '#d5ff47' } : {}}
+                    style={activeTab === tab ? { backgroundColor: '#54b768' } : {}}
                   >
                     {icon}
                     {label}
@@ -474,10 +474,10 @@ function App() {
                     if (window.innerWidth < 768) setIsSidebarOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base font-semibold transition-all duration-200 ${activeTab === 'users'
-                    ? 'text-gray-900 border-l-4 border-gray-800 shadow-md'
-                    : 'text-gray-700 hover:bg-gray-50 hover:-translate-y-0.5 active:-translate-y-1'
+                    ? 'text-white border-l-4 border-emerald-800 shadow-md'
+                    : 'text-gray-700 hover:bg-emerald-100/60 hover:-translate-y-0.5 active:-translate-y-1'
                     }`}
-                  style={activeTab === 'users' ? { backgroundColor: '#d5ff47' } : {}}
+                  style={activeTab === 'users' ? { backgroundColor: '#54b768' } : {}}
                 >
                   <Users className="size-[18px]" />
                   User Management
