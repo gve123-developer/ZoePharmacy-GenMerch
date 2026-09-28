@@ -45,7 +45,7 @@ const ParticleBackground = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    const colors = ['#000000', '#2d3436', '#54b768', '#636e72'];
+    const colors = ['#000000', '#2d3436', '#92d15f', '#636e72'];
     const newDots = Array.from({ length: 450 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
@@ -359,8 +359,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   return (
     <div className="min-h-screen bg-white flex flex-col relative overflow-hidden font-sans">
       {/* Background Blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#54b768]/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#54b768]/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#92d15f]/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#92d15f]/15 rounded-full blur-[100px] pointer-events-none" />
 
       <main className="flex-1 flex flex-col md:flex-row relative z-10 px-8 md:px-48 items-center justify-center gap-12 md:gap-64 py-12">
         <ParticleBackground />
@@ -371,15 +371,15 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-[0.85] tracking-tighter">
               ZOE <br />
               PHARMACY <br />
-              <span className="text-[#54b768] text-2xl md:text-3xl block mt-2 tracking-tighter font-extrabold uppercase">
+              <span className="text-[#92d15f] text-2xl md:text-3xl block mt-2 tracking-tighter font-extrabold uppercase">
                 & GENERAL MERCHANDISE
               </span>
             </h1>
-            <div className="w-24 h-3 bg-[#54b768] rounded-full" />
+            <div className="w-24 h-3 bg-[#92d15f] rounded-full" />
           </div>
 
           <div className="space-y-4 w-full max-w-lg">
-            <div className="bg-[#eef8f0] p-6 rounded-tr-[40px] rounded-br-[40px] border-l-[12px] border-[#54b768] shadow-md">
+            <div className="bg-[#f4faed] p-6 rounded-tr-[40px] rounded-br-[40px] border-l-[12px] border-[#92d15f] shadow-md">
               <p className="text-gray-900 font-extrabold uppercase text-lg md:text-xl leading-tight tracking-tight">
                 "MAG-INGAT SA MGA PEKENG GAMOT. BUMILI LAMANG SA MGA REGISTRADONG BOTIKA."
               </p>
@@ -403,7 +403,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               />
             </div>
 
-            <div className={`bg-[#54b768] px-12 pb-24 pt-10 flex flex-col space-y-6 transition-all duration-1000 ease-in-out m-0 ${isOpening ? 'translate-y-[150%] rotate-[10deg] opacity-0' : 'rounded-b-[240px]'}`}>
+            <div className={`bg-[#92d15f] px-12 pb-24 pt-10 flex flex-col space-y-6 transition-all duration-1000 ease-in-out m-0 ${isOpening ? 'translate-y-[150%] rotate-[10deg] opacity-0' : 'rounded-b-[240px]'}`}>
               {forgotMode === 'login' && (
                 <form
                   ref={formRef}
@@ -421,7 +421,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setUsername(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isLocked || isLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#92d15f] transition-all px-6 text-lg disabled:opacity-60"
                     />
                   </div>
 
@@ -437,7 +437,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                         onChange={(e) => { setPassword(e.target.value); setErrorMsg(''); }}
                         required
                         disabled={isLocked || isLoading}
-                        className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                        className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#92d15f] transition-all px-6 text-lg disabled:opacity-60"
                       />
                       <button
                         type="button"
@@ -512,7 +512,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setForgotInput(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#92d15f] transition-all px-6 text-lg disabled:opacity-60"
                     />
                   </div>
 
@@ -570,7 +570,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setResetCode(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60 text-center tracking-[0.5em] font-bold"
+                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#92d15f] transition-all px-6 text-lg disabled:opacity-60 text-center tracking-[0.5em] font-bold"
                     />
                   </div>
 
@@ -584,7 +584,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setNewPassword(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#92d15f] transition-all px-6 text-lg disabled:opacity-60"
                     />
                   </div>
 
@@ -598,7 +598,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setNewPasswordConfirm(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#92d15f] transition-all px-6 text-lg disabled:opacity-60"
                     />
                   </div>
 

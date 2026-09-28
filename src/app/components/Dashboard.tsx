@@ -687,8 +687,8 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                 <AreaChart data={getSalesData()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#84cc16" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#84cc16" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#92d15f" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#92d15f" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -713,7 +713,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                   <Area
                     type="monotone"
                     dataKey="sales"
-                    stroke="#65a30d" // Apple Green / Lime-600
+                    stroke="#92d15f"
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorSales)"
@@ -725,12 +725,12 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                           cy={cy}
                           r={4}
                           fill="white"
-                          stroke="#65a30d"
+                          stroke="#92d15f"
                           strokeWidth={2}
                         />
                       );
                     }}
-                    activeDot={{ r: 6, strokeWidth: 0, fill: '#65a30d' }}
+                    activeDot={{ r: 6, strokeWidth: 0, fill: '#92d15f' }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -758,7 +758,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                     {getSalesByCategory().map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={entry.name === 'Pharmaceutical' ? '#b7ec00' :
+                        fill={entry.name === 'Pharmaceutical' ? '#92d15f' :
                           entry.name === 'Non-pharmaceutical' ? '#455900' :
                             COLORS[index % COLORS.length]}
                       />
