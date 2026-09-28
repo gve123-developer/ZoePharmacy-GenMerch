@@ -312,7 +312,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Inventory Management</h2>
-              <p className="text-sm text-gray-500 mt-1">Manage your products and stock levels</p>
+              <p className="text-sm text-gray-700 font-semibold mt-1">Manage your products and stock levels</p>
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>

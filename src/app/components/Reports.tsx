@@ -589,7 +589,7 @@ export function Reports({ currentUser }: ReportsProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">Reports & Analytics</h2>
-            <p className="text-sm text-gray-500 mt-1">Detailed insights into your business</p>
+            <p className="text-sm text-gray-700 font-semibold mt-1">Detailed insights into your business</p>
           </div>
           <div className="flex gap-3">
             <Select value={timeRange} onValueChange={setTimeRange}>
@@ -720,7 +720,7 @@ export function Reports({ currentUser }: ReportsProps) {
                   </div>
                 </div>
                 <div className="mt-4 p-3 bg-yellow-50 rounded-lg border border-dashed border-yellow-300 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-700 font-medium">
                     <span className="font-bold">Net Margin:</span> <span className="text-[#DAA520] font-black">{profitAnalysis.margin.toFixed(1)}%</span>
                     <span className="mx-2">|</span>
                     <span className="italic text-xs text-red-500">Includes deductions from expired and disposed inventory.</span>
@@ -752,13 +752,13 @@ export function Reports({ currentUser }: ReportsProps) {
                       dataKey="date"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 12 }}
+                      tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }}
                       dy={10}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 12 }}
+                      tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }}
                       tickFormatter={(value) => `₱${formatNumber(value)}`}
                     />
                     <Tooltip
@@ -839,7 +839,7 @@ export function Reports({ currentUser }: ReportsProps) {
                   <BarChart data={getPaymentMethodDistribution()}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={false} />
-                    <YAxis />
+                    <YAxis tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }} />
                     <Tooltip formatter={(value: number) => [formatNumber(value), 'Transactions']} />
                     <Legend payload={[
                       { value: 'CASH', type: 'rect', id: 'cash', color: '#54b768' }
@@ -867,12 +867,12 @@ export function Reports({ currentUser }: ReportsProps) {
                 <ResponsiveContainer width="100%" height={350} key={timeRange}>
                   <BarChart data={getTopSellingProducts().slice(0, 10)} layout="vertical" margin={{ left: 10, right: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                    <XAxis type="number" tickFormatter={(value) => `₱${formatNumber(value)}`} tick={{ fill: '#64748b', fontSize: 12 }} />
+                    <XAxis type="number" tickFormatter={(value) => `₱${formatNumber(value)}`} tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }} />
                     <YAxis 
                       dataKey="name" 
                       type="category" 
                       width={140} 
-                      tick={{ fill: '#475569', fontSize: 11, fontWeight: 500 }}
+                      tick={{ fill: '#1e293b', fontSize: 11, fontWeight: 700 }}
                       tickFormatter={(name) => name.length > 22 ? name.substring(0, 22) + '...' : name}
                     />
                     <Tooltip 
@@ -914,7 +914,7 @@ export function Reports({ currentUser }: ReportsProps) {
                           {product.name}
                         </div>
                       </TableCell>
-                      <TableCell className="border px-4 py-2 text-center text-gray-500">{formatNumber(product.quantity)}</TableCell>
+                      <TableCell className="border px-4 py-2 text-center text-gray-700 font-semibold">{formatNumber(product.quantity)}</TableCell>
                       <TableCell className="font-bold text-gray-900 border px-4 py-2 text-center">{formatCurrency(product.revenue)}</TableCell>
                     </TableRow>
                   ))}
@@ -947,7 +947,7 @@ export function Reports({ currentUser }: ReportsProps) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md border">
-              <span className="text-sm font-medium text-gray-500">Total Transactions Today:</span>
+              <span className="text-sm font-bold text-gray-700">Total Transactions Today:</span>
               <span className="text-lg font-bold">{calculateZReading().totalTransactions}</span>
             </div>
             <div className="flex justify-between items-center bg-indigo-50 p-4 rounded-md border-2 border-indigo-200">

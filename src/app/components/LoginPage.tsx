@@ -384,35 +384,35 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 "MAG-INGAT SA MGA PEKENG GAMOT. BUMILI LAMANG SA MGA REGISTRADONG BOTIKA."
               </p>
             </div>
-            <p className="text-gray-400 text-[10px] md:text-xs font-black tracking-[0.25em] uppercase italic ml-1">
+            <p className="text-gray-700 text-[10px] md:text-xs font-black tracking-[0.25em] uppercase italic ml-1">
               BRANDED AND QUALITY GENERIC MEDICINES AVAILABLE HERE
             </p>
           </div>
         </div>
 
         {/* Right: Login Capsule */}
-        <div className="flex-none w-full max-w-[450px] flex justify-center items-center">
-          <Card className={`w-full border-none transition-all duration-700 bg-transparent shadow-none p-0 flex flex-col gap-0 ${isOpening ? 'overflow-visible' : 'overflow-hidden shadow-2xl rounded-[240px]'}`}>
+        <div className="flex-none w-full max-w-[340px] flex justify-center items-center">
+          <Card className={`w-full border-none transition-all duration-700 bg-transparent shadow-none p-0 flex flex-col gap-0 ${isOpening ? 'overflow-visible' : 'overflow-hidden shadow-2xl rounded-[180px]'}`}>
 
             {/* Top Half — White */}
-            <div className={`bg-white pt-16 pb-10 px-12 flex flex-col items-center transition-all duration-1000 ease-in-out m-0 ${isOpening ? '-translate-y-[150%] rotate-[-10deg] opacity-0' : 'rounded-t-[240px]'}`}>
+            <div className={`bg-white pt-8 pb-4 px-8 flex flex-col items-center transition-all duration-1000 ease-in-out m-0 ${isOpening ? '-translate-y-[150%] rotate-[-10deg] opacity-0' : 'rounded-t-[180px]'}`}>
               <img
                 src="/logo.jpg"
                 alt="Zoe Pharmacy Logo"
-                className="h-20 w-auto mb-6 drop-shadow-sm rounded-xl"
+                className="h-14 w-auto mb-2 drop-shadow-sm rounded-xl"
               />
             </div>
 
-            <div className={`bg-[#54b768] px-12 pb-24 pt-10 flex flex-col space-y-6 transition-all duration-1000 ease-in-out m-0 ${isOpening ? 'translate-y-[150%] rotate-[10deg] opacity-0' : 'rounded-b-[240px]'}`}>
+            <div className={`bg-[#54b768] px-8 pb-12 pt-6 flex flex-col space-y-4 transition-all duration-1000 ease-in-out m-0 ${isOpening ? 'translate-y-[150%] rotate-[10deg] opacity-0' : 'rounded-b-[180px]'}`}>
               {forgotMode === 'login' && (
                 <form
                   ref={formRef}
                   onSubmit={handleSubmit}
-                  className={`space-y-4 text-left ${shake ? 'shake' : ''}`}
+                  className={`space-y-3.5 text-left ${shake ? 'shake' : ''}`}
                 >
                   {/* Username */}
-                  <div className="space-y-2">
-                    <Label htmlFor="username" className="text-gray-900 font-black text-sm ml-2">USERNAME</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="username" className="text-gray-900 font-black text-xs ml-1">USERNAME</Label>
                     <Input
                       id="username"
                       type="text"
@@ -421,13 +421,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setUsername(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isLocked || isLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
                   {/* Password */}
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-gray-900 font-black text-sm ml-2">PASSWORD</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="password" className="text-gray-900 font-black text-xs ml-1">PASSWORD</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -437,24 +437,24 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                         onChange={(e) => { setPassword(e.target.value); setErrorMsg(''); }}
                         required
                         disabled={isLocked || isLoading}
-                        className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                        className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
                       >
-                        {showPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
+                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
                     </div>
                   </div>
 
                   {/* Forgot Password Link */}
-                  <div className="text-right px-2">
+                  <div className="text-right px-1">
                     <button
                       type="button"
                       onClick={() => { setForgotMode('forgot'); setErrorMsg(''); setForgotInput(''); }}
-                      className="text-gray-900 hover:text-black font-extrabold text-xs transition-colors tracking-wider"
+                      className="text-gray-900 hover:text-black font-extrabold text-[11px] transition-colors tracking-wider"
                     >
                       FORGOT PASSWORD?
                     </button>
@@ -462,10 +462,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
                   {/* Error / Lockout banner */}
                   {errorMsg && (
-                    <div className={`flex items-start gap-2 px-4 py-3 rounded-2xl text-sm font-semibold ${isLocked ? 'bg-red-600 text-white' : 'bg-black/10 text-gray-900'}`}>
+                    <div className={`flex items-start gap-2 px-3 py-2 rounded-xl text-xs font-semibold ${isLocked ? 'bg-red-600 text-white' : 'bg-black/10 text-gray-900'}`}>
                       {isLocked
-                        ? <Lock className="size-4 mt-0.5 shrink-0" />
-                        : <AlertCircle className="size-4 mt-0.5 shrink-0" />}
+                        ? <Lock className="size-3.5 mt-0.5 shrink-0" />
+                        : <AlertCircle className="size-3.5 mt-0.5 shrink-0" />}
                       <span>
                         {isLocked
                           ? `Account locked — try again in ${lockoutCountdown}s`
@@ -478,16 +478,16 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     disabled={isLocked || isLoading}
-                    className="w-full bg-gray-900 hover:bg-black text-white h-16 rounded-full font-black uppercase tracking-[.25em] text-sm shadow-2xl transition-all hover:scale-[1.03] active:scale-95 mt-4 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full bg-gray-900 hover:bg-black text-white h-11 rounded-full font-black uppercase tracking-[.2em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {isLoading ? (
                       <span className="flex items-center gap-2">
-                        <Loader2 className="size-5 animate-spin" />
+                        <Loader2 className="size-4 animate-spin" />
                         AUTHENTICATING...
                       </span>
                     ) : isLocked ? (
                       <span className="flex items-center gap-2">
-                        <Lock className="size-5" />
+                        <Lock className="size-4" />
                         LOCKED ({lockoutCountdown}s)
                       </span>
                     ) : (
@@ -500,10 +500,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               {forgotMode === 'forgot' && (
                 <form
                   onSubmit={handleForgotRequest}
-                  className="space-y-4 text-left"
+                  className="space-y-3.5 text-left"
                 >
-                  <div className="space-y-2">
-                    <Label htmlFor="forgotInput" className="text-gray-900 font-black text-sm ml-2">USERNAME OR EMAIL</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="forgotInput" className="text-gray-900 font-black text-xs ml-1">USERNAME OR EMAIL</Label>
                     <Input
                       id="forgotInput"
                       type="text"
@@ -512,13 +512,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setForgotInput(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
                   {errorMsg && (
-                    <div className="flex items-start gap-2 px-4 py-3 rounded-2xl text-sm font-semibold bg-black/10 text-gray-900">
-                      <AlertCircle className="size-4 mt-0.5 shrink-0" />
+                    <div className="flex items-start gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-black/10 text-gray-900">
+                      <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
                   )}
@@ -526,11 +526,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     disabled={isResetLoading}
-                    className="w-full bg-gray-900 hover:bg-black text-white h-16 rounded-full font-black uppercase tracking-[.25em] text-sm shadow-2xl transition-all hover:scale-[1.03] active:scale-95 mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full bg-gray-900 hover:bg-black text-white h-11 rounded-full font-black uppercase tracking-[.2em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isResetLoading ? (
                       <span className="flex items-center gap-2">
-                        <Loader2 className="size-5 animate-spin" />
+                        <Loader2 className="size-4 animate-spin" />
                         SENDING CODE...
                       </span>
                     ) : (
@@ -542,7 +542,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     type="button"
                     variant="ghost"
                     onClick={() => { setForgotMode('login'); setErrorMsg(''); }}
-                    className="w-full border-none hover:bg-black/5 text-gray-900 h-14 rounded-full font-black uppercase tracking-[.25em] text-xs transition-all mt-2"
+                    className="w-full border-none hover:bg-black/5 text-gray-900 h-10 rounded-full font-black uppercase tracking-[.2em] text-[11px] transition-all mt-1"
                   >
                     BACK TO LOGIN
                   </Button>
@@ -552,15 +552,15 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               {forgotMode === 'verify' && (
                 <form
                   onSubmit={handlePasswordReset}
-                  className="space-y-4 text-left"
+                  className="space-y-3 text-left"
                 >
-                  <div className="space-y-1">
-                    <Label className="text-gray-900 font-black text-xs ml-2">SENT TO</Label>
-                    <p className="text-sm font-bold text-gray-800 ml-2 italic">{resetEmail}</p>
+                  <div className="space-y-0.5">
+                    <Label className="text-gray-900 font-black text-[11px] ml-1">SENT TO</Label>
+                    <p className="text-xs font-bold text-gray-800 ml-1 italic">{resetEmail}</p>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="resetCode" className="text-gray-900 font-black text-sm ml-2">6-DIGIT RESET CODE</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="resetCode" className="text-gray-900 font-black text-xs ml-1">6-DIGIT RESET CODE</Label>
                     <Input
                       id="resetCode"
                       type="text"
@@ -570,12 +570,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setResetCode(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60 text-center tracking-[0.5em] font-bold"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60 text-center tracking-[0.4em] font-bold"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-gray-900 font-black text-sm ml-2">NEW PASSWORD</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="newPassword" className="text-gray-900 font-black text-xs ml-1">NEW PASSWORD</Label>
                     <Input
                       id="newPassword"
                       type="password"
@@ -584,12 +584,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setNewPassword(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="newPasswordConfirm" className="text-gray-900 font-black text-sm ml-2">CONFIRM NEW PASSWORD</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="newPasswordConfirm" className="text-gray-900 font-black text-xs ml-1">CONFIRM NEW PASSWORD</Label>
                     <Input
                       id="newPasswordConfirm"
                       type="password"
@@ -598,13 +598,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setNewPasswordConfirm(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-14 rounded-2xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-6 text-lg disabled:opacity-60"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
                   {errorMsg && (
-                    <div className="flex items-start gap-2 px-4 py-3 rounded-2xl text-sm font-semibold bg-black/10 text-gray-900">
-                      <AlertCircle className="size-4 mt-0.5 shrink-0" />
+                    <div className="flex items-start gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-black/10 text-gray-900">
+                      <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
                   )}
@@ -612,11 +612,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     disabled={isResetLoading}
-                    className="w-full bg-gray-900 hover:bg-black text-white h-16 rounded-full font-black uppercase tracking-[.25em] text-sm shadow-2xl transition-all hover:scale-[1.03] active:scale-95 mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full bg-gray-900 hover:bg-black text-white h-11 rounded-full font-black uppercase tracking-[.2em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isResetLoading ? (
                       <span className="flex items-center gap-2">
-                        <Loader2 className="size-5 animate-spin" />
+                        <Loader2 className="size-4 animate-spin" />
                         RESETTING PASSWORD...
                       </span>
                     ) : (
@@ -628,7 +628,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     type="button"
                     variant="ghost"
                     onClick={() => { setForgotMode('forgot'); setErrorMsg(''); }}
-                    className="w-full border-none hover:bg-black/5 text-gray-900 h-14 rounded-full font-black uppercase tracking-[.25em] text-xs transition-all mt-2"
+                    className="w-full border-none hover:bg-black/5 text-gray-900 h-10 rounded-full font-black uppercase tracking-[.2em] text-[11px] transition-all mt-1"
                   >
                     CANCEL
                   </Button>

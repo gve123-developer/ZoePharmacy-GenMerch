@@ -96,7 +96,7 @@ export function AuditLogs({ currentUser }: AuditLogsProps) {
                             <ClipboardList className="size-7 text-indigo-600" />
                             System Audit Logs
                         </h2>
-                        <p className="text-sm text-gray-500 font-medium">Complete chronicle of all pharmacy activities and system modifications</p>
+                        <p className="text-sm text-gray-700 font-semibold">Complete chronicle of all pharmacy activities and system modifications</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="relative w-full md:w-64">

@@ -233,7 +233,7 @@ export function UserManagement({ currentUser }: UserManagementProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">User Management</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Manage system users and their roles</p>
+            <p className="text-xs text-gray-700 font-semibold mt-0.5">Manage system users and their roles</p>
           </div>
           <ErrorBoundary fallbackTitle="Add User Dialog Error">
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

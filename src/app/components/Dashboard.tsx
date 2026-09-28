@@ -539,7 +539,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">Dashboard</h2>
-            <p className="text-sm text-gray-500 mt-1">Overview of your pharmacy operations</p>
+            <p className="text-sm text-gray-700 font-semibold mt-1">Overview of your pharmacy operations</p>
           </div>
 
 
@@ -696,13 +696,13 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                     dataKey="date"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#94a3b8', fontSize: 12 }}
+                    tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }}
                     dy={10}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#94a3b8', fontSize: 12 }}
+                    tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }}
                     tickFormatter={(value) => `₱${formatNumber(value)}`}
                   />
                   <Tooltip
@@ -781,7 +781,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-bold text-gray-900 uppercase">Product Sales Performance</CardTitle>
-                  <p className="text-sm text-gray-500 font-medium">Revenue distribution and unit sales breakdown</p>
+                  <p className="text-sm text-gray-700 font-semibold">Revenue distribution and unit sales breakdown</p>
                 </div>
                 <TrendingUp className="size-8 text-blue-600 opacity-20" />
               </div>
@@ -790,7 +790,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
               <div className="grid grid-cols-1 xl:grid-cols-2">
                 {/* Product Revenue Section */}
                 <div className="p-8 border-b xl:border-b-0 xl:border-r border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
-                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Revenue Growth</h3>
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest mb-6">Revenue Growth</h3>
                   <ResponsiveContainer width="100%" height={300} key={timeRange}>
                     <BarChart data={getProductRevenueData()}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -803,7 +803,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                       <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
+                        tick={{ fill: '#1e293b', fontSize: 12, fontWeight: 700 }}
                         tickFormatter={(value) => `₱${formatNumber(value)}`}
                       />
                       <Tooltip
@@ -837,7 +837,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
                 {/* Table Section */}
                 <div className="flex flex-col">
                   <div className="p-6 bg-gray-50/50 border-b border-gray-100">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Performance Details</h3>
+                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Performance Details</h3>
                   </div>
                   <div className="max-h-[400px] overflow-y-auto">
                     <table className="w-full text-left border-collapse">
@@ -1060,7 +1060,7 @@ function MovementAnalysis({ products, transactions }: { products: Product[], tra
             </div>
             <div>
               <CardTitle className="text-base font-bold text-gray-900">Inventory Movement Analysis</CardTitle>
-              <p className="text-xs text-gray-500">Fast vs Slow moving items based on sales history</p>
+              <p className="text-xs text-gray-700 font-semibold">Fast vs Slow moving items based on sales history</p>
             </div>
           </div>
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -1131,7 +1131,7 @@ function MovementAnalysis({ products, transactions }: { products: Product[], tra
                       slowMoving.map((item, i) => (
                         <TableRow key={item.id} className="hover:bg-gray-50">
                           <TableCell className="py-2 text-sm font-medium truncate max-w-[150px]" title={item.name}>{item.name}</TableCell>
-                          <TableCell className="py-2 text-sm text-right font-bold text-gray-400">{item.soldQuantity}</TableCell>
+                          <TableCell className="py-2 text-sm text-right font-bold text-gray-700">{item.soldQuantity}</TableCell>
                           <TableCell className="py-2 text-sm text-right text-red-600 font-medium">{item.currentStock}</TableCell>
                         </TableRow>
                       ))

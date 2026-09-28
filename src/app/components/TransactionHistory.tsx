@@ -477,7 +477,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-[#1f2937]">Transaction History</h2>
-            <p className="text-sm text-gray-400 mt-1">View all sales transactions</p>
+            <p className="text-sm text-gray-700 font-semibold mt-1">View all sales transactions</p>
           </div>
           <Button
             onClick={exportAllPDF}

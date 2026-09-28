@@ -97,7 +97,7 @@ export function StockForecasting({ products, transactions }: StockForecastingPro
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
                         <h2 className="text-2xl font-semibold text-gray-900">Stock Forecasting</h2>
-                        <p className="text-sm text-gray-500 mt-1">Predictive insights based on sales velocity and environmental data.</p>
+                        <p className="text-sm text-gray-700 font-semibold mt-1">Predictive insights based on sales velocity and environmental data.</p>
                     </div>
                     {productMetrics.length > 0 && (
                         <Dialog onOpenChange={(open) => { if (!open) setSelectedProductAnalysis(null); }}>
@@ -130,12 +130,12 @@ export function StockForecasting({ products, transactions }: StockForecastingPro
                                         </div>
 
                                         <div className="h-[350px] w-full border border-gray-100 rounded-lg p-4 bg-gray-50/50 shadow-sm">
-                                            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest text-center mb-6">Demand Forecast Analysis (Daily)</h3>
+                                            <h3 className="text-xs font-bold text-gray-700 uppercase tracking-widest text-center mb-6">Demand Forecast Analysis (Daily)</h3>
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <LineChart data={selectedProductAnalysis.metrics.chartData} margin={{ top: 5, right: 20, left: -20, bottom: 25 }}>
                                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                                                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6b7280', fontWeight: 'bold' }} tickLine={false} axisLine={false} dy={10} />
-                                                    <YAxis tick={{ fontSize: 11, fill: '#6b7280', fontWeight: 'bold' }} tickLine={false} axisLine={false} />
+                                                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#1e293b', fontWeight: 'bold' }} tickLine={false} axisLine={false} dy={10} />
+                                                    <YAxis tick={{ fontSize: 11, fill: '#1e293b', fontWeight: 'bold' }} tickLine={false} axisLine={false} />
                                                     <RechartsTooltip
                                                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }}
                                                         itemStyle={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 0' }}
