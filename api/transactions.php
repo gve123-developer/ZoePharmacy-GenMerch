@@ -462,7 +462,7 @@ elseif ($method === 'PATCH') {
              LEFT JOIN products p
                 ON ti.product_id = p.id
              WHERE ti.transaction_id = :transaction_id
-             FOR UPDATE"
+             FOR UPDATE OF ti"
         );
 
         $itemsStmt->execute([
@@ -489,16 +489,19 @@ elseif ($method === 'PATCH') {
         );
 
         // Determine if this is a Full Void or Partial Void
-        $shouldFullVoid = ($isFullVoidExplicit === true) || !is_array($itemsToVoid) || empty($itemsToVoid) || count($itemsToVoid) >= count($existingItems);
+        $shouldFullVoid = ($isFullVoidExplicit === true);
 
-        // If itemsToVoid is specified, double-check if all existing items are included
-        if (!$shouldFullVoid && is_array($itemsToVoid)) {
+        if (!$shouldFullVoid && is_array($itemsToVoid) && !empty($itemsToVoid)) {
             $toVoidPids = array_map(function($it) { return (string)($it['productId'] ?? ''); }, $itemsToVoid);
             $existingPids = array_map(function($it) { return (string)$it['product_id']; }, $existingItems);
             $diff = array_diff($existingPids, $toVoidPids);
             if (empty($diff)) {
                 $shouldFullVoid = true;
             }
+        } elseif (empty($itemsToVoid) && $isFullVoidExplicit !== true) {
+            throw new RuntimeException("No items selected to void");
+        } else {
+            $shouldFullVoid = true;
         }
 
         if ($shouldFullVoid) {

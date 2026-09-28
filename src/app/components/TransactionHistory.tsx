@@ -82,13 +82,9 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Automatically select all items whenever a transaction is set to be voided
+  // Start with ALL UNCHECKED by default as requested
   useEffect(() => {
-    if (transactionToVoid?.items) {
-      setSelectedItemIndicesToVoid(new Set(transactionToVoid.items.map((_, i) => i)));
-    } else {
-      setSelectedItemIndicesToVoid(new Set());
-    }
+    setSelectedItemIndicesToVoid(new Set());
   }, [transactionToVoid]);
 
   useEffect(() => {
@@ -763,17 +759,17 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                             setSelectedItemIndicesToVoid(new Set());
                           }
                         }}
-                        className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                        className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer accent-red-600"
                       />
                       <span>Select All ({totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'})</span>
                     </label>
-                    <span className="text-[11px] font-semibold text-gray-500">
+                    <span className="text-xs font-bold text-gray-600">
                       {selectedCount} of {totalItemsCount} selected
                     </span>
                   </div>
 
                   {/* Transaction Items Checklist */}
-                  <div className="w-full text-left space-y-2 mb-3 overflow-y-auto max-h-48 pr-1">
+                  <div className="w-full text-left space-y-2 mb-3 overflow-y-auto max-h-56 pr-1">
                     {items.map((it, i) => {
                       const isChecked = selectedItemIndicesToVoid.has(i);
                       return (
@@ -787,31 +783,38 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                               return next;
                             });
                           }}
-                          className={`flex items-center justify-between p-2.5 rounded-lg border text-sm cursor-pointer transition-all ${
+                          className={`flex items-center justify-between p-3 rounded-xl border-2 text-sm cursor-pointer transition-all duration-150 select-none ${
                             isChecked
-                              ? 'bg-red-50/80 border-red-300 text-red-950 shadow-sm'
-                              : 'bg-white border-gray-200 text-gray-400 opacity-60 hover:opacity-80'
+                              ? 'bg-red-50 border-red-500 shadow-md ring-2 ring-red-200'
+                              : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm opacity-100'
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0 pr-2">
                             <input
                               type="checkbox"
                               checked={isChecked}
-                              onChange={() => {}} // handled by parent div click
-                              className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500 pointer-events-none"
+                              onChange={() => {}} // click handled by parent container
+                              className="size-5 rounded border-gray-300 text-red-600 focus:ring-red-500 pointer-events-none accent-red-600 cursor-pointer"
                             />
                             <div className="flex flex-col min-w-0 text-left">
-                              <span className={`truncate text-xs md:text-sm ${isChecked ? 'font-bold text-gray-900' : 'text-gray-500'}`}>
+                              <span className={`truncate text-sm font-bold ${isChecked ? 'text-red-950 font-black' : 'text-gray-900'}`}>
                                 {it.productName}
                               </span>
-                              <span className="text-[10px] text-gray-400">
+                              <span className={`text-xs ${isChecked ? 'text-red-700 font-semibold' : 'text-gray-500 font-medium'}`}>
                                 ₱{it.price.toFixed(2)} × {it.quantity} {it.quantity === 1 ? 'unit' : 'units'}
                               </span>
                             </div>
                           </div>
-                          <span className={`font-black text-xs md:text-sm whitespace-nowrap ${isChecked ? 'text-red-700' : 'text-gray-400'}`}>
-                            ₱{(it.price * it.quantity).toFixed(2)}
-                          </span>
+                          <div className="flex flex-col items-end shrink-0 pl-2">
+                            <span className={`font-black text-sm whitespace-nowrap ${isChecked ? 'text-red-600' : 'text-gray-900'}`}>
+                              ₱{(it.price * it.quantity).toFixed(2)}
+                            </span>
+                            {isChecked && (
+                              <span className="text-[10px] font-black uppercase tracking-wider text-red-700 bg-red-100 px-1.5 py-0.5 rounded mt-0.5 border border-red-200">
+                                TO VOID
+                              </span>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
