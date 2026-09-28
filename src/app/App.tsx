@@ -54,11 +54,13 @@ export interface Transaction {
   id: string;
   date: string;
   items: Array<{
+    itemId?: number;
     productId: string;
     productName: string;
     quantity: number;
     price: number;
     cost: number;
+    status?: string;
   }>;
   total: number;
   paymentMethod?: string;

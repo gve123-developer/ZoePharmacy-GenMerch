@@ -16,7 +16,7 @@ export const calculateVelocity = (productId: string, transactions: Transaction[]
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays < 30) {
-            const item = t.items.find((i: any) => i.productId === productId);
+            const item = t.items.find((i: any) => i.productId === productId && i.status !== 'voided');
             if (item) {
                 // index 0 is 29 days ago, index 29 is today
                 const index = 29 - diffDays;
@@ -137,7 +137,7 @@ export const calculateAccuracyMetrics = (productId: string, transactions: Transa
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); // Use round to handle DST edge cases
 
             if (diffDays < DAYS) {
-                const item = t.items.find((i: any) => i.productId === productId);
+                const item = t.items.find((i: any) => i.productId === productId && i.status !== 'voided');
                 if (item) {
                     const index = (DAYS - 1) - diffDays;
                     if (index >= 0 && index < DAYS) {
@@ -239,7 +239,7 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
             const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
 
             if (diffDays < TOTAL_DAYS) {
-                const item = t.items.find((i: any) => i.productId === productId);
+                const item = t.items.find((i: any) => i.productId === productId && i.status !== 'voided');
                 if (item) {
                     const index = (TOTAL_DAYS - 1) - diffDays;
                     if (index >= 0 && index < TOTAL_DAYS) {

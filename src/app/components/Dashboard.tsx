@@ -187,6 +187,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
     let filteredProfit = 0;
     filteredTransactions.forEach((transaction: Transaction) => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         const itemCostPrice = item.cost !== undefined ? item.cost : (products.find(p => p.id === item.productId)?.cost || 0);
         const itemRevenue = item.price * item.quantity;
         const itemCost = itemCostPrice * item.quantity;
@@ -267,6 +268,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
 
     filtered.forEach((transaction: Transaction) => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         const product = products.find(p => p.id === item.productId);
         if (product) {
           const category = product.category;
@@ -370,6 +372,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
 
     filtered.forEach((transaction: Transaction) => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         productSales[item.productName] = (productSales[item.productName] || 0) + item.quantity;
       });
     });
@@ -386,6 +389,7 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
 
     filtered.forEach((transaction: Transaction) => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         if (!productRevenue[item.productName]) {
           productRevenue[item.productName] = { name: item.productName, value: 0, quantity: 0 };
         }
@@ -1009,6 +1013,7 @@ function MovementAnalysis({ products, transactions }: { products: Product[], tra
     // Sum up sales
     filteredTx.forEach(tx => {
       tx.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         if (productSales[item.productId] !== undefined) {
           productSales[item.productId] += item.quantity;
         }

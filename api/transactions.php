@@ -7,6 +7,11 @@ header("Content-Type: application/json; charset=UTF-8");
 
 include '../includes/db_connect.php';
 
+// Ensure status column exists on transaction_items
+try {
+    $conn->exec("ALTER TABLE transaction_items ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'completed'");
+} catch (Throwable $ignored) {}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'OPTIONS') {
@@ -62,11 +67,13 @@ if ($method === 'GET') {
 
             $itemStmt = $conn->prepare(
                 "SELECT
+                    i.id AS item_id,
                     i.product_id,
                     p.name AS product_name,
                     i.quantity,
                     i.price_at_sale,
-                    i.cost_at_sale
+                    i.cost_at_sale,
+                    COALESCE(i.status, 'completed') AS status
                  FROM transaction_items i
                  LEFT JOIN products p
                     ON i.product_id = p.id
@@ -83,11 +90,13 @@ if ($method === 'GET') {
             while ($item = $itemStmt->fetch(PDO::FETCH_ASSOC)) {
 
                 $items[] = [
+                    'itemId' => (int)$item['item_id'],
                     'productId' => (string)$item['product_id'],
                     'productName' => $item['product_name'] ?? 'Unknown Product',
                     'quantity' => (int)$item['quantity'],
                     'price' => (float)$item['price_at_sale'],
-                    'cost' => (float)$item['cost_at_sale']
+                    'cost' => (float)$item['cost_at_sale'],
+                    'status' => $item['status'] ?? 'completed'
                 ];
             }
 
@@ -457,6 +466,8 @@ elseif ($method === 'PATCH') {
                 ti.product_id,
                 ti.quantity,
                 ti.price_at_sale,
+                ti.cost_at_sale,
+                COALESCE(ti.status, 'completed') AS status,
                 p.name
              FROM transaction_items ti
              LEFT JOIN products p
@@ -506,22 +517,35 @@ elseif ($method === 'PATCH') {
 
         if ($shouldFullVoid) {
             // FULL VOID: Cancel entire transaction
+            $amountReceived = isset($tx['amount_received']) ? (float)$tx['amount_received'] : null;
             $voidStmt = $conn->prepare(
                 "UPDATE transactions
-                 SET status = 'voided'
+                 SET status = 'voided',
+                     change_amount = CASE WHEN amount_received IS NOT NULL THEN amount_received ELSE change_amount END
                  WHERE id = :id"
             );
             $voidStmt->execute([':id' => $transaction_id]);
 
+            // Mark all items in this transaction as voided
+            $markAllItemsVoidStmt = $conn->prepare(
+                "UPDATE transaction_items
+                 SET status = 'voided'
+                 WHERE transaction_id = :id"
+            );
+            $markAllItemsVoidStmt->execute([':id' => $transaction_id]);
+
             $restored = [];
             foreach ($existingItems as $item) {
-                $restoreStmt->execute([
-                    ':quantity' => (int)$item['quantity'],
-                    ':product_id' => (int)$item['product_id']
-                ]);
+                // Only restore items that were previously completed
+                if (($item['status'] ?? 'completed') !== 'voided') {
+                    $restoreStmt->execute([
+                        ':quantity' => (int)$item['quantity'],
+                        ':product_id' => (int)$item['product_id']
+                    ]);
 
-                $productName = $item['name'] ?? "ID:{$item['product_id']}";
-                $restored[] = $productName . " x" . $item['quantity'];
+                    $productName = $item['name'] ?? "ID:{$item['product_id']}";
+                    $restored[] = $productName . " x" . $item['quantity'];
+                }
             }
 
             $summary = "Voided Transaction #$transaction_id (Full Void). Sum: ₱" .
@@ -547,27 +571,46 @@ elseif ($method === 'PATCH') {
             exit();
 
         } else {
-            // PARTIAL VOID: Void only selected items
+            // PARTIAL VOID: Mark only selected items as voided and update change
             $totalRefund = 0.0;
             $restored = [];
 
-            // Prepare statements for updating/deleting transaction_items
-            $deleteItemStmt = $conn->prepare("DELETE FROM transaction_items WHERE id = :item_id");
-            $updateItemQtyStmt = $conn->prepare("UPDATE transaction_items SET quantity = quantity - :void_qty WHERE id = :item_id");
+            // Prepared statements for updating / splitting transaction_items
+            $markItemVoidStmt = $conn->prepare("UPDATE transaction_items SET status = 'voided' WHERE id = :item_id");
+            $updateActiveQtyStmt = $conn->prepare("UPDATE transaction_items SET quantity = quantity - :void_qty WHERE id = :item_id");
+            $insertVoidedRecordStmt = $conn->prepare(
+                "INSERT INTO transaction_items (transaction_id, product_id, quantity, price_at_sale, cost_at_sale, status)
+                 VALUES (:transaction_id, :product_id, :quantity, :price_at_sale, :cost_at_sale, 'voided')"
+            );
 
-            // Index existing items by product_id
+            // Index existing active items by product_id
             $existingByPid = [];
             foreach ($existingItems as $row) {
-                $existingByPid[(string)$row['product_id']] = $row;
+                if (($row['status'] ?? 'completed') !== 'voided') {
+                    $existingByPid[(string)$row['product_id']] = $row;
+                }
             }
 
             foreach ($itemsToVoid as $voidReq) {
                 $vPid = (string)($voidReq['productId'] ?? '');
-                if (!isset($existingByPid[$vPid])) {
-                    continue;
+                $vItemId = !empty($voidReq['itemId']) ? (int)$voidReq['itemId'] : 0;
+
+                $matchedItem = null;
+                if ($vItemId > 0) {
+                    foreach ($existingItems as $row) {
+                        if ((int)$row['item_id'] === $vItemId && ($row['status'] ?? 'completed') !== 'voided') {
+                            $matchedItem = $row;
+                            break;
+                        }
+                    }
+                }
+                if (!$matchedItem && isset($existingByPid[$vPid])) {
+                    $matchedItem = $existingByPid[$vPid];
                 }
 
-                $matchedItem = $existingByPid[$vPid];
+                if (!$matchedItem) {
+                    continue;
+                }
                 $reqQty = isset($voidReq['quantity']) ? (int)$voidReq['quantity'] : (int)$matchedItem['quantity'];
                 $voidQty = min($reqQty, (int)$matchedItem['quantity']);
 
@@ -575,7 +618,7 @@ elseif ($method === 'PATCH') {
                     continue;
                 }
 
-                // Restore stock
+                // Restore stock in products
                 $restoreStmt->execute([
                     ':quantity' => $voidQty,
                     ':product_id' => (int)$matchedItem['product_id']
@@ -588,47 +631,73 @@ elseif ($method === 'PATCH') {
                 $restored[] = $prodName . " x" . $voidQty . " (₱" . number_format($lineRefund, 2) . ")";
 
                 if ($voidQty >= (int)$matchedItem['quantity']) {
-                    $deleteItemStmt->execute([':item_id' => $matchedItem['item_id']]);
+                    // Mark the entire line item as voided
+                    $markItemVoidStmt->execute([':item_id' => $matchedItem['item_id']]);
                 } else {
-                    $updateItemQtyStmt->execute([
+                    // Reduce active line item quantity
+                    $updateActiveQtyStmt->execute([
                         ':void_qty' => $voidQty,
                         ':item_id' => $matchedItem['item_id']
+                    ]);
+                    // Insert a voided record for the returned portion
+                    $insertVoidedRecordStmt->execute([
+                        ':transaction_id' => $transaction_id,
+                        ':product_id' => (int)$matchedItem['product_id'],
+                        ':quantity' => $voidQty,
+                        ':price_at_sale' => (float)$matchedItem['price_at_sale'],
+                        ':cost_at_sale' => isset($matchedItem['cost_at_sale']) ? (float)$matchedItem['cost_at_sale'] : 0.0
                     ]);
                 }
             }
 
-            // Check if any items remain in this transaction
-            $checkRemainingStmt = $conn->prepare("SELECT COUNT(*) FROM transaction_items WHERE transaction_id = :id");
+            // Check if any ACTIVE items remain in this transaction
+            $checkRemainingStmt = $conn->prepare("SELECT COUNT(*) FROM transaction_items WHERE transaction_id = :id AND status != 'voided'");
             $checkRemainingStmt->execute([':id' => $transaction_id]);
             $remainingCount = (int)$checkRemainingStmt->fetchColumn();
 
             $newTotal = 0.0;
+            $newChange = 0.0;
             $type = 'partial';
 
             if ($remainingCount === 0) {
-                // All items ended up deleted -> mark as voided
-                $voidAllStmt = $conn->prepare("UPDATE transactions SET status = 'voided', total_amount = 0 WHERE id = :id");
+                // All items are now voided -> mark entire order voided
+                $amtReceived = (float)($tx['amount_received'] ?? 0);
+                $voidAllStmt = $conn->prepare(
+                    "UPDATE transactions
+                     SET status = 'voided',
+                         total_amount = 0,
+                         change_amount = CASE WHEN amount_received IS NOT NULL THEN amount_received ELSE change_amount END
+                     WHERE id = :id"
+                );
                 $voidAllStmt->execute([':id' => $transaction_id]);
                 $type = 'full';
+                $newChange = $amtReceived;
             } else {
-                // Deduct refunded amount from transaction total
+                // Deduct refunded amount from transaction total and recompute change_amount
+                // Example: Amount Received ₱300 - New Total ₱200 = New Change ₱100!
                 $updateTotalStmt = $conn->prepare(
                     "UPDATE transactions
-                     SET total_amount = GREATEST(0, total_amount - :refund)
+                     SET total_amount = GREATEST(0, total_amount - :refund),
+                         change_amount = CASE
+                             WHEN amount_received IS NOT NULL THEN GREATEST(0, amount_received - GREATEST(0, total_amount - :refund))
+                             ELSE change_amount
+                         END
                      WHERE id = :id
-                     RETURNING total_amount"
+                     RETURNING total_amount, change_amount"
                 );
                 $updateTotalStmt->execute([
                     ':refund' => $totalRefund,
                     ':id' => $transaction_id
                 ]);
-                $newTotal = (float)$updateTotalStmt->fetchColumn();
+                $updatedRow = $updateTotalStmt->fetch(PDO::FETCH_ASSOC);
+                $newTotal = (float)($updatedRow['total_amount'] ?? 0);
+                $newChange = (float)($updatedRow['change_amount'] ?? 0);
             }
 
             $summary = "Partial Void on Transaction #$transaction_id. Refunded: ₱" .
                 number_format($totalRefund, 2) .
                 ". Restored items: " . implode(", ", $restored) .
-                ($type === 'full' ? ". Order is now completely voided." : ". Remaining Total: ₱" . number_format($newTotal, 2));
+                ($type === 'full' ? ". Order is now completely voided." : ". Remaining Total: ₱" . number_format($newTotal, 2) . ". Updated Change: ₱" . number_format($newChange, 2));
 
             $logStmt = $conn->prepare(
                 "INSERT INTO audit_logs (user_name, action, details)
@@ -646,7 +715,8 @@ elseif ($method === 'PATCH') {
                 'type' => $type,
                 'id' => (string)$transaction_id,
                 'refundAmount' => $totalRefund,
-                'newTotal' => $newTotal
+                'newTotal' => $newTotal,
+                'newChange' => $newChange
             ]);
             exit();
         }

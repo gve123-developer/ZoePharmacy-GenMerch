@@ -111,7 +111,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     itemsToVoidList?: Array<{ productId: string; quantity: number; price: number; productName: string }>
   ) => {
     try {
-      const isFull = !itemsToVoidList || (transactionToVoid && itemsToVoidList.length === transactionToVoid.items.length);
+      const activeItems = (transactionToVoid?.items || []).filter(it => it.status !== 'voided');
+      const isFull = !itemsToVoidList || (activeItems.length > 0 && itemsToVoidList.length === activeItems.length);
 
       const response = await fetch('/api/transactions.php', {
         method: 'PATCH',
@@ -259,9 +260,14 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       return;
     }
 
-    // Calculate required height: Base height (approx 120mm) + 10mm per item
-    const itemsCount = t.items.length;
-    // Increased base to 150mm and per-item to 12mm to provide plenty of space
+    const activeItems = (t.items || []).filter((it: any) => it.status !== 'voided');
+    if (activeItems.length === 0) {
+      toast.error('All items in this transaction are voided.');
+      return;
+    }
+
+    // Calculate required height: Base height (approx 150mm) + 12mm per active item
+    const itemsCount = activeItems.length;
     const estimatedHeight = 150 + (itemsCount * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
 
@@ -290,7 +296,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     doc.text('ITEM DESCRIPTION', 4, y);
     doc.text('PRICE', 76, y, { align: 'right' }); y += 6;
 
-    t.items.forEach(it => {
+    activeItems.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
       doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
@@ -304,8 +310,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
 
     doc.setFont("courier", "normal");
-    const amountReceived = t.amountReceived || t.total;
-    const change = t.change || 0;
+    const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : t.total;
+    const change = t.change != null ? Number(t.change) : Math.max(0, amountReceived - t.total);
 
     doc.text(`CASH RECEIVED`, 4, y);
     doc.text(`P${amountReceived.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
@@ -328,24 +334,25 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       ? filteredTransactions.filter(t => selectedTransactionIds.has(t.id))
       : filteredTransactions;
 
-    const transactionsToExport = rawToExport.filter(t => t.status !== 'voided');
+    const transactionsToExport = rawToExport.filter(t => {
+      if (t.status === 'voided') return false;
+      const activeItems = (t.items || []).filter((it: any) => it.status !== 'voided');
+      return activeItems.length > 0;
+    });
 
     if (transactionsToExport.length === 0) {
       toast.error(selectedTransactionIds.size > 0 ? 'Selected transaction(s) are voided and cannot be downloaded.' : 'No valid transactions available to download.');
       return;
     }
 
-    // We'll create the document with the height of the first transaction, 
-    // but the actual page sizes will be added individually in the loop.
-    // Increased base height for safety
-    const firstItemsCount = transactionsToExport[0].items.length;
-    const firstHeight = 150 + (firstItemsCount * 12);
+    const firstActiveItems = (transactionsToExport[0].items || []).filter((it: any) => it.status !== 'voided');
+    const firstHeight = 150 + (firstActiveItems.length * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, firstHeight] });
 
     transactionsToExport.forEach((t, index) => {
+      const activeItems = (t.items || []).filter((it: any) => it.status !== 'voided');
       if (index > 0) {
-        const itemsCount = t.items.length;
-        const estimatedHeight = 150 + (itemsCount * 12);
+        const estimatedHeight = 150 + (activeItems.length * 12);
         doc.addPage([80, estimatedHeight]);
       }
 
@@ -374,7 +381,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       doc.text('ITEM DESCRIPTION', 4, y);
       doc.text('PRICE', 76, y, { align: 'right' }); y += 6;
 
-      t.items.forEach((it: any) => {
+      activeItems.forEach((it: any) => {
         const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
         doc.text(productName, 4, y);
         doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
@@ -388,8 +395,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
 
       doc.setFont("courier", "normal");
-      const amountReceived = t.amountReceived || t.total;
-      const change = t.change || 0;
+      const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : t.total;
+      const change = t.change != null ? Number(t.change) : Math.max(0, amountReceived - t.total);
 
       doc.text(`CASH RECEIVED`, 4, y);
       doc.text(`P${amountReceived.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
@@ -646,45 +653,87 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                 </div>
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-xs font-bold border-b border-dashed pb-2"><span>ITEM NAME</span><span>TOTAL</span></div>
-                  <div className="space-y-1 max-h-48 overflow-y-auto">
-                    {selectedTransaction.items.map((it: any, i: number) => (
-                      <div key={i} className="flex justify-between text-[11px] font-medium">
-                        <span>{it.productName} x{it.quantity}</span>
-                        <span>₱{(it.price * it.quantity).toFixed(2)}</span>
-                      </div>
-                    ))}
+                  <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                    {selectedTransaction.items.map((it: any, i: number) => {
+                      const isItemVoided = it.status === 'voided';
+                      return (
+                        <div key={i} className={`flex justify-between text-[11px] items-center ${isItemVoided ? 'text-red-500' : 'font-medium text-gray-800'}`}>
+                          <div className="flex items-center gap-1.5 min-w-0 pr-2">
+                            <span className={`truncate ${isItemVoided ? 'line-through text-gray-400' : ''}`}>
+                              {it.productName} x{it.quantity}
+                            </span>
+                            {isItemVoided && (
+                              <span className="no-underline inline-block text-[9px] font-black uppercase tracking-wider text-red-700 bg-red-100 px-1 py-0.5 rounded border border-red-200 shrink-0">
+                                VOIDED
+                              </span>
+                            )}
+                          </div>
+                          <span className={`shrink-0 font-bold ${isItemVoided ? 'line-through text-red-500 font-semibold' : 'text-gray-900'}`}>
+                            {isItemVoided ? `-₱${(it.price * it.quantity).toFixed(2)}` : `₱${(it.price * it.quantity).toFixed(2)}`}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-                <div className="border-t-2 border-dashed border-gray-900 pt-4 mb-6 space-y-2">
-                  <div className="flex justify-between text-sm font-black text-gray-900 uppercase">
-                    <span>Grand Total</span>
-                    <span>₱{selectedTransaction.total.toFixed(2)}</span>
-                  </div>
 
-                  {(!selectedTransaction.paymentMethod || selectedTransaction.paymentMethod.toLowerCase() === 'cash' || selectedTransaction.amountReceived != null) ? (
-                    <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
-                      <div className="flex justify-between text-[11px] text-gray-600 font-medium">
-                        <span className="uppercase">Cash Received</span>
-                        <span>₱{Number(selectedTransaction.amountReceived ?? selectedTransaction.total).toFixed(2)}</span>
+                {(() => {
+                  const items = selectedTransaction.items || [];
+                  const voidedItems = items.filter((it: any) => it.status === 'voided');
+                  const hasVoided = voidedItems.length > 0;
+                  const originalTotal = items.reduce((sum: number, it: any) => sum + (it.price * it.quantity), 0);
+                  const voidedTotal = voidedItems.reduce((sum: number, it: any) => sum + (it.price * it.quantity), 0);
+                  const netTotal = selectedTransaction.status === 'voided' ? 0 : Number(selectedTransaction.total ?? Math.max(0, originalTotal - voidedTotal));
+                  const amountReceived = Number(selectedTransaction.amountReceived ?? (hasVoided ? originalTotal : netTotal));
+                  const changeDue = Number(selectedTransaction.change ?? Math.max(0, amountReceived - netTotal));
+
+                  return (
+                    <div className="border-t-2 border-dashed border-gray-900 pt-4 mb-6 space-y-2">
+                      {hasVoided && (
+                        <div className="space-y-1 pb-2 border-b border-dashed border-gray-200 text-xs">
+                          <div className="flex justify-between text-gray-600 font-medium">
+                            <span className="uppercase">Original Subtotal</span>
+                            <span>₱{originalTotal.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-red-600 font-bold">
+                            <span className="uppercase">Refunded / Voided</span>
+                            <span>-₱{voidedTotal.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between text-sm font-black text-gray-900 uppercase">
+                        <span>{hasVoided ? 'Net Order Total' : 'Grand Total'}</span>
+                        <span>₱{netTotal.toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
-                        <span className="uppercase tracking-tighter">Change Due</span>
-                        <span>₱{Number(selectedTransaction.change ?? Math.max(0, (selectedTransaction.amountReceived ?? selectedTransaction.total) - selectedTransaction.total)).toFixed(2)}</span>
-                      </div>
+
+                      {(!selectedTransaction.paymentMethod || selectedTransaction.paymentMethod.toLowerCase() === 'cash' || selectedTransaction.amountReceived != null) ? (
+                        <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
+                          <div className="flex justify-between text-[11px] text-gray-600 font-medium">
+                            <span className="uppercase">Cash Received</span>
+                            <span>₱{amountReceived.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
+                            <span className="uppercase tracking-tighter">Change (Sukli)</span>
+                            <span>₱{changeDue.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
+                          <div className="flex justify-between text-[11px] text-gray-600 font-medium">
+                            <span className="uppercase">Payment Method</span>
+                            <span className="font-bold uppercase">{selectedTransaction.paymentMethod}</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-bold text-gray-800">
+                            <span className="uppercase">Amount Paid</span>
+                            <span>₱{netTotal.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
-                      <div className="flex justify-between text-[11px] text-gray-600 font-medium">
-                        <span className="uppercase">Payment Method</span>
-                        <span className="font-bold uppercase">{selectedTransaction.paymentMethod}</span>
-                      </div>
-                      <div className="flex justify-between text-xs font-bold text-gray-800">
-                        <span className="uppercase">Amount Paid</span>
-                        <span>₱{selectedTransaction.total.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  );
+                })()}
+
                 <div className="text-center space-y-1 mb-6 text-gray-800">
                   <p className="font-bold text-xs">THANK YOU FOR YOUR TRUST!</p>
                   <p className="text-[9px]">--- NO REFUND WITHOUT TRANSACTION DETAILS ---</p>
@@ -724,9 +773,9 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
         <Dialog open={!!transactionToVoid} onOpenChange={(open) => !open && setTransactionToVoid(null)}>
           <DialogContent className="max-w-lg bg-white border-0 shadow-2xl p-6 rounded-2xl flex flex-col max-h-[90vh]">
             {(() => {
-              const items = transactionToVoid?.items || [];
-              const totalItemsCount = items.length;
-              const selectedItems = items.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
+              const activeItems = (transactionToVoid?.items || []).filter(it => it.status !== 'voided');
+              const totalItemsCount = activeItems.length;
+              const selectedItems = activeItems.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
               const selectedCount = selectedItems.length;
               const voidedTotal = selectedItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
               const originalTotal = transactionToVoid?.total || 0;
@@ -754,7 +803,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                         checked={isAllChecked}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSelectedItemIndicesToVoid(new Set(items.map((_, i) => i)));
+                            setSelectedItemIndicesToVoid(new Set(activeItems.map((_, i) => i)));
                           } else {
                             setSelectedItemIndicesToVoid(new Set());
                           }
@@ -770,7 +819,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
                   {/* Transaction Items Checklist */}
                   <div className="w-full text-left space-y-2 mb-3 overflow-y-auto max-h-56 pr-1">
-                    {items.map((it, i) => {
+                    {activeItems.map((it, i) => {
                       const isChecked = selectedItemIndicesToVoid.has(i);
                       return (
                         <div
@@ -823,7 +872,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   {/* Financial Summary */}
                   <div className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-3 space-y-1 text-xs text-left">
                     <div className="flex justify-between items-center text-gray-600">
-                      <span>Original Order Total:</span>
+                      <span>Current Order Total:</span>
                       <span className="font-semibold text-gray-900">₱{originalTotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center text-red-700 font-bold border-t border-gray-200 pt-1.5">
@@ -865,7 +914,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                         }
                         onVoid={() => {
                           const id = transactionToVoid.id;
-                          const selectedItemsToVoid = transactionToVoid.items.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
+                          const selectedItemsToVoid = activeItems.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
                           handleVoidTransaction(id, selectedItemsToVoid);
                         }}
                       />

@@ -185,7 +185,7 @@ export function Reports({ currentUser }: ReportsProps) {
     const totalLoss = filteredLosses.reduce((sum, l) => sum + l.totalLoss, 0);
     const totalTransactions = filtered.length;
     const totalItems = filtered.reduce((sum, t) =>
-      sum + t.items.reduce((itemSum: number, item: any) => itemSum + item.quantity, 0), 0
+      sum + t.items.filter((item: any) => item.status !== 'voided').reduce((itemSum: number, item: any) => itemSum + item.quantity, 0), 0
     );
     const totalProducts = products.length;
     const inventoryUnits = products.reduce((sum, p) => sum + p.quantity, 0);
@@ -208,6 +208,7 @@ export function Reports({ currentUser }: ReportsProps) {
 
     filtered.forEach(transaction => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         const product = products.find(p => p.id === item.productId);
         if (product) {
           const category = product.category;
@@ -228,6 +229,7 @@ export function Reports({ currentUser }: ReportsProps) {
 
     filtered.forEach(transaction => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         if (!productSales[item.productId]) {
           productSales[item.productId] = {
             quantity: 0,
@@ -337,6 +339,7 @@ export function Reports({ currentUser }: ReportsProps) {
 
     filtered.forEach(transaction => {
       transaction.items.forEach((item: any) => {
+        if (item.status === 'voided') return;
         totalRevenue += item.quantity * item.price;
         // Use historical cost from the item if available, fallback to current product cost
         const itemCostPrice = item.cost !== undefined ? item.cost : (products.find(p => p.id === item.productId)?.cost || 0);
