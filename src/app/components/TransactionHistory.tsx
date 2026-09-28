@@ -735,28 +735,38 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                         <span>₱{netTotal.toFixed(2)}</span>
                       </div>
 
-                      {(!selectedTransaction.paymentMethod || selectedTransaction.paymentMethod.toLowerCase() === 'cash' || selectedTransaction.amountReceived != null) ? (
-                        <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
-                          <div className="flex justify-between text-[11px] text-gray-600 font-medium">
-                            <span className="uppercase">Cash Received</span>
-                            <span>₱{amountReceived.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
-                            <span className="uppercase tracking-tighter">Change (Sukli)</span>
-                            <span>₱{changeDue.toFixed(2)}</span>
-                          </div>
-                        </div>
-                      ) : (
+                      {/* Hide Cash Received and Change (Sukli) when void has occurred; retain when not voided */}
+                      {hasVoided || selectedTransaction.status === 'voided' ? (
                         <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
                           <div className="flex justify-between text-[11px] text-gray-600 font-medium">
                             <span className="uppercase">Payment Method</span>
-                            <span className="font-bold uppercase">{selectedTransaction.paymentMethod}</span>
-                          </div>
-                          <div className="flex justify-between text-xs font-bold text-gray-800">
-                            <span className="uppercase">Amount Paid</span>
-                            <span>₱{netTotal.toFixed(2)}</span>
+                            <span className="font-bold uppercase">{selectedTransaction.paymentMethod || 'CASH'}</span>
                           </div>
                         </div>
+                      ) : (
+                        (!selectedTransaction.paymentMethod || selectedTransaction.paymentMethod.toLowerCase() === 'cash' || selectedTransaction.amountReceived != null) ? (
+                          <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
+                            <div className="flex justify-between text-[11px] text-gray-600 font-medium">
+                              <span className="uppercase">Cash Received</span>
+                              <span>₱{amountReceived.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm font-black text-blue-700 bg-blue-50/50 p-2 rounded -mx-2 mt-1">
+                              <span className="uppercase tracking-tighter">Change (Sukli)</span>
+                              <span>₱{changeDue.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-1 mt-3 pt-3 border-t border-dashed border-gray-200">
+                            <div className="flex justify-between text-[11px] text-gray-600 font-medium">
+                              <span className="uppercase">Payment Method</span>
+                              <span className="font-bold uppercase">{selectedTransaction.paymentMethod}</span>
+                            </div>
+                            <div className="flex justify-between text-xs font-bold text-gray-800">
+                              <span className="uppercase">Amount Paid</span>
+                              <span>₱{netTotal.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        )
                       )}
                     </div>
                   );
