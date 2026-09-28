@@ -290,20 +290,46 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     setSelectedTransactionIds(newSet);
   };
 
+  const getConsolidatedOriginalItems = (items: any[]) => {
+    const map = new Map<string, { productId: string; productName: string; price: number; quantity: number }>();
+    const list: Array<{ productId: string; productName: string; price: number; quantity: number }> = [];
+
+    (items || []).forEach((it: any) => {
+      const key = it.productId ? String(it.productId) : `${(it.productName || '').trim().toLowerCase()}_${Number(it.price || 0).toFixed(2)}`;
+      const price = Number(it.price || 0);
+      const qty = Number(it.quantity || 0);
+
+      if (map.has(key)) {
+        map.get(key)!.quantity += qty;
+      } else {
+        const entry = {
+          productId: it.productId,
+          productName: it.productName || 'Unknown',
+          price,
+          quantity: qty
+        };
+        map.set(key, entry);
+        list.push(entry);
+      }
+    });
+
+    return list;
+  };
+
   const generatePDF = (t: Transaction) => {
-    const allItems = t.items || [];
-    if (allItems.length === 0) {
+    const consolidatedItems = getConsolidatedOriginalItems(t.items || []);
+    if (consolidatedItems.length === 0) {
       toast.error('No items found in this transaction.');
       return;
     }
 
     // Retain original copy of transaction before void
-    const originalTotal = allItems.reduce((sum: number, it: any) => sum + (Number(it.price || 0) * Number(it.quantity || 0)), 0);
+    const originalTotal = consolidatedItems.reduce((sum: number, it: any) => sum + (Number(it.price || 0) * Number(it.quantity || 0)), 0);
     const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : originalTotal;
     const originalChange = Math.max(0, amountReceived - originalTotal);
 
-    // Calculate required height: Base height (approx 150mm) + 12mm per item
-    const itemsCount = allItems.length;
+    // Calculate required height: Base height (approx 150mm) + 12mm per consolidated item
+    const itemsCount = consolidatedItems.length;
     const estimatedHeight = 150 + (itemsCount * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
 
@@ -332,7 +358,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     doc.text('ITEM DESCRIPTION', 4, y);
     doc.text('PRICE', 76, y, { align: 'right' }); y += 6;
 
-    allItems.forEach(it => {
+    consolidatedItems.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
       doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
@@ -374,18 +400,18 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       return;
     }
 
-    const firstItems = transactionsToExport[0].items || [];
-    const firstHeight = 150 + (firstItems.length * 12);
+    const firstConsolidated = getConsolidatedOriginalItems(transactionsToExport[0].items || []);
+    const firstHeight = 150 + (firstConsolidated.length * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, firstHeight] });
 
     transactionsToExport.forEach((t, index) => {
-      const allItems = t.items || [];
-      const originalTotal = allItems.reduce((sum: number, it: any) => sum + (Number(it.price || 0) * Number(it.quantity || 0)), 0);
+      const consolidatedItems = getConsolidatedOriginalItems(t.items || []);
+      const originalTotal = consolidatedItems.reduce((sum: number, it: any) => sum + (Number(it.price || 0) * Number(it.quantity || 0)), 0);
       const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : originalTotal;
       const originalChange = Math.max(0, amountReceived - originalTotal);
 
       if (index > 0) {
-        const estimatedHeight = 150 + (allItems.length * 12);
+        const estimatedHeight = 150 + (consolidatedItems.length * 12);
         doc.addPage([80, estimatedHeight]);
       }
 
@@ -414,7 +440,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       doc.text('ITEM DESCRIPTION', 4, y);
       doc.text('PRICE', 76, y, { align: 'right' }); y += 6;
 
-      allItems.forEach((it: any) => {
+      consolidatedItems.forEach((it: any) => {
         const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
         doc.text(productName, 4, y);
         doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
@@ -682,26 +708,51 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-xs font-bold border-b border-dashed pb-2"><span>ITEM NAME</span><span>TOTAL</span></div>
                   <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                    {selectedTransaction.items.map((it: any, i: number) => {
-                      const isItemVoided = it.status === 'voided';
-                      return (
-                        <div key={i} className={`flex justify-between text-[11px] items-center ${isItemVoided ? 'text-red-500' : 'font-medium text-gray-800'}`}>
-                          <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                            <span className={`truncate ${isItemVoided ? 'line-through text-gray-400' : ''}`}>
-                              {it.productName} x{it.quantity}
-                            </span>
-                            {isItemVoided && (
-                              <span className="no-underline inline-block text-[9px] font-black uppercase tracking-wider text-red-700 bg-red-100 px-1 py-0.5 rounded border border-red-200 shrink-0">
-                                VOIDED
+                    {(() => {
+                      const consolidatedViewItems: Array<{ productName: string; quantity: number; price: number; isVoided: boolean }> = [];
+                      const viewMap = new Map<string, { productName: string; quantity: number; price: number; isVoided: boolean }>();
+
+                      (selectedTransaction.items || []).forEach((it: any) => {
+                        const isVoided = it.status === 'voided';
+                        const key = `${it.productId || it.productName}_${it.price}_${isVoided ? 'v' : 'a'}`;
+                        const qty = Number(it.quantity || 0);
+                        const price = Number(it.price || 0);
+
+                        if (viewMap.has(key)) {
+                          viewMap.get(key)!.quantity += qty;
+                        } else {
+                          const entry = {
+                            productName: it.productName || 'Unknown',
+                            quantity: qty,
+                            price,
+                            isVoided
+                          };
+                          viewMap.set(key, entry);
+                          consolidatedViewItems.push(entry);
+                        }
+                      });
+
+                      return consolidatedViewItems.map((it, i) => {
+                        const isItemVoided = it.isVoided;
+                        return (
+                          <div key={i} className={`flex justify-between text-[11px] items-center ${isItemVoided ? 'text-red-500' : 'font-medium text-gray-800'}`}>
+                            <div className="flex items-center gap-1.5 min-w-0 pr-2">
+                              <span className={`truncate ${isItemVoided ? 'line-through text-gray-400' : ''}`}>
+                                {it.productName} x{it.quantity}
                               </span>
-                            )}
+                              {isItemVoided && (
+                                <span className="no-underline inline-block text-[9px] font-black uppercase tracking-wider text-red-700 bg-red-100 px-1 py-0.5 rounded border border-red-200 shrink-0">
+                                  VOIDED
+                                </span>
+                              )}
+                            </div>
+                            <span className={`shrink-0 font-bold ${isItemVoided ? 'line-through text-red-500 font-semibold' : 'text-gray-900'}`}>
+                              {isItemVoided ? `-₱${(it.price * it.quantity).toFixed(2)}` : `₱${(it.price * it.quantity).toFixed(2)}`}
+                            </span>
                           </div>
-                          <span className={`shrink-0 font-bold ${isItemVoided ? 'line-through text-red-500 font-semibold' : 'text-gray-900'}`}>
-                            {isItemVoided ? `-₱${(it.price * it.quantity).toFixed(2)}` : `₱${(it.price * it.quantity).toFixed(2)}`}
-                          </span>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
 
