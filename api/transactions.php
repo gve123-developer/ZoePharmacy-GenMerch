@@ -504,16 +504,43 @@ elseif ($method === 'PATCH') {
         );
 
         // Determine if this is a Full Void or Partial Void
-        $shouldFullVoid = ($isFullVoidExplicit === true);
+        $shouldFullVoid = false;
 
-        if (!$shouldFullVoid && is_array($itemsToVoid) && !empty($itemsToVoid)) {
-            $toVoidPids = array_map(function($it) { return (string)($it['productId'] ?? ''); }, $itemsToVoid);
-            $existingPids = array_map(function($it) { return (string)$it['product_id']; }, $existingItems);
-            $diff = array_diff($existingPids, $toVoidPids);
-            if (empty($diff)) {
+        if ($isFullVoidExplicit === true) {
+            $shouldFullVoid = true;
+        } elseif ($isFullVoidExplicit === false) {
+            $shouldFullVoid = false;
+        } elseif (is_array($itemsToVoid) && !empty($itemsToVoid)) {
+            // Check if every active item is included AND its full quantity is being voided
+            $existingActiveItems = array_values(array_filter($existingItems, function($it) {
+                return ($it['status'] ?? 'completed') !== 'voided';
+            }));
+            $allCovered = !empty($existingActiveItems);
+            foreach ($existingActiveItems as $act) {
+                $matchedReq = null;
+                foreach ($itemsToVoid as $req) {
+                    if (!empty($req['itemId']) && (int)$req['itemId'] === (int)$act['item_id']) {
+                        $matchedReq = $req;
+                        break;
+                    } elseif ((string)($req['productId'] ?? '') === (string)$act['product_id']) {
+                        $matchedReq = $req;
+                        break;
+                    }
+                }
+                if (!$matchedReq) {
+                    $allCovered = false;
+                    break;
+                }
+                $reqQty = isset($matchedReq['quantity']) ? (int)$matchedReq['quantity'] : (int)$act['quantity'];
+                if ($reqQty < (int)$act['quantity']) {
+                    $allCovered = false;
+                    break;
+                }
+            }
+            if ($allCovered) {
                 $shouldFullVoid = true;
             }
-        } elseif (empty($itemsToVoid) && $isFullVoidExplicit !== true) {
+        } elseif (empty($itemsToVoid)) {
             throw new RuntimeException("No items selected to void");
         } else {
             $shouldFullVoid = true;

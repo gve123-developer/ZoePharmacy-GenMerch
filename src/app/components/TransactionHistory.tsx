@@ -103,13 +103,24 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const [transactionToVoid, setTransactionToVoid] = useState<Transaction | null>(null);
   const [transactionWaitingPasscode, setTransactionWaitingPasscode] = useState<Transaction | null>(null);
   const [selectedItemIndicesToVoid, setSelectedItemIndicesToVoid] = useState<Set<number>>(new Set());
+  const [voidQuantities, setVoidQuantities] = useState<Record<number, number>>({});
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isVoiding, setIsVoiding] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Start with ALL UNCHECKED by default as requested
+  // Start with ALL UNCHECKED by default and initialize max quantities
   useEffect(() => {
     setSelectedItemIndicesToVoid(new Set());
+    if (transactionToVoid) {
+      const activeItems = (transactionToVoid.items || []).filter((it: any) => it.status !== 'voided');
+      const initialQtys: Record<number, number> = {};
+      activeItems.forEach((it: any, idx: number) => {
+        initialQtys[idx] = it.quantity;
+      });
+      setVoidQuantities(initialQtys);
+    } else {
+      setVoidQuantities({});
+    }
   }, [transactionToVoid]);
 
   useEffect(() => {
@@ -133,13 +144,14 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
   const handleVoidTransaction = async (
     id: string,
-    itemsToVoidList?: Array<{ itemId?: number; productId: string; quantity: number; price: number; productName: string }>
+    itemsToVoidList?: Array<{ itemId?: number; productId: string; quantity: number; price: number; productName: string }>,
+    isFullVoidFlag?: boolean
   ) => {
     if (isVoiding) return;
     setIsVoiding(true);
     try {
       const activeItems = (transactionToVoid?.items || []).filter(it => it.status !== 'voided');
-      const isFull = !itemsToVoidList || (activeItems.length > 0 && itemsToVoidList.length === activeItems.length);
+      const isFull = isFullVoidFlag ?? (!itemsToVoidList || (activeItems.length > 0 && itemsToVoidList.length === activeItems.length));
 
       const response = await fetch('/api/transactions.php', {
         method: 'PATCH',
@@ -782,12 +794,32 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
             {(() => {
               const activeItems = (transactionToVoid?.items || []).filter(it => it.status !== 'voided');
               const totalItemsCount = activeItems.length;
-              const selectedItems = activeItems.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
-              const selectedCount = selectedItems.length;
-              const voidedTotal = selectedItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
+              const selectedCount = selectedItemIndicesToVoid.size;
+
+              const getVoidQty = (idx: number, maxQty: number) => {
+                const q = voidQuantities[idx];
+                if (q == null) return maxQty;
+                return Math.min(maxQty, Math.max(1, q));
+              };
+
+              const voidedTotal = activeItems.reduce((sum, it, idx) => {
+                if (!selectedItemIndicesToVoid.has(idx)) return sum;
+                const q = getVoidQty(idx, it.quantity);
+                return sum + (it.price * q);
+              }, 0);
+
+              const totalUnitsToVoid = activeItems.reduce((sum, it, idx) => {
+                if (!selectedItemIndicesToVoid.has(idx)) return sum;
+                return sum + getVoidQty(idx, it.quantity);
+              }, 0);
+
               const originalTotal = transactionToVoid?.total || 0;
               const remainingTotal = Math.max(0, originalTotal - voidedTotal);
-              const isAllChecked = totalItemsCount > 0 && selectedCount === totalItemsCount;
+
+              // Fully voided order only if all items checked AND each void qty equals full qty
+              const isAllFullVoid = totalItemsCount > 0 && selectedCount === totalItemsCount && activeItems.every((it, idx) => {
+                return getVoidQty(idx, it.quantity) === it.quantity;
+              });
               const isNoneChecked = selectedCount === 0;
 
               return (
@@ -799,7 +831,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     Void Items in Transaction #{transactionToVoid?.id.padStart(7, '0')}
                   </h2>
                   <p className="text-xs text-gray-500 px-2 mb-3">
-                    Check the items you want to void. Checked items will be refunded and restored to inventory stock.
+                    Check items to void and adjust the quantity to return. Voided units will be refunded and restored to inventory stock.
                   </p>
 
                   {/* Checklist Header with Select All */}
@@ -807,10 +839,15 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700 select-none">
                       <input
                         type="checkbox"
-                        checked={isAllChecked}
+                        checked={totalItemsCount > 0 && selectedCount === totalItemsCount}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setSelectedItemIndicesToVoid(new Set(activeItems.map((_, i) => i)));
+                            const allQtys: Record<number, number> = {};
+                            activeItems.forEach((it, i) => {
+                              allQtys[i] = it.quantity;
+                            });
+                            setVoidQuantities(allQtys);
                           } else {
                             setSelectedItemIndicesToVoid(new Set());
                           }
@@ -828,49 +865,124 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   <div className="w-full text-left space-y-2 mb-3 overflow-y-auto max-h-56 pr-1">
                     {activeItems.map((it, i) => {
                       const isChecked = selectedItemIndicesToVoid.has(i);
+                      const currentVoidQty = getVoidQty(i, it.quantity);
+                      const isPartialQty = currentVoidQty < it.quantity;
+
                       return (
                         <div
                           key={i}
                           onClick={() => {
                             setSelectedItemIndicesToVoid(prev => {
                               const next = new Set(prev);
-                              if (next.has(i)) next.delete(i);
-                              else next.add(i);
+                              if (next.has(i)) {
+                                next.delete(i);
+                              } else {
+                                next.add(i);
+                                if (!voidQuantities[i]) {
+                                  setVoidQuantities(q => ({ ...q, [i]: it.quantity }));
+                                }
+                              }
                               return next;
                             });
                           }}
-                          className={`flex items-center justify-between p-3 rounded-xl border-2 text-sm cursor-pointer transition-all duration-150 select-none ${
+                          className={`flex flex-col p-3 rounded-xl border-2 text-sm cursor-pointer transition-all duration-150 select-none ${
                             isChecked
                               ? 'bg-red-50 border-red-500 shadow-md ring-2 ring-red-200'
                               : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm opacity-100'
                           }`}
                         >
-                          <div className="flex items-center gap-3 min-w-0 pr-2">
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => {}} // click handled by parent container
-                              className="size-5 rounded border-gray-300 text-red-600 focus:ring-red-500 pointer-events-none accent-red-600 cursor-pointer"
-                            />
-                            <div className="flex flex-col min-w-0 text-left">
-                              <span className={`truncate text-sm font-bold ${isChecked ? 'text-red-950 font-black' : 'text-gray-900'}`}>
-                                {it.productName}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 min-w-0 pr-2">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {}} // handled by parent onClick
+                                className="size-5 rounded border-gray-300 text-red-600 focus:ring-red-500 pointer-events-none accent-red-600 cursor-pointer"
+                              />
+                              <div className="flex flex-col min-w-0 text-left">
+                                <span className={`truncate text-sm font-bold ${isChecked ? 'text-red-950 font-black' : 'text-gray-900'}`}>
+                                  {it.productName}
+                                </span>
+                                <span className={`text-xs ${isChecked ? 'text-red-700 font-semibold' : 'text-gray-500 font-medium'}`}>
+                                  ₱{it.price.toFixed(2)} × {it.quantity} {it.quantity === 1 ? 'unit' : 'units'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end shrink-0 pl-2">
+                              <span className={`font-black text-sm whitespace-nowrap ${isChecked ? 'text-red-600' : 'text-gray-900'}`}>
+                                ₱{(it.price * (isChecked ? currentVoidQty : it.quantity)).toFixed(2)}
                               </span>
-                              <span className={`text-xs ${isChecked ? 'text-red-700 font-semibold' : 'text-gray-500 font-medium'}`}>
-                                ₱{it.price.toFixed(2)} × {it.quantity} {it.quantity === 1 ? 'unit' : 'units'}
-                              </span>
+                              {isChecked && (
+                                <span className="text-[10px] font-black uppercase tracking-wider text-red-700 bg-red-100 px-1.5 py-0.5 rounded mt-0.5 border border-red-200">
+                                  {isPartialQty ? `VOID ${currentVoidQty} OF ${it.quantity}` : 'VOID ALL'}
+                                </span>
+                              )}
                             </div>
                           </div>
-                          <div className="flex flex-col items-end shrink-0 pl-2">
-                            <span className={`font-black text-sm whitespace-nowrap ${isChecked ? 'text-red-600' : 'text-gray-900'}`}>
-                              ₱{(it.price * it.quantity).toFixed(2)}
-                            </span>
-                            {isChecked && (
-                              <span className="text-[10px] font-black uppercase tracking-wider text-red-700 bg-red-100 px-1.5 py-0.5 rounded mt-0.5 border border-red-200">
-                                TO VOID
-                              </span>
-                            )}
-                          </div>
+
+                          {/* Quantity Stepper (Shown when item is checked and bought quantity > 1) */}
+                          {isChecked && it.quantity > 1 && (
+                            <div
+                              className="flex items-center justify-between mt-2.5 pt-2 border-t border-red-200/80"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[11px] font-bold text-gray-700">Quantity to void:</span>
+                                {isPartialQty && (
+                                  <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
+                                    Remaining: {it.quantity - currentVoidQty}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white border border-red-300 rounded-lg p-0.5 shadow-sm">
+                                <button
+                                  type="button"
+                                  className="size-6 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 text-gray-800 font-black text-xs disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                  disabled={currentVoidQty <= 1}
+                                  onClick={() => {
+                                    setVoidQuantities(prev => ({
+                                      ...prev,
+                                      [i]: Math.max(1, currentVoidQty - 1)
+                                    }));
+                                  }}
+                                >
+                                  -
+                                </button>
+                                <input
+                                  type="number"
+                                  min={1}
+                                  max={it.quantity}
+                                  value={currentVoidQty}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value, 10);
+                                    if (!isNaN(val)) {
+                                      setVoidQuantities(prev => ({
+                                        ...prev,
+                                        [i]: Math.max(1, Math.min(it.quantity, val))
+                                      }));
+                                    }
+                                  }}
+                                  className="w-10 text-center text-xs font-black text-gray-900 border-0 focus:ring-0 p-0"
+                                />
+                                <button
+                                  type="button"
+                                  className="size-6 flex items-center justify-center rounded bg-gray-100 hover:bg-gray-200 text-gray-800 font-black text-xs disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                  disabled={currentVoidQty >= it.quantity}
+                                  onClick={() => {
+                                    setVoidQuantities(prev => ({
+                                      ...prev,
+                                      [i]: Math.min(it.quantity, currentVoidQty + 1)
+                                    }));
+                                  }}
+                                >
+                                  +
+                                </button>
+                                <span className="text-[11px] text-gray-500 font-medium pr-1.5">
+                                  / {it.quantity}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -884,7 +996,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     </div>
                     <div className="flex justify-between items-center text-red-700 font-bold border-t border-gray-200 pt-1.5">
                       <span>Refund & Stock Return:</span>
-                      <span className="text-sm font-black">-₱{voidedTotal.toFixed(2)} ({selectedCount} items)</span>
+                      <span className="text-sm font-black">-₱{voidedTotal.toFixed(2)} ({totalUnitsToVoid} {totalUnitsToVoid === 1 ? 'unit' : 'units'})</span>
                     </div>
                     <div className="flex justify-between items-center text-gray-700 font-medium">
                       <span>Remaining Order Total:</span>
@@ -894,7 +1006,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
                   {/* Status Banner */}
                   <div className="w-full mb-2">
-                    {isAllChecked ? (
+                    {isAllFullVoid ? (
                       <div className="bg-red-50 border border-red-200 text-red-800 text-[11px] font-bold px-3 py-1.5 rounded-lg text-center">
                         FULL VOID: The entire transaction will be cancelled and marked as VOIDED.
                       </div>
@@ -904,7 +1016,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                       </div>
                     ) : (
                       <div className="bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg text-center">
-                        PARTIAL VOID: Only selected items will be refunded and restored to stock.
+                        PARTIAL VOID: Only selected item quantities will be refunded and restored to stock.
                       </div>
                     )}
                   </div>
@@ -916,14 +1028,20 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                         disabled={isNoneChecked || isVoiding}
                         isProcessing={isVoiding}
                         label={
-                          isAllChecked
+                          isAllFullVoid
                             ? "SWIPE TO VOID ENTIRE ORDER >>>"
-                            : `SWIPE TO VOID ${selectedCount} ITEM(S) (-₱${voidedTotal.toFixed(2)}) >>>`
+                            : `SWIPE TO VOID ${totalUnitsToVoid} UNIT(S) (-₱${voidedTotal.toFixed(2)}) >>>`
                         }
                         onVoid={() => {
                           const id = transactionToVoid.id;
-                          const selectedItemsToVoid = activeItems.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
-                          handleVoidTransaction(id, selectedItemsToVoid);
+                          const selectedItemsToVoid = activeItems
+                            .map((it, idx) => ({ it, idx }))
+                            .filter(({ idx }) => selectedItemIndicesToVoid.has(idx))
+                            .map(({ it, idx }) => ({
+                              ...it,
+                              quantity: getVoidQty(idx, it.quantity)
+                            }));
+                          handleVoidTransaction(id, selectedItemsToVoid, isAllFullVoid);
                         }}
                       />
                     )}
