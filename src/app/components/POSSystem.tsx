@@ -642,7 +642,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                           type="button"
                           onClick={() => setSelectedLetter(prev => prev === letter ? 'ALL' : letter)}
                           className={`size-6 flex items-center justify-center text-[11px] font-black rounded-md transition-all shrink-0 ${selectedLetter === letter
-                            ? 'bg-[#92d15f] text-gray-900 shadow-sm scale-105'
+                            ? 'bg-[#54b768] text-white shadow-sm scale-105'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                         >
@@ -670,7 +670,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                         className="cursor-pointer hover:shadow-md transition-all border"
                         style={{
                           backgroundColor: product.category === 'Pharmaceutical' ? '#fafff0' : '#f0f7ff',
-                          borderColor: product.category === 'Pharmaceutical' ? '#92d15f' : '#4169E1'
+                          borderColor: product.category === 'Pharmaceutical' ? '#54b768' : '#4169E1'
                         }}
                         onClick={() => addToCart(product)}
                       >

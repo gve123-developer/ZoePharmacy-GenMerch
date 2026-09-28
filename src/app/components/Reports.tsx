@@ -743,8 +743,8 @@ export function Reports({ currentUser }: ReportsProps) {
                   <AreaChart data={getDailySales()} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorDailySales" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#92d15f" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#92d15f" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#54b768" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#54b768" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -769,7 +769,7 @@ export function Reports({ currentUser }: ReportsProps) {
                     <Area
                       type="monotone"
                       dataKey="sales"
-                      stroke="#92d15f"
+                      stroke="#54b768"
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorDailySales)"
@@ -781,12 +781,12 @@ export function Reports({ currentUser }: ReportsProps) {
                             cy={cy}
                             r={4}
                             fill="white"
-                            stroke="#92d15f"
+                            stroke="#54b768"
                             strokeWidth={2}
                           />
                         );
                       }}
-                      activeDot={{ r: 6, strokeWidth: 0, fill: '#92d15f' }}
+                      activeDot={{ r: 6, strokeWidth: 0, fill: '#54b768' }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -815,8 +815,8 @@ export function Reports({ currentUser }: ReportsProps) {
                       {getSalesByCategory().map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill={entry.name === 'Pharmaceutical' ? '#92d15f' :
-                            entry.name === 'Non-pharmaceutical' ? '#455900' :
+                          fill={entry.name === 'Pharmaceutical' ? '#54b768' :
+                            entry.name === 'Non-pharmaceutical' ? '#236833' :
                               COLORS[index % COLORS.length]}
                         />
                       ))}
@@ -842,13 +842,13 @@ export function Reports({ currentUser }: ReportsProps) {
                     <YAxis />
                     <Tooltip formatter={(value: number) => [formatNumber(value), 'Transactions']} />
                     <Legend payload={[
-                      { value: 'CASH', type: 'rect', id: 'cash', color: '#92d15f' }
+                      { value: 'CASH', type: 'rect', id: 'cash', color: '#54b768' }
                     ]} />
                     <Bar dataKey="value">
                       {getPaymentMethodDistribution().map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill="#92d15f"
+                          fill="#54b768"
                         />
                       ))}
                     </Bar>
@@ -880,7 +880,7 @@ export function Reports({ currentUser }: ReportsProps) {
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
                     <Legend />
-                    <Bar dataKey="revenue" fill="#92d15f" radius={[0, 4, 4, 0]} barSize={20} />
+                    <Bar dataKey="revenue" fill="#54b768" radius={[0, 4, 4, 0]} barSize={20} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
