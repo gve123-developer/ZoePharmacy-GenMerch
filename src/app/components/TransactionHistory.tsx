@@ -18,12 +18,29 @@ interface TransactionHistoryProps {
   currentUser: User;
 }
 
-const SwipeToVoid = ({ onVoid }: { onVoid: () => void }) => {
+const SwipeToVoid = ({
+  onVoid,
+  label = "SWIPE TO CONFIRM VOID >>>",
+  disabled = false
+}: {
+  onVoid: () => void;
+  label?: string;
+  disabled?: boolean;
+}) => {
   const [val, setVal] = useState(0);
+
+  if (disabled) {
+    return (
+      <div className="relative w-full h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center shadow-inner mt-4 border border-gray-200 text-gray-400 text-xs font-bold uppercase tracking-wider">
+        Select at least 1 item to void
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full h-12 bg-red-100 rounded-md overflow-hidden flex items-center shadow-inner mt-4 border border-red-200">
-      <div className="absolute inset-0 flex items-center justify-center text-sm font-black tracking-widest text-red-800 pointer-events-none opacity-80 decoration-0">
-        SWIPE TO CONFIRM VOID &gt;&gt;&gt;
+    <div className="relative w-full h-12 bg-red-100 rounded-lg overflow-hidden flex items-center shadow-inner mt-4 border border-red-200 select-none">
+      <div className="absolute inset-0 flex items-center justify-center text-xs sm:text-sm font-black tracking-wider text-red-800 pointer-events-none opacity-90 px-3 text-center truncate">
+        {label}
       </div>
       <div
         className="absolute top-0 left-0 bottom-0 bg-red-500 opacity-20 pointer-events-none"
@@ -61,8 +78,18 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [transactionToVoid, setTransactionToVoid] = useState<Transaction | null>(null);
   const [transactionWaitingPasscode, setTransactionWaitingPasscode] = useState<Transaction | null>(null);
+  const [selectedItemIndicesToVoid, setSelectedItemIndicesToVoid] = useState<Set<number>>(new Set());
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Automatically select all items whenever a transaction is set to be voided
+  useEffect(() => {
+    if (transactionToVoid?.items) {
+      setSelectedItemIndicesToVoid(new Set(transactionToVoid.items.map((_, i) => i)));
+    } else {
+      setSelectedItemIndicesToVoid(new Set());
+    }
+  }, [transactionToVoid]);
 
   useEffect(() => {
     loadTransactions();
@@ -83,20 +110,38 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     }
   };
 
-  const handleVoidTransaction = async (id: string) => {
+  const handleVoidTransaction = async (
+    id: string,
+    itemsToVoidList?: Array<{ productId: string; quantity: number; price: number; productName: string }>
+  ) => {
     try {
+      const isFull = !itemsToVoidList || (transactionToVoid && itemsToVoidList.length === transactionToVoid.items.length);
+
       const response = await fetch('/api/transactions.php', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'X-User-Name': currentUser.name,
         },
-        body: JSON.stringify({ id, action: 'void' }),
+        body: JSON.stringify({
+          id,
+          action: 'void',
+          isFullVoid: isFull,
+          itemsToVoid: itemsToVoidList
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to void transaction');
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data?.message || 'Failed to void transaction');
+      }
 
-      toast.success(`Transaction #${id} voided successfully`);
+      if (data.type === 'partial') {
+        toast.success(`Partial void completed. ₱${Number(data.refundAmount || 0).toFixed(2)} refunded.`);
+      } else {
+        toast.success(`Transaction #${id} voided successfully`);
+      }
+
       setTransactionToVoid(null);
 
       setSelectedTransactionIds(prev => {
@@ -105,13 +150,24 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
         return next;
       });
 
-      setSelectedTransaction(prev => prev && prev.id === id ? { ...prev, status: 'voided' } : prev);
+      await loadTransactions();
+      window.dispatchEvent(new CustomEvent('inventory-updated'));
 
-      setTransactions(prev => prev.map(t =>
-        t.id === id ? { ...t, status: 'voided' } : t
-      ));
-    } catch (error) {
+      if (selectedTransaction && selectedTransaction.id === id) {
+        if (data.type === 'partial') {
+          const res = await fetch('/api/transactions.php');
+          const list = await res.json();
+          if (Array.isArray(list)) {
+            const updated = list.find((t: Transaction) => t.id === id);
+            if (updated) setSelectedTransaction(updated);
+          }
+        } else {
+          setSelectedTransaction(prev => prev ? { ...prev, status: 'voided' } : null);
+        }
+      }
+    } catch (error: any) {
       console.error("Void Error:", error);
+      toast.error(error.message || "Failed to void transaction");
     }
   };
   const parseDate = (ds: string) => {
@@ -670,50 +726,158 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
         </Dialog>
 
         <Dialog open={!!transactionToVoid} onOpenChange={(open) => !open && setTransactionToVoid(null)}>
-          <DialogContent className="max-w-md bg-white border-0 shadow-2xl p-6 rounded-2xl flex flex-col max-h-[90vh]">
-            <div className="flex flex-col items-center justify-center text-center">
-              <div className="size-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
-                <Trash2 className="size-8 text-red-600" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900 leading-tight mb-1">
-                Void Transaction #{transactionToVoid?.id.padStart(7, '0')}?
-              </h2>
-              <p className="text-sm text-gray-500 px-4 mb-4">
-                This action will instantly cancel the transaction, restoring exact stock levels for {transactionToVoid?.items.length} items to inventory. The total ₱{transactionToVoid?.total.toFixed(2)} will be subtracted from sales.
-              </p>
+          <DialogContent className="max-w-lg bg-white border-0 shadow-2xl p-6 rounded-2xl flex flex-col max-h-[90vh]">
+            {(() => {
+              const items = transactionToVoid?.items || [];
+              const totalItemsCount = items.length;
+              const selectedItems = items.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
+              const selectedCount = selectedItems.length;
+              const voidedTotal = selectedItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
+              const originalTotal = transactionToVoid?.total || 0;
+              const remainingTotal = Math.max(0, originalTotal - voidedTotal);
+              const isAllChecked = totalItemsCount > 0 && selectedCount === totalItemsCount;
+              const isNoneChecked = selectedCount === 0;
 
-              {/* Transaction Items Detail List */}
-              <div className="w-full text-left bg-gray-50 rounded-lg p-4 mb-4 border border-gray-100 overflow-y-auto max-h-40">
-                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Transaction Details</h3>
-                <div className="space-y-2">
-                  {transactionToVoid?.items.map((it, i) => (
-                    <div key={i} className="flex justify-between items-center text-sm border-b border-gray-200 border-dashed pb-2 last:border-0 last:pb-0">
-                      <span className="font-medium text-gray-700">{it.productName} <span className="text-gray-400 text-xs">x{it.quantity}</span></span>
-                      <span className="font-bold text-gray-900">₱{(it.price * it.quantity).toFixed(2)}</span>
+              return (
+                <div className="flex flex-col items-center justify-center text-center">
+                  <div className="size-14 rounded-full bg-red-100 flex items-center justify-center mb-3">
+                    <Trash2 className="size-7 text-red-600" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 leading-tight mb-1">
+                    Void Items in Transaction #{transactionToVoid?.id.padStart(7, '0')}
+                  </h2>
+                  <p className="text-xs text-gray-500 px-2 mb-3">
+                    Check the items you want to void. Checked items will be refunded and restored to inventory stock.
+                  </p>
+
+                  {/* Checklist Header with Select All */}
+                  <div className="w-full flex items-center justify-between py-2 px-1 mb-2 border-b border-gray-200">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700 select-none">
+                      <input
+                        type="checkbox"
+                        checked={isAllChecked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedItemIndicesToVoid(new Set(items.map((_, i) => i)));
+                          } else {
+                            setSelectedItemIndicesToVoid(new Set());
+                          }
+                        }}
+                        className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                      />
+                      <span>Select All ({totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'})</span>
+                    </label>
+                    <span className="text-[11px] font-semibold text-gray-500">
+                      {selectedCount} of {totalItemsCount} selected
+                    </span>
+                  </div>
+
+                  {/* Transaction Items Checklist */}
+                  <div className="w-full text-left space-y-2 mb-3 overflow-y-auto max-h-48 pr-1">
+                    {items.map((it, i) => {
+                      const isChecked = selectedItemIndicesToVoid.has(i);
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => {
+                            setSelectedItemIndicesToVoid(prev => {
+                              const next = new Set(prev);
+                              if (next.has(i)) next.delete(i);
+                              else next.add(i);
+                              return next;
+                            });
+                          }}
+                          className={`flex items-center justify-between p-2.5 rounded-lg border text-sm cursor-pointer transition-all ${
+                            isChecked
+                              ? 'bg-red-50/80 border-red-300 text-red-950 shadow-sm'
+                              : 'bg-white border-gray-200 text-gray-400 opacity-60 hover:opacity-80'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 pr-2">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {}} // handled by parent div click
+                              className="size-4 rounded border-gray-300 text-red-600 focus:ring-red-500 pointer-events-none"
+                            />
+                            <div className="flex flex-col min-w-0 text-left">
+                              <span className={`truncate text-xs md:text-sm ${isChecked ? 'font-bold text-gray-900' : 'text-gray-500'}`}>
+                                {it.productName}
+                              </span>
+                              <span className="text-[10px] text-gray-400">
+                                ₱{it.price.toFixed(2)} × {it.quantity} {it.quantity === 1 ? 'unit' : 'units'}
+                              </span>
+                            </div>
+                          </div>
+                          <span className={`font-black text-xs md:text-sm whitespace-nowrap ${isChecked ? 'text-red-700' : 'text-gray-400'}`}>
+                            ₱{(it.price * it.quantity).toFixed(2)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Financial Summary */}
+                  <div className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 mb-3 space-y-1 text-xs text-left">
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Original Order Total:</span>
+                      <span className="font-semibold text-gray-900">₱{originalTotal.toFixed(2)}</span>
                     </div>
-                  ))}
+                    <div className="flex justify-between items-center text-red-700 font-bold border-t border-gray-200 pt-1.5">
+                      <span>Refund & Stock Return:</span>
+                      <span className="text-sm font-black">-₱{voidedTotal.toFixed(2)} ({selectedCount} items)</span>
+                    </div>
+                    <div className="flex justify-between items-center text-gray-700 font-medium">
+                      <span>Remaining Order Total:</span>
+                      <span className="font-black text-gray-900">₱{remainingTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {/* Status Banner */}
+                  <div className="w-full mb-2">
+                    {isAllChecked ? (
+                      <div className="bg-red-50 border border-red-200 text-red-800 text-[11px] font-bold px-3 py-1.5 rounded-lg text-center">
+                        FULL VOID: The entire transaction will be cancelled and marked as VOIDED.
+                      </div>
+                    ) : isNoneChecked ? (
+                      <div className="bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg text-center">
+                        Please check at least 1 item to void.
+                      </div>
+                    ) : (
+                      <div className="bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg text-center">
+                        PARTIAL VOID: Only selected items will be refunded and restored to stock.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Swipe-to-Void Slider */}
+                  <div className="w-full pt-1 pb-2 mt-auto">
+                    {transactionToVoid && (
+                      <SwipeToVoid
+                        disabled={isNoneChecked}
+                        label={
+                          isAllChecked
+                            ? "SWIPE TO VOID ENTIRE ORDER >>>"
+                            : `SWIPE TO VOID ${selectedCount} ITEM(S) (-₱${voidedTotal.toFixed(2)}) >>>`
+                        }
+                        onVoid={() => {
+                          const id = transactionToVoid.id;
+                          const selectedItemsToVoid = transactionToVoid.items.filter((_, idx) => selectedItemIndicesToVoid.has(idx));
+                          handleVoidTransaction(id, selectedItemsToVoid);
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setTransactionToVoid(null)}
+                    className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors uppercase tracking-widest mt-1"
+                  >
+                    Cancel Action
+                  </button>
                 </div>
-              </div>
-
-              <div className="w-full pt-2 pb-2 mt-auto">
-                {transactionToVoid && (
-                  <SwipeToVoid
-                    onVoid={() => {
-                      const id = transactionToVoid.id;
-                      setTransactionToVoid(null);
-                      handleVoidTransaction(id);
-                    }}
-                  />
-                )}
-              </div>
-
-              <button
-                onClick={() => setTransactionToVoid(null)}
-                className="text-sm font-semibold text-gray-400 hover:text-gray-700 transition-colors uppercase tracking-widest mt-2"
-              >
-                Cancel Action
-              </button>
-            </div>
+              );
+            })()}
           </DialogContent>
         </Dialog>
 

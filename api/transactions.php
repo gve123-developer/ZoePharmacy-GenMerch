@@ -446,32 +446,39 @@ elseif ($method === 'PATCH') {
             );
         }
 
-        // Mark voided
-        $voidStmt = $conn->prepare(
-            "UPDATE transactions
-             SET status = 'voided'
-             WHERE id = :id"
-        );
+        // Check if item-level partial void was requested
+        $itemsToVoid = $data['itemsToVoid'] ?? null;
+        $isFullVoidExplicit = $data['isFullVoid'] ?? null;
 
-        $voidStmt->execute([
-            ':id' => $transaction_id
-        ]);
-
-        // Fetch transaction items
+        // Fetch all existing transaction items
         $itemsStmt = $conn->prepare(
             "SELECT
+                ti.id AS item_id,
                 ti.product_id,
                 ti.quantity,
+                ti.price_at_sale,
                 p.name
              FROM transaction_items ti
              LEFT JOIN products p
                 ON ti.product_id = p.id
-             WHERE ti.transaction_id = :transaction_id"
+             WHERE ti.transaction_id = :transaction_id
+             FOR UPDATE"
         );
 
         $itemsStmt->execute([
             ':transaction_id' => $transaction_id
         ]);
+
+        $existingItems = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($existingItems)) {
+            // No items left, mark voided
+            $voidStmt = $conn->prepare("UPDATE transactions SET status = 'voided', total_amount = 0 WHERE id = :id");
+            $voidStmt->execute([':id' => $transaction_id]);
+            $conn->commit();
+            echo json_encode(['success' => true, 'type' => 'full']);
+            exit();
+        }
 
         $restoreStmt = $conn->prepare(
             "UPDATE products
@@ -481,62 +488,165 @@ elseif ($method === 'PATCH') {
              WHERE id = :product_id"
         );
 
-        $restored = [];
+        // Determine if this is a Full Void or Partial Void
+        $shouldFullVoid = ($isFullVoidExplicit === true) || !is_array($itemsToVoid) || empty($itemsToVoid) || count($itemsToVoid) >= count($existingItems);
 
-        while (
-            $item =
-            $itemsStmt->fetch(PDO::FETCH_ASSOC)
-        ) {
-
-            $restoreStmt->execute([
-                ':quantity' => (int)$item['quantity'],
-                ':product_id' => (int)$item['product_id']
-            ]);
-
-            $productName =
-                $item['name']
-                ?? "ID:{$item['product_id']}";
-
-            $restored[] =
-                $productName .
-                " x" .
-                $item['quantity'];
+        // If itemsToVoid is specified, double-check if all existing items are included
+        if (!$shouldFullVoid && is_array($itemsToVoid)) {
+            $toVoidPids = array_map(function($it) { return (string)($it['productId'] ?? ''); }, $itemsToVoid);
+            $existingPids = array_map(function($it) { return (string)$it['product_id']; }, $existingItems);
+            $diff = array_diff($existingPids, $toVoidPids);
+            if (empty($diff)) {
+                $shouldFullVoid = true;
+            }
         }
 
-        $summary =
-            "Voided #$transaction_id. Sum: ₱" .
-            number_format(
-                (float)$tx['total_amount'],
-                2
-            ) .
-            ". Restored items: " .
-            implode(", ", $restored);
+        if ($shouldFullVoid) {
+            // FULL VOID: Cancel entire transaction
+            $voidStmt = $conn->prepare(
+                "UPDATE transactions
+                 SET status = 'voided'
+                 WHERE id = :id"
+            );
+            $voidStmt->execute([':id' => $transaction_id]);
 
-        $logStmt = $conn->prepare(
-            "INSERT INTO audit_logs
-            (
-                user_name,
-                action,
-                details
-            )
-            VALUES
-            (
-                :user_name,
-                'Void Transaction',
-                :details
-            )"
-        );
+            $restored = [];
+            foreach ($existingItems as $item) {
+                $restoreStmt->execute([
+                    ':quantity' => (int)$item['quantity'],
+                    ':product_id' => (int)$item['product_id']
+                ]);
 
-        $logStmt->execute([
-            ':user_name' => $user_name,
-            ':details' => $summary
-        ]);
+                $productName = $item['name'] ?? "ID:{$item['product_id']}";
+                $restored[] = $productName . " x" . $item['quantity'];
+            }
 
-        $conn->commit();
+            $summary = "Voided Transaction #$transaction_id (Full Void). Sum: ₱" .
+                number_format((float)$tx['total_amount'], 2) .
+                ". Restored items: " . implode(", ", $restored);
 
-        echo json_encode([
-            'success' => true
-        ]);
+            $logStmt = $conn->prepare(
+                "INSERT INTO audit_logs (user_name, action, details)
+                 VALUES (:user_name, 'Void Transaction', :details)"
+            );
+            $logStmt->execute([
+                ':user_name' => $user_name,
+                ':details' => $summary
+            ]);
+
+            $conn->commit();
+
+            echo json_encode([
+                'success' => true,
+                'type' => 'full',
+                'id' => (string)$transaction_id
+            ]);
+            exit();
+
+        } else {
+            // PARTIAL VOID: Void only selected items
+            $totalRefund = 0.0;
+            $restored = [];
+
+            // Prepare statements for updating/deleting transaction_items
+            $deleteItemStmt = $conn->prepare("DELETE FROM transaction_items WHERE id = :item_id");
+            $updateItemQtyStmt = $conn->prepare("UPDATE transaction_items SET quantity = quantity - :void_qty WHERE id = :item_id");
+
+            // Index existing items by product_id
+            $existingByPid = [];
+            foreach ($existingItems as $row) {
+                $existingByPid[(string)$row['product_id']] = $row;
+            }
+
+            foreach ($itemsToVoid as $voidReq) {
+                $vPid = (string)($voidReq['productId'] ?? '');
+                if (!isset($existingByPid[$vPid])) {
+                    continue;
+                }
+
+                $matchedItem = $existingByPid[$vPid];
+                $reqQty = isset($voidReq['quantity']) ? (int)$voidReq['quantity'] : (int)$matchedItem['quantity'];
+                $voidQty = min($reqQty, (int)$matchedItem['quantity']);
+
+                if ($voidQty <= 0) {
+                    continue;
+                }
+
+                // Restore stock
+                $restoreStmt->execute([
+                    ':quantity' => $voidQty,
+                    ':product_id' => (int)$matchedItem['product_id']
+                ]);
+
+                $lineRefund = $voidQty * (float)$matchedItem['price_at_sale'];
+                $totalRefund += $lineRefund;
+
+                $prodName = $matchedItem['name'] ?? "ID:{$matchedItem['product_id']}";
+                $restored[] = $prodName . " x" . $voidQty . " (₱" . number_format($lineRefund, 2) . ")";
+
+                if ($voidQty >= (int)$matchedItem['quantity']) {
+                    $deleteItemStmt->execute([':item_id' => $matchedItem['item_id']]);
+                } else {
+                    $updateItemQtyStmt->execute([
+                        ':void_qty' => $voidQty,
+                        ':item_id' => $matchedItem['item_id']
+                    ]);
+                }
+            }
+
+            // Check if any items remain in this transaction
+            $checkRemainingStmt = $conn->prepare("SELECT COUNT(*) FROM transaction_items WHERE transaction_id = :id");
+            $checkRemainingStmt->execute([':id' => $transaction_id]);
+            $remainingCount = (int)$checkRemainingStmt->fetchColumn();
+
+            $newTotal = 0.0;
+            $type = 'partial';
+
+            if ($remainingCount === 0) {
+                // All items ended up deleted -> mark as voided
+                $voidAllStmt = $conn->prepare("UPDATE transactions SET status = 'voided', total_amount = 0 WHERE id = :id");
+                $voidAllStmt->execute([':id' => $transaction_id]);
+                $type = 'full';
+            } else {
+                // Deduct refunded amount from transaction total
+                $updateTotalStmt = $conn->prepare(
+                    "UPDATE transactions
+                     SET total_amount = GREATEST(0, total_amount - :refund)
+                     WHERE id = :id
+                     RETURNING total_amount"
+                );
+                $updateTotalStmt->execute([
+                    ':refund' => $totalRefund,
+                    ':id' => $transaction_id
+                ]);
+                $newTotal = (float)$updateTotalStmt->fetchColumn();
+            }
+
+            $summary = "Partial Void on Transaction #$transaction_id. Refunded: ₱" .
+                number_format($totalRefund, 2) .
+                ". Restored items: " . implode(", ", $restored) .
+                ($type === 'full' ? ". Order is now completely voided." : ". Remaining Total: ₱" . number_format($newTotal, 2));
+
+            $logStmt = $conn->prepare(
+                "INSERT INTO audit_logs (user_name, action, details)
+                 VALUES (:user_name, 'Partial Void', :details)"
+            );
+            $logStmt->execute([
+                ':user_name' => $user_name,
+                ':details' => $summary
+            ]);
+
+            $conn->commit();
+
+            echo json_encode([
+                'success' => true,
+                'type' => $type,
+                'id' => (string)$transaction_id,
+                'refundAmount' => $totalRefund,
+                'newTotal' => $newTotal
+            ]);
+            exit();
+        }
 
     } catch (Throwable $e) {
 
