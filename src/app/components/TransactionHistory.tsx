@@ -263,20 +263,15 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   const startShowing = ((currentPage - 1) * itemsPerPage) + 1;
   const endShowing = Math.min(currentPage * itemsPerPage, filteredTransactions.length);
 
-  const validFilteredTransactions = filteredTransactions.filter(t => t.status !== 'voided');
-
   const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedTransactionIds(new Set(validFilteredTransactions.map(t => t.id)));
+      setSelectedTransactionIds(new Set(filteredTransactions.map(t => t.id)));
     } else {
       setSelectedTransactionIds(new Set());
     }
   };
 
   const toggleSelect = (id: string) => {
-    const target = filteredTransactions.find(t => t.id === id);
-    if (target?.status === 'voided') return;
-
     const newSet = new Set(selectedTransactionIds);
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
@@ -284,19 +279,19 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
   };
 
   const generatePDF = (t: Transaction) => {
-    if (t.status === 'voided') {
-      toast.error('Voided transactions cannot be downloaded.');
+    const allItems = t.items || [];
+    if (allItems.length === 0) {
+      toast.error('No items found in this transaction.');
       return;
     }
 
-    const activeItems = (t.items || []).filter((it: any) => it.status !== 'voided');
-    if (activeItems.length === 0) {
-      toast.error('All items in this transaction are voided.');
-      return;
-    }
+    // Retain original copy of transaction before void
+    const originalTotal = allItems.reduce((sum: number, it: any) => sum + (Number(it.price || 0) * Number(it.quantity || 0)), 0);
+    const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : originalTotal;
+    const originalChange = Math.max(0, amountReceived - originalTotal);
 
-    // Calculate required height: Base height (approx 150mm) + 12mm per active item
-    const itemsCount = activeItems.length;
+    // Calculate required height: Base height (approx 150mm) + 12mm per item
+    const itemsCount = allItems.length;
     const estimatedHeight = 150 + (itemsCount * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, estimatedHeight] });
 
@@ -325,7 +320,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
     doc.text('ITEM DESCRIPTION', 4, y);
     doc.text('PRICE', 76, y, { align: 'right' }); y += 6;
 
-    activeItems.forEach(it => {
+    allItems.forEach(it => {
       const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
       doc.text(productName, 4, y);
       doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
@@ -336,17 +331,14 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
     doc.setFont("courier", "bold");
     doc.text(`TOTAL AMOUNT`, 4, y);
-    doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
+    doc.text(`P${originalTotal.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
 
     doc.setFont("courier", "normal");
-    const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : t.total;
-    const change = t.change != null ? Number(t.change) : Math.max(0, amountReceived - t.total);
-
     doc.text(`CASH RECEIVED`, 4, y);
     doc.text(`P${amountReceived.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
     doc.setFont("courier", "bold");
     doc.text(`CHANGE DUE`, 4, y);
-    doc.text(`P${change.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
+    doc.text(`P${originalChange.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
 
     doc.text(`THANK YOU FOR YOUR TRUST!`, 40, y, { align: 'center' }); y += 6;
     doc.setFontSize(8);
@@ -363,25 +355,25 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       ? filteredTransactions.filter(t => selectedTransactionIds.has(t.id))
       : filteredTransactions;
 
-    const transactionsToExport = rawToExport.filter(t => {
-      if (t.status === 'voided') return false;
-      const activeItems = (t.items || []).filter((it: any) => it.status !== 'voided');
-      return activeItems.length > 0;
-    });
+    const transactionsToExport = rawToExport.filter(t => (t.items || []).length > 0);
 
     if (transactionsToExport.length === 0) {
-      toast.error(selectedTransactionIds.size > 0 ? 'Selected transaction(s) are voided and cannot be downloaded.' : 'No valid transactions available to download.');
+      toast.error('No transactions available to download.');
       return;
     }
 
-    const firstActiveItems = (transactionsToExport[0].items || []).filter((it: any) => it.status !== 'voided');
-    const firstHeight = 150 + (firstActiveItems.length * 12);
+    const firstItems = transactionsToExport[0].items || [];
+    const firstHeight = 150 + (firstItems.length * 12);
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: [80, firstHeight] });
 
     transactionsToExport.forEach((t, index) => {
-      const activeItems = (t.items || []).filter((it: any) => it.status !== 'voided');
+      const allItems = t.items || [];
+      const originalTotal = allItems.reduce((sum: number, it: any) => sum + (Number(it.price || 0) * Number(it.quantity || 0)), 0);
+      const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : originalTotal;
+      const originalChange = Math.max(0, amountReceived - originalTotal);
+
       if (index > 0) {
-        const estimatedHeight = 150 + (activeItems.length * 12);
+        const estimatedHeight = 150 + (allItems.length * 12);
         doc.addPage([80, estimatedHeight]);
       }
 
@@ -410,7 +402,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
       doc.text('ITEM DESCRIPTION', 4, y);
       doc.text('PRICE', 76, y, { align: 'right' }); y += 6;
 
-      activeItems.forEach((it: any) => {
+      allItems.forEach((it: any) => {
         const productName = (it.productName || 'Unknown').substring(0, 20).toUpperCase();
         doc.text(productName, 4, y);
         doc.text(`P${(it.price * it.quantity).toFixed(2)}`, 76, y, { align: 'right' }); y += 4;
@@ -421,17 +413,14 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
 
       doc.setFont("courier", "bold");
       doc.text(`TOTAL AMOUNT`, 4, y);
-      doc.text(`P${t.total.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
+      doc.text(`P${originalTotal.toFixed(2)}`, 76, y, { align: 'right' }); y += 8;
 
       doc.setFont("courier", "normal");
-      const amountReceived = t.amountReceived != null ? Number(t.amountReceived) : t.total;
-      const change = t.change != null ? Number(t.change) : Math.max(0, amountReceived - t.total);
-
       doc.text(`CASH RECEIVED`, 4, y);
       doc.text(`P${amountReceived.toFixed(2)}`, 76, y, { align: 'right' }); y += 6;
       doc.setFont("courier", "bold");
       doc.text(`CHANGE DUE`, 4, y);
-      doc.text(`P${change.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
+      doc.text(`P${originalChange.toFixed(2)}`, 76, y, { align: 'right' }); y += 10;
 
       doc.text(`THANK YOU FOR YOUR TRUST!`, 40, y, { align: 'center' }); y += 6;
       doc.setFontSize(8);
@@ -512,8 +501,8 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                     <TableHead className="px-6 py-4 font-bold text-gray-700 uppercase text-xs tracking-wider border-r border-gray-200 text-center whitespace-nowrap w-44">
                       <div className="flex items-center justify-center gap-2">
                         <Checkbox
-                          checked={validFilteredTransactions.length > 0 && selectedTransactionIds.size === validFilteredTransactions.length}
-                          disabled={validFilteredTransactions.length === 0}
+                          checked={filteredTransactions.length > 0 && selectedTransactionIds.size === filteredTransactions.length}
+                          disabled={filteredTransactions.length === 0}
                           onCheckedChange={(checked) => toggleSelectAll(!!checked)}
                         />
                         <span className="ml-1">Actions</span>
@@ -561,9 +550,7 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                           <div className="flex items-center justify-start gap-3">
                             <Checkbox
                               checked={selectedTransactionIds.has(t.id)}
-                              disabled={t.status === 'voided'}
                               onCheckedChange={() => toggleSelect(t.id)}
-                              title={t.status === 'voided' ? 'Voided transactions cannot be downloaded' : undefined}
                             />
                             <button
                               className="flex items-center gap-1.5 text-xs font-bold text-[#1f2937] hover:text-black transition-colors min-w-[50px]"
@@ -768,31 +755,22 @@ export function TransactionHistory({ currentUser }: TransactionHistoryProps) {
                   <p className="text-[9px]">--- NO REFUND WITHOUT TRANSACTION DETAILS ---</p>
                   <p className="text-[9px] italic text-gray-500">This is not an official transaction record.</p>
                 </div>
-                {selectedTransaction.status === 'voided' ? (
+                <div className="grid grid-cols-2 gap-2">
                   <Button
-                    className="w-full bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
+                    variant="outline"
+                    className="border-gray-300 hover:bg-gray-100 rounded-none h-11 uppercase text-[10px] font-bold tracking-widest flex items-center justify-center gap-1.5"
+                    onClick={() => generatePDF(selectedTransaction)}
+                  >
+                    <Download className="size-3.5" />
+                    Download Receipt
+                  </Button>
+                  <Button
+                    className="bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
                     onClick={() => setIsDetailDialogOpen(false)}
                   >
                     Close Record
                   </Button>
-                ) : (
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant="outline"
-                      className="border-gray-300 hover:bg-gray-100 rounded-none h-11 uppercase text-[10px] font-bold tracking-widest flex items-center justify-center gap-1.5"
-                      onClick={() => generatePDF(selectedTransaction)}
-                    >
-                      <Download className="size-3.5" />
-                      Download
-                    </Button>
-                    <Button
-                      className="bg-gray-900 hover:bg-black text-white rounded-none h-11 uppercase text-[10px] font-bold tracking-widest"
-                      onClick={() => setIsDetailDialogOpen(false)}
-                    >
-                      Close Record
-                    </Button>
-                  </div>
-                )}
+                </div>
               </div>
             )}
             <div className="w-full h-2 bg-gray-200" style={{ backgroundImage: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%)', backgroundSize: '12px 24px' }}></div>
