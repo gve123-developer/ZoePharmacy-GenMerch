@@ -189,3 +189,34 @@
 .animate-shake {
   animation: shake 0.4s ease-in-out;
 }
+
+/* 57mm Thermal Print Styles (Paperang / Thermal Printers) */
+@media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  #printable-thermal-receipt,
+  #printable-thermal-receipt * {
+    visibility: visible !important;
+  }
+  #printable-thermal-receipt {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 57mm !important;
+    max-width: 57mm !important;
+    margin: 0 !important;
+    padding: 2mm 3mm !important;
+  }
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
+}
