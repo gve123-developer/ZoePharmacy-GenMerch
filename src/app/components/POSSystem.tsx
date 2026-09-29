@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/app/components/ui/badge';
 import { Separator } from '@/app/components/ui/separator';
 import { toast } from 'sonner';
-import { Search, ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Mic, CheckCircle2, Printer, Bluetooth } from 'lucide-react';
+import { Search, ShoppingCart, Trash2, Plus, Minus, CreditCard, FileText, Mic, CheckCircle2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/app/components/ui/dialog';
 import { logAuditAction } from '@/app/utils/auditUtils';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
@@ -96,12 +96,6 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const [amountReceived, setAmountReceived] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [completedTransaction, setCompletedTransaction] = useState<Transaction | null>(null);
-  const [autoPrintReceipt, setAutoPrintReceipt] = useState<boolean>(() => {
-    return localStorage.getItem('autoPrintThermal') !== 'false';
-  });
-  const [printTransaction, setPrintTransaction] = useState<Transaction | null>(null);
-  const [bluetoothDevice, setBluetoothDevice] = useState<any>(null);
-  const [isConnectingBt, setIsConnectingBt] = useState(false);
 
   // Dynamically extract and sort all brands from products + popular brands
   const allBrands = useMemo(() => {
@@ -416,9 +410,6 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         setCart([]);
         setAmountReceived('');
         setCompletedTransaction(transaction);
-        if (autoPrintReceipt) {
-          printThermalReceipt(transaction);
-        }
         toast.success('Transaction completed successfully!');
         speak('Transaction complete');
         setSearchQuery('');
@@ -445,40 +436,6 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const clearCart = () => {
     setCart([]);
     setAmountReceived('');
-  };
-
-  const printThermalReceipt = (t: Transaction) => {
-    setPrintTransaction(t);
-    setTimeout(() => {
-      window.print();
-    }, 150);
-  };
-
-  const connectBluetoothPrinter = async () => {
-    if (!('bluetooth' in navigator)) {
-      toast.error('Web Bluetooth is supported on Google Chrome or Edge.');
-      return;
-    }
-    try {
-      setIsConnectingBt(true);
-      const device = await (navigator as any).bluetooth.requestDevice({
-        acceptAllDevices: true,
-        optionalServices: [
-          '0000fee7-0000-1000-8000-00805f9b34fb',
-          '000018f0-0000-1000-8000-00805f9b34fb',
-          '49535343-fe7d-4ae5-8fa9-9fafd205e455',
-          'e7810a71-73ae-499d-8c15-faa9aef0c3f2'
-        ]
-      });
-      setBluetoothDevice(device);
-      toast.success(`Paired with ${device.name || 'Bluetooth Printer'}!`);
-    } catch (err: any) {
-      if (err.name !== 'NotFoundError') {
-        toast.error(`Bluetooth: ${err.message}`);
-      }
-    } finally {
-      setIsConnectingBt(false);
-    }
   };
 
   const generatePDF = (t: Transaction) => {
@@ -589,49 +546,9 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   return (
     <ErrorBoundary fallbackTitle="POS System Module Error">
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900">Point of Sale</h2>
-            <p className="text-sm text-gray-700 font-semibold mt-1">Process sales transactions</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Bluetooth / Paperang Connect Button */}
-            <Button
-              type="button"
-              variant={bluetoothDevice ? "default" : "outline"}
-              size="sm"
-              onClick={connectBluetoothPrinter}
-              disabled={isConnectingBt}
-              className={`h-9 text-xs font-bold gap-1.5 shadow-sm transition-all ${bluetoothDevice ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              title="Connect to Paperang or Bluetooth Thermal Printer"
-            >
-              <Bluetooth className={`size-3.5 ${isConnectingBt ? 'animate-spin' : ''}`} />
-              {bluetoothDevice ? (
-                <span className="flex items-center gap-1">
-                  <CheckCircle2 className="size-3 text-emerald-200" />
-                  {bluetoothDevice.name || 'Printer Connected'}
-                </span>
-              ) : (
-                'Connect Paperang (BT)'
-              )}
-            </Button>
-
-            {/* Auto-Print Receipt Toggle */}
-            <label className="flex items-center gap-2 cursor-pointer bg-white border border-gray-200 hover:border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 shadow-sm transition-all select-none">
-              <input
-                type="checkbox"
-                checked={autoPrintReceipt}
-                onChange={(e) => {
-                  setAutoPrintReceipt(e.target.checked);
-                  localStorage.setItem('autoPrintThermal', String(e.target.checked));
-                }}
-                className="rounded accent-[#54b768] size-4 cursor-pointer"
-              />
-              <Printer className="size-3.5 text-emerald-600" />
-              <span>Auto-Print Receipt</span>
-            </label>
-          </div>
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">Point of Sale</h2>
+          <p className="text-sm text-gray-700 font-semibold mt-1">Process sales transactions</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1059,19 +976,12 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
 
                 <div className="grid grid-cols-1 gap-2">
                   <Button
-                    className="w-full bg-[#54b768] hover:bg-[#469e57] text-white rounded-none h-12 font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.99]"
-                    onClick={() => completedTransaction && printThermalReceipt(completedTransaction)}
-                  >
-                    <Printer className="size-4" />
-                    Print to Paperang (57mm)
-                  </Button>
-                  <Button
                     variant="outline"
                     className="w-full border-gray-300 rounded-none h-12 font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2"
                     onClick={() => completedTransaction && generatePDF(completedTransaction)}
                   >
                     <FileText className="size-4" />
-                    Download PDF Receipt
+                    Download Receipt
                   </Button>
                   <Button
                     className="w-full bg-gray-900 hover:bg-black text-white rounded-none h-12 font-bold uppercase tracking-widest text-xs"
@@ -1087,76 +997,8 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
             <div className="w-full h-2 bg-gray-200" style={{ backgroundImage: 'linear-gradient(45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%), linear-gradient(-45deg, transparent 33.333%, #fff 33.333%, #fff 66.666%, transparent 66.666%)', backgroundSize: '12px 24px' }}></div>
           </DialogContent>
         </Dialog>
-
-        {/* 57mm Thermal Printable Receipt for Paperang & Thermal Printers */}
-        <div id="printable-thermal-receipt" className="hidden print:block text-black bg-white">
-          {printTransaction && (
-            <div style={{ width: '48mm', maxWidth: '48mm', margin: '0 auto', fontFamily: "'Courier New', Courier, monospace", fontSize: '10px', lineHeight: '1.25', color: '#000000' }}>
-              <div style={{ textAlign: 'center', marginBottom: '4px' }}>
-                <div style={{ fontWeight: '900', fontSize: '11px', textTransform: 'uppercase' }}>ZOE PHARMACY & GENERAL MERCHANDISE</div>
-                <div style={{ fontSize: '8px', marginTop: '2px', textTransform: 'uppercase' }}>40 Mata Cor, Manlunas Sts., Vab Brgy, 183, Pasay City</div>
-              </div>
-
-              <div style={{ borderTop: '1px dashed #000', borderBottom: '1px dashed #000', padding: '3px 0', margin: '3px 0', fontSize: '9px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>TRANS ID:</span>
-                  <span style={{ fontWeight: 'bold' }}>{printTransaction.id}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>DATE:</span>
-                  <span>{new Date(printTransaction.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>CASHIER:</span>
-                  <span style={{ textTransform: 'uppercase' }}>{printTransaction.cashier || 'Zoe Owner'}</span>
-                </div>
-              </div>
-
-              <div style={{ margin: '3px 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '9px', borderBottom: '1px solid #000', paddingBottom: '2px', marginBottom: '2px' }}>
-                  <span>ITEM</span>
-                  <span>PRICE</span>
-                </div>
-                {printTransaction.items.map((it, idx) => (
-                  <div key={idx} style={{ margin: '2px 0' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '9.5px', textTransform: 'uppercase' }}>{it.productName}</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px' }}>
-                      <span>{it.quantity} x ₱{it.price.toFixed(2)}</span>
-                      <span style={{ fontWeight: 'bold' }}>₱{(it.price * it.quantity).toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ borderTop: '1px dashed #000', paddingTop: '3px', marginTop: '4px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '11px' }}>
-                  <span>TOTAL:</span>
-                  <span>₱{printTransaction.total.toFixed(2)}</span>
-                </div>
-                {printTransaction.paymentMethod === 'cash' && (
-                  <div style={{ marginTop: '2px', fontSize: '9px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>CASH RECEIVED:</span>
-                      <span>₱{(printTransaction.amountReceived || printTransaction.total).toFixed(2)}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px', marginTop: '1px' }}>
-                      <span>CHANGE DUE:</span>
-                      <span>₱{(printTransaction.change || 0).toFixed(2)}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '8px', borderTop: '1px dashed #000', paddingTop: '3px' }}>
-                <div style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>Thank you for your trust!</div>
-                <div>--- NO REFUND WITHOUT DETAILS ---</div>
-                <div style={{ fontStyle: 'italic', marginTop: '1px' }}>Not an official transaction record</div>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
-    </ErrorBoundary>
+    </ErrorBoundary >
   );
 }
 
