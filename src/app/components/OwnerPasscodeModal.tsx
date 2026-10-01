@@ -10,17 +10,7 @@ interface OwnerPasscodeModalProps {
   onClose: () => void;
 }
 
-const DIAL_KEYS = [
-  { num: '1', letters: '' },
-  { num: '2', letters: 'ABC' },
-  { num: '3', letters: 'DEF' },
-  { num: '4', letters: 'GHI' },
-  { num: '5', letters: 'JKL' },
-  { num: '6', letters: 'MNO' },
-  { num: '7', letters: 'PQRS' },
-  { num: '8', letters: 'TUV' },
-  { num: '9', letters: 'WXYZ' },
-];
+const DIAL_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 export function OwnerPasscodeModal({
   isOpen,
@@ -161,7 +151,7 @@ export function OwnerPasscodeModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 transition-opacity duration-200 animate-in fade-in-0"
     >
       <div
-        className={`relative w-full max-w-sm rounded-[2rem] bg-white/80 backdrop-blur-xl border border-white/70 p-6 sm:p-8 shadow-2xl flex flex-col items-center text-center transition-all animate-in zoom-in-95 duration-150 ${
+        className={`relative w-full max-w-[440px] sm:max-w-[460px] rounded-3xl bg-white/95 backdrop-blur-xl border border-white/70 p-6 sm:p-7 shadow-2xl flex flex-col items-center text-center transition-all animate-in zoom-in-95 duration-150 ${
           shake ? 'animate-shake' : ''
         }`}
         style={{
@@ -179,28 +169,28 @@ export function OwnerPasscodeModal({
         </button>
 
         {/* Shield Icon in Squircle */}
-        <div className="bg-indigo-100/90 p-3.5 rounded-2xl shadow-sm text-indigo-600 mb-3 border border-indigo-200/60">
-          <ShieldCheck className="size-8" />
+        <div className="bg-indigo-100/90 p-3 rounded-2xl shadow-sm text-indigo-600 mb-2.5 border border-indigo-200/60">
+          <ShieldCheck className="size-7 sm:size-8" />
         </div>
 
         {/* Title */}
-        <h3 className="text-2xl font-black text-indigo-950 tracking-tight">
+        <h3 className="text-xl sm:text-2xl font-black text-indigo-950 tracking-tight">
           Owner Authorization
         </h3>
 
         {/* Action Badge */}
-        <div className="mt-2.5 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-indigo-100/70 border border-indigo-200 text-indigo-700 text-xs font-black uppercase tracking-wider shadow-xs">
+        <div className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-100/70 border border-indigo-200 text-indigo-700 text-xs font-black uppercase tracking-wider shadow-xs">
           {actionTitle}
         </div>
 
         {actionDescription && (
-          <p className="text-xs text-slate-500 font-medium mt-2 max-w-[280px]">
+          <p className="text-xs text-slate-500 font-medium mt-1.5 max-w-[320px]">
             {actionDescription}
           </p>
         )}
 
         {/* 6-Digit PIN Indicator Rings */}
-        <div className="flex items-center justify-center gap-3.5 my-5">
+        <div className="flex items-center justify-center gap-3.5 my-4">
           {[0, 1, 2, 3, 4, 5].map((index) => {
             const isFilled = passcode.length > index;
             return (
@@ -220,28 +210,25 @@ export function OwnerPasscodeModal({
 
         {/* Error message */}
         {errorMsg && (
-          <div className="flex items-center gap-1.5 text-xs text-red-600 font-semibold mb-3 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
+          <div className="flex items-center gap-1.5 text-xs text-red-600 font-semibold mb-2.5 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
             <AlertCircle className="size-3.5 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
-        {/* Circular Keypad Grid (3x4) */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 my-2">
-          {DIAL_KEYS.map(({ num, letters }) => (
+        {/* Square Keypad Grid (3x4) */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-3.5 my-2">
+          {DIAL_KEYS.map((num) => (
             <button
               key={num}
               type="button"
               disabled={isVerifying}
               onClick={() => handleDigitPress(num)}
-              className="size-16 sm:size-17 rounded-full bg-white border border-indigo-50/80 hover:bg-indigo-50/60 hover:border-indigo-300 active:scale-95 active:bg-indigo-100/60 transition-all flex flex-col items-center justify-center text-indigo-950 shadow-md select-none cursor-pointer focus:outline-none group"
+              className="size-16 sm:size-17 rounded-2xl bg-white border border-slate-200/90 hover:bg-indigo-50/70 hover:border-indigo-300 active:scale-95 active:bg-indigo-100/60 transition-all flex items-center justify-center text-indigo-950 shadow-sm hover:shadow select-none cursor-pointer focus:outline-none group"
             >
-              <span className="text-2xl font-black leading-none text-indigo-950 group-hover:text-indigo-600">{num}</span>
-              {letters && (
-                <span className="text-[9px] text-slate-400 group-hover:text-indigo-500 font-bold uppercase tracking-widest mt-0.5">
-                  {letters}
-                </span>
-              )}
+              <span className="text-2xl font-black leading-none text-indigo-950 group-hover:text-indigo-600 transition-colors">
+                {num}
+              </span>
             </button>
           ))}
 
@@ -250,7 +237,7 @@ export function OwnerPasscodeModal({
             type="button"
             disabled={isVerifying}
             onClick={onClose}
-            className="size-16 sm:size-17 rounded-full text-xs font-black uppercase text-slate-600 hover:text-indigo-950 hover:bg-slate-200/40 active:scale-95 transition-all flex items-center justify-center cursor-pointer select-none focus:outline-none"
+            className="size-16 sm:size-17 rounded-2xl text-xs font-black uppercase text-slate-600 hover:text-indigo-950 hover:bg-slate-200/40 active:scale-95 transition-all flex items-center justify-center cursor-pointer select-none focus:outline-none"
           >
             Cancel
           </button>
@@ -259,16 +246,18 @@ export function OwnerPasscodeModal({
             type="button"
             disabled={isVerifying}
             onClick={() => handleDigitPress('0')}
-            className="size-16 sm:size-17 rounded-full bg-white border border-indigo-50/80 hover:bg-indigo-50/60 hover:border-indigo-300 active:scale-95 active:bg-indigo-100/60 transition-all flex flex-col items-center justify-center text-indigo-950 shadow-md select-none cursor-pointer focus:outline-none group"
+            className="size-16 sm:size-17 rounded-2xl bg-white border border-slate-200/90 hover:bg-indigo-50/70 hover:border-indigo-300 active:scale-95 active:bg-indigo-100/60 transition-all flex items-center justify-center text-indigo-950 shadow-sm hover:shadow select-none cursor-pointer focus:outline-none group"
           >
-            <span className="text-2xl font-black leading-none text-indigo-950 group-hover:text-indigo-600">0</span>
+            <span className="text-2xl font-black leading-none text-indigo-950 group-hover:text-indigo-600 transition-colors">
+              0
+            </span>
           </button>
 
           <button
             type="button"
             disabled={isVerifying || passcode.length === 0}
             onClick={handleBackspace}
-            className="size-16 sm:size-17 rounded-full text-slate-600 hover:text-indigo-950 hover:bg-slate-200/40 active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center justify-center cursor-pointer select-none focus:outline-none"
+            className="size-16 sm:size-17 rounded-2xl text-slate-600 hover:text-indigo-950 hover:bg-slate-200/40 active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center justify-center cursor-pointer select-none focus:outline-none"
             title="Delete"
           >
             <Delete className="size-6" />
@@ -276,7 +265,7 @@ export function OwnerPasscodeModal({
         </div>
 
         {/* Reset Passcode via Email - Owner Only */}
-        <div className="mt-5 pt-4 border-t border-slate-200/80 w-full flex flex-col items-center">
+        <div className="mt-4 pt-3.5 border-t border-slate-200/80 w-full flex flex-col items-center">
           <button
             type="button"
             disabled={isResetting}
