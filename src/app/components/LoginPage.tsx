@@ -395,23 +395,23 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <Card className={`w-full border-none transition-all duration-700 bg-transparent shadow-none p-0 flex flex-col gap-0 ${isOpening ? 'overflow-visible' : 'overflow-hidden shadow-2xl rounded-[200px]'}`}>
 
             {/* Top Half — White */}
-            <div className={`bg-white pt-10 pb-5 px-9 flex flex-col items-center transition-all duration-1000 ease-in-out m-0 ${isOpening ? '-translate-y-[150%] rotate-[-10deg] opacity-0' : 'rounded-t-[200px]'}`}>
+            <div className={`bg-white pt-9 pb-4 px-9 flex flex-col items-center transition-all duration-1000 ease-in-out m-0 ${isOpening ? '-translate-y-[150%] rotate-[-10deg] opacity-0' : 'rounded-t-[200px]'}`}>
               <img
                 src="/logo.jpg"
                 alt="Zoe Pharmacy Logo"
-                className="h-16 w-auto mb-3 drop-shadow-sm rounded-xl"
+                className="h-16 w-auto mb-2.5 drop-shadow-sm rounded-xl"
               />
             </div>
 
-            <div className={`bg-[#54b768] px-9 pb-16 pt-7 flex flex-col space-y-4 transition-all duration-1000 ease-in-out m-0 ${isOpening ? 'translate-y-[150%] rotate-[10deg] opacity-0' : 'rounded-b-[200px]'}`}>
+            <div className={`bg-[#54b768] px-10 pb-24 pt-6 flex flex-col space-y-3.5 transition-all duration-1000 ease-in-out m-0 ${isOpening ? 'translate-y-[150%] rotate-[10deg] opacity-0' : 'rounded-b-[200px]'}`}>
               {forgotMode === 'login' && (
                 <form
                   ref={formRef}
                   onSubmit={handleSubmit}
-                  className={`space-y-4 text-left ${shake ? 'shake' : ''}`}
+                  className={`space-y-3.5 text-left ${shake ? 'shake' : ''}`}
                 >
                   {/* Username */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="username" className="text-gray-900 font-black text-xs ml-1">USERNAME</Label>
                     <Input
                       id="username"
@@ -421,12 +421,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setUsername(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isLocked || isLoading}
-                      className="bg-white/95 border-none h-12 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-base disabled:opacity-60"
+                      className="bg-white/95 border-none h-11.5 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
                   {/* Password */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="password" className="text-gray-900 font-black text-xs ml-1">PASSWORD</Label>
                     <div className="relative">
                       <Input
@@ -437,7 +437,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                         onChange={(e) => { setPassword(e.target.value); setErrorMsg(''); }}
                         required
                         disabled={isLocked || isLoading}
-                        className="bg-white/95 border-none h-12 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-base disabled:opacity-60"
+                        className="bg-white/95 border-none h-11.5 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                       />
                       <button
                         type="button"
@@ -462,7 +462,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
                   {/* Error / Lockout banner */}
                   {errorMsg && (
-                    <div className={`flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold ${isLocked ? 'bg-red-600 text-white' : 'bg-black/10 text-gray-900'}`}>
+                    <div className={`flex items-start gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold ${isLocked ? 'bg-red-600 text-white' : 'bg-black/10 text-gray-900'}`}>
                       {isLocked
                         ? <Lock className="size-3.5 mt-0.5 shrink-0" />
                         : <AlertCircle className="size-3.5 mt-0.5 shrink-0" />}
@@ -478,7 +478,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     disabled={isLocked || isLoading}
-                    className="w-full bg-gray-900 hover:bg-black text-white h-13 rounded-full font-black uppercase tracking-[.25em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full bg-gray-900 hover:bg-black text-white h-12 rounded-full font-black uppercase tracking-[.25em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {isLoading ? (
                       <span className="flex items-center gap-2">
@@ -500,9 +500,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               {forgotMode === 'forgot' && (
                 <form
                   onSubmit={handleForgotRequest}
-                  className="space-y-4 text-left"
+                  className="space-y-3.5 text-left"
                 >
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="forgotInput" className="text-gray-900 font-black text-xs ml-1">USERNAME OR EMAIL</Label>
                     <Input
                       id="forgotInput"
@@ -512,12 +512,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setForgotInput(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-12 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-base disabled:opacity-60"
+                      className="bg-white/95 border-none h-11.5 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
                   {errorMsg && (
-                    <div className="flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-black/10 text-gray-900">
+                    <div className="flex items-start gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-black/10 text-gray-900">
                       <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
@@ -526,7 +526,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     disabled={isResetLoading}
-                    className="w-full bg-gray-900 hover:bg-black text-white h-13 rounded-full font-black uppercase tracking-[.25em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full bg-gray-900 hover:bg-black text-white h-12 rounded-full font-black uppercase tracking-[.25em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isResetLoading ? (
                       <span className="flex items-center gap-2">
@@ -542,7 +542,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     type="button"
                     variant="ghost"
                     onClick={() => { setForgotMode('login'); setErrorMsg(''); }}
-                    className="w-full border-none hover:bg-black/5 text-gray-900 h-11 rounded-full font-black uppercase tracking-[.2em] text-xs transition-all mt-1"
+                    className="w-full border-none hover:bg-black/5 text-gray-900 h-10 rounded-full font-black uppercase tracking-[.2em] text-xs transition-all mt-1"
                   >
                     BACK TO LOGIN
                   </Button>
@@ -552,7 +552,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               {forgotMode === 'verify' && (
                 <form
                   onSubmit={handlePasswordReset}
-                  className="space-y-3.5 text-left"
+                  className="space-y-2.5 text-left"
                 >
                   <div className="space-y-0.5">
                     <Label className="text-gray-900 font-black text-xs ml-1">SENT TO</Label>
@@ -570,7 +570,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setResetCode(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-12 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-base disabled:opacity-60 text-center tracking-[0.4em] font-bold"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60 text-center tracking-[0.4em] font-bold"
                     />
                   </div>
 
@@ -584,7 +584,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setNewPassword(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-12 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-base disabled:opacity-60"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
@@ -598,12 +598,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       onChange={(e) => { setNewPasswordConfirm(e.target.value); setErrorMsg(''); }}
                       required
                       disabled={isResetLoading}
-                      className="bg-white/95 border-none h-12 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-base disabled:opacity-60"
+                      className="bg-white/95 border-none h-11 rounded-xl shadow-inner focus-visible:ring-2 focus-visible:ring-[#54b768] transition-all px-4 text-sm disabled:opacity-60"
                     />
                   </div>
 
                   {errorMsg && (
-                    <div className="flex items-start gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-black/10 text-gray-900">
+                    <div className="flex items-start gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-black/10 text-gray-900">
                       <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
@@ -612,7 +612,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="submit"
                     disabled={isResetLoading}
-                    className="w-full bg-gray-900 hover:bg-black text-white h-13 rounded-full font-black uppercase tracking-[.25em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full bg-gray-900 hover:bg-black text-white h-11.5 rounded-full font-black uppercase tracking-[.25em] text-xs shadow-xl transition-all hover:scale-[1.02] active:scale-95 mt-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isResetLoading ? (
                       <span className="flex items-center gap-2">
@@ -628,7 +628,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     type="button"
                     variant="ghost"
                     onClick={() => { setForgotMode('forgot'); setErrorMsg(''); }}
-                    className="w-full border-none hover:bg-black/5 text-gray-900 h-11 rounded-full font-black uppercase tracking-[.2em] text-xs transition-all mt-1"
+                    className="w-full border-none hover:bg-black/5 text-gray-900 h-10 rounded-full font-black uppercase tracking-[.2em] text-xs transition-all mt-0.5"
                   >
                     CANCEL
                   </Button>
