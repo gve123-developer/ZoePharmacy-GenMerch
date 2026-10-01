@@ -85,10 +85,24 @@ type Tab = 'dashboard' | 'inventory' | 'pos' | 'transactions' | 'reports' | 'use
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+      const cached = localStorage.getItem('cachedProducts');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [poCurrentPage, setPoCurrentPage] = useState(1);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    try {
+      const cached = localStorage.getItem('cachedTransactions');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // On desktop screens (>= 1024px), default sidebar to open
   useEffect(() => {
@@ -118,89 +132,28 @@ function App() {
 
     const fetchData = async () => {
       try {
-        const productsRes = await fetch('/api/products.php', {
-          cache: 'no-store'
-        });
+        const [productsRes, transactionsRes] = await Promise.all([
+          fetch('/api/products.php'),
+          fetch('/api/transactions.php')
+        ]);
 
-        if (!productsRes.ok) {
-          throw new Error(`Products API failed: HTTP ${productsRes.status}`);
-        }
-
-        const productsData = await productsRes.json();
-
-        if (!Array.isArray(productsData)) {
-          throw new Error('Products API returned invalid data');
-        }
-
-        setProducts(productsData);
-        localStorage.setItem(
-          'cachedProducts',
-          JSON.stringify(productsData)
-        );
-
-      } catch (error) {
-        console.error('Error fetching products:', error);
-
-        const cachedProducts = localStorage.getItem('cachedProducts');
-
-        if (cachedProducts) {
-          try {
-            const parsedProducts = JSON.parse(cachedProducts);
-
-            if (Array.isArray(parsedProducts)) {
-              setProducts(parsedProducts);
-            }
-          } catch (cacheError) {
-            console.error('Invalid cached products:', cacheError);
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          if (Array.isArray(productsData)) {
+            setProducts(productsData);
+            localStorage.setItem('cachedProducts', JSON.stringify(productsData));
           }
         }
-      }
 
-      try {
-        const transactionsRes = await fetch('/api/transactions.php', {
-          cache: 'no-store'
-        });
-
-        if (!transactionsRes.ok) {
-          throw new Error(
-            `Transactions API failed: HTTP ${transactionsRes.status}`
-          );
-        }
-
-        const transactionsData = await transactionsRes.json();
-
-        if (!Array.isArray(transactionsData)) {
-          throw new Error('Transactions API returned invalid data');
-        }
-
-        setTransactions(transactionsData);
-
-        localStorage.setItem(
-          'cachedTransactions',
-          JSON.stringify(transactionsData)
-        );
-
-      } catch (error) {
-        console.error('Error fetching transactions:', error);
-
-        const cachedTransactions =
-          localStorage.getItem('cachedTransactions');
-
-        if (cachedTransactions) {
-          try {
-            const parsedTransactions =
-              JSON.parse(cachedTransactions);
-
-            if (Array.isArray(parsedTransactions)) {
-              setTransactions(parsedTransactions);
-            }
-          } catch (cacheError) {
-            console.error(
-              'Invalid cached transactions:',
-              cacheError
-            );
+        if (transactionsRes.ok) {
+          const transactionsData = await transactionsRes.json();
+          if (Array.isArray(transactionsData)) {
+            setTransactions(transactionsData);
+            localStorage.setItem('cachedTransactions', JSON.stringify(transactionsData));
           }
         }
+      } catch (error) {
+        console.error('Error syncing products/transactions:', error);
       }
     };
     fetchData();
@@ -516,6 +469,7 @@ function App() {
             <Dashboard
               currentUser={currentUser}
               products={products}
+              transactions={transactions}
             />
           )}
           {activeTab === 'inventory' && (
@@ -530,6 +484,14 @@ function App() {
               currentUser={currentUser}
               products={products}
               onProductsChange={handleProductsChange}
+              onTransactionComplete={(newTx) => {
+                setTransactions(prev => [newTx, ...prev]);
+                try {
+                  const cached = localStorage.getItem('cachedTransactions');
+                  const list = cached ? JSON.parse(cached) : [];
+                  localStorage.setItem('cachedTransactions', JSON.stringify([newTx, ...list]));
+                } catch (e) {}
+              }}
             />
           )}
           {activeTab === 'transactions' && (

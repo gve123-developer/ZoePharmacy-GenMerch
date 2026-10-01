@@ -19,6 +19,7 @@ interface POSSystemProps {
   currentUser: User;
   products: Product[];
   onProductsChange: (products: Product[]) => void;
+  onTransactionComplete?: (transaction: any) => void;
 }
 
 interface CartItem {
@@ -85,7 +86,7 @@ const POPULAR_BRANDS = [
   'Zykast'
 ];
 
-export function POSSystem({ currentUser, products, onProductsChange }: POSSystemProps) {
+export function POSSystem({ currentUser, products, onProductsChange, onTransactionComplete }: POSSystemProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCondition, setFilterCondition] = useState('all');
   const [filterBrand, setFilterBrand] = useState('all');
@@ -410,6 +411,7 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         setCart([]);
         setAmountReceived('');
         setCompletedTransaction(transaction);
+        onTransactionComplete?.(transaction);
         toast.success('Transaction completed successfully!');
         speak('Transaction complete');
         setSearchQuery('');

@@ -13,6 +13,7 @@ import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 interface DashboardProps {
   currentUser: User;
   products: Product[];
+  transactions?: Transaction[];
 }
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
@@ -30,8 +31,16 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('en-PH').format(value);
 };
 
-export function Dashboard({ currentUser, products }: DashboardProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+export function Dashboard({ currentUser, products, transactions: propTransactions }: DashboardProps) {
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    if (propTransactions && propTransactions.length > 0) return propTransactions;
+    try {
+      const cached = localStorage.getItem('cachedTransactions');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   const [showLowStockAlert, setShowLowStockAlert] = useState(false);
   const [showOutOfStockAlert, setShowOutOfStockAlert] = useState(false);
   const [timeRange, setTimeRange] = useState('today');
@@ -64,24 +73,32 @@ export function Dashboard({ currentUser, products }: DashboardProps) {
   };
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 5000); // Auto-refresh every 5 seconds
-    return () => clearInterval(interval);
-  }, [products, timeRange]);
+    if (propTransactions && propTransactions.length > 0) {
+      setTransactions(propTransactions);
+    }
+  }, [propTransactions]);
 
+  useEffect(() => {
+    loadData();
+  }, [products, timeRange, propTransactions]);
 
   const loadData = async () => {
-    // Load transactions from API
-    let transactionsList: Transaction[] = [];
-    try {
-      const response = await fetch('/api/transactions.php');
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        transactionsList = data;
-        setTransactions(data);
+    // Reuse transactions passed from App state or cached transactions if available
+    let transactionsList: Transaction[] = (propTransactions && propTransactions.length > 0)
+      ? propTransactions
+      : transactions;
+
+    if (!transactionsList || transactionsList.length === 0) {
+      try {
+        const response = await fetch('/api/transactions.php');
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          transactionsList = data;
+          setTransactions(data);
+        }
+      } catch (error) {
+        console.error("Error loading dashboard transactions:", error);
       }
-    } catch (error) {
-      console.error("Error loading dashboard transactions:", error);
     }
 
     // Check for stock issues (considering both old and new stock)
