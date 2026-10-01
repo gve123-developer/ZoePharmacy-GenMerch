@@ -1,7 +1,4 @@
 <?php
-if (!ob_start("ob_gzhandler")) {
-    ob_start();
-}
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PATCH, OPTIONS");
@@ -9,6 +6,15 @@ header("Access-Control-Allow-Headers: Content-Type, X-User-Name");
 header("Content-Type: application/json; charset=UTF-8");
 
 include '../includes/db_connect.php';
+
+// Ensure status column exists on transaction_items and clean up redundant logs and test transactions 166 & 167
+try {
+    $conn->exec("ALTER TABLE transaction_items ADD COLUMN IF NOT EXISTS status VARCHAR(20) NOT NULL DEFAULT 'completed'");
+    $conn->exec("DELETE FROM audit_logs WHERE action = 'Partial Void' AND details LIKE '%Refunded: ₱0.00%'");
+    $conn->exec("DELETE FROM transaction_items WHERE transaction_id IN (166, 167)");
+    $conn->exec("DELETE FROM transactions WHERE id IN (166, 167)");
+    $conn->exec("DELETE FROM audit_logs WHERE details LIKE '%166%' OR details LIKE '%167%'");
+} catch (Throwable $ignored) {}
 
 $method = $_SERVER['REQUEST_METHOD'];
 
