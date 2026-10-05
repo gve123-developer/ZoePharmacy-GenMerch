@@ -6,31 +6,35 @@ const RX_KEYWORDS = [
   'cefuroxime', 'zinnat', 'cefixime', 'ciprofloxacin', 'ciprobay', 'levofloxacin', 'cravit', 'clarithromycin', 'klaricid',
   'erythromycin', 'doxycycline', 'clindamycin', 'dalacin', 'metronidazole', 'flagyl', 'cotrimoxazole', 'bactrim',
   'sumapen', 'ampicillin', 'fluconazole', 'diflucan', 'ketoconazole', 'itraconazole', 'acyclovir', 'zovirax',
-  'gentamicin', 'neomycin', 'chloramphenicol', 'ofloxacin', 'tobramycin', 'mupirocin', 'bactroban',
+  'gentamicin', 'neomycin', 'chloramphenicol', 'ofloxacin', 'inoflox', 'tobramycin', 'mupirocin', 'bactroban', 'mupicin',
+  'pediamox', 'himox', 'moxipen', 'cloxacillin', 'cefaclor', 'cefdinir', 'cefpodoxime', 'ceftriaxone',
 
   // Cardiovascular & Antihypertensives
-  'amlodipine', 'norvasc', 'losartan', 'cozaar', 'metoprolol', 'betaloc', 'telmisartan', 'micardis',
-  'candesartan', 'valsartan', 'captopril', 'enalapril', 'carvedilol', 'atenolol', 'diltiazem',
-  'verapamil', 'nifedipine', 'clopidogrel', 'plavix', 'digoxin', 'furosemide', 'lasix', 'spironolactone',
-  'hydralazine', 'isorbide', 'isordil', 'mononitrate', 'dinitrate', 'irbesartan',
+  'amlodipine', 'norvasc', 'amvaz', 'amovas', 'provasc', 'losartan', 'cozaar', 'lifezar', 'metoprolol', 'betaloc',
+  'neobloc', 'telmisartan', 'micardis', 'candesartan', 'valsartan', 'captopril', 'enalapril', 'carvedilol', 'atenolol',
+  'diltiazem', 'verapamil', 'nifedipine', 'calcibloc', 'adalat', 'clopidogrel', 'plavix', 'digoxin', 'furosemide',
+  'lasix', 'spironolactone', 'hydralazine', 'isorbide', 'isordil', 'imdur', 'mononitrate', 'dinitrate', 'irbesartan',
+  'catapres', 'clonidine', 'aspilets', 'cardiprin', 'bisoprolol', 'concor', 'nebivolol',
 
   // Diabetes
   'metformin', 'glimepiride', 'amaryl', 'gliclazide', 'diamicron', 'insulin', 'pioglitazone',
-  'sitagliptin', 'januvia', 'vildagliptin', 'galvus', 'linagliptin', 'trajenta', 'empagliflozin', 'jardiance', 'dapagliflozin', 'forxiga',
+  'sitagliptin', 'januvia', 'vildagliptin', 'galvus', 'linagliptin', 'trajenta', 'empagliflozin', 'jardiance',
+  'dapagliflozin', 'forxiga', 'glucophage',
 
   // Cholesterol
   'atorvastatin', 'lipitor', 'rosuvastatin', 'crestor', 'simvastatin', 'zocor', 'fenofibrate', 'gemfibrozil',
 
   // Corticosteroids
-  'prednisone', 'prednisolone', 'dexamethasone', 'hydrocortisone', 'betamethasone', 'methylprednisolone', 'medrol',
+  'prednisone', 'prednisolone', 'dexamethasone', 'hydrocortisone', 'betamethasone', 'betnovate',
+  'methylprednisolone', 'medrol', 'clobetasol', 'triamcinolone',
 
-  // Prescription Painkillers / NSAIDs
-  'celecoxib', 'celebrex', 'mefenamic', 'ponstan', 'tramadol', 'ketorolac', 'toradol', 'etoricoxib', 'arcoxia',
-  'meloxicam', 'mobic', 'piroxicam', 'feldene', 'diclofenac', 'voltaren',
+  // Prescription Painkillers & Anti-inflammatory (Rx NSAIDs)
+  'celecoxib', 'celebrex', 'mefenamic', 'ponstan', 'dolfenal', 'tramadol', 'ketorolac', 'toradol',
+  'etoricoxib', 'arcoxia', 'meloxicam', 'mobic', 'piroxicam', 'feldene', 'diclofenac', 'voltaren', 'cataflam',
 
-  // Asthma Nebules & Rx
-  'ventolin neb', 'salbutamol neb', 'budesonide', 'pulmicort', 'combivent', 'berodual', 'ipratropium',
-  'montelukast', 'singulair', 'zykast', 'seretide', 'symbicort', 'fluticasone', 'salmeterol',
+  // Asthma Nebules & Rx Respiratory
+  'ventolin neb', 'salbutamol neb', 'combivent', 'duavent', 'pulmodual', 'berodual', 'budesonide',
+  'pulmicort', 'ipratropium', 'montelukast', 'singulair', 'zykast', 'seretide', 'symbicort', 'fluticasone', 'salmeterol',
 
   // Uric Acid / Gout
   'allopurinol', 'zyloprim', 'colchicine', 'febuxostat',
@@ -38,18 +42,20 @@ const RX_KEYWORDS = [
   // Gastro Rx
   'omeprazole', 'prilosec', 'pantoprazole', 'pantocid', 'esomeprazole', 'nexium', 'ranitidine', 'famotidine',
 
-  // Thyroid
+  // Thyroid & Hormones
   'levothyroxine', 'euthyrox', 'methimazole', 'tapazole', 'propylthiouracil',
 
-  // Neuro / Psych
-  'gabapentin', 'neurontin', 'pregabalin', 'lyrica', 'carbamazepine', 'tegretol', 'clonazepam', 'alprazolam', 'diazepam'
+  // Neuro / Psych / Vertigo / Hemostatic
+  'gabapentin', 'neurontin', 'pregabalin', 'lyrica', 'carbamazepine', 'tegretol', 'clonazepam', 'alprazolam', 'diazepam',
+  'betahistine', 'serc', 'exigo', 'hemostan', 'tranexamic'
 ];
 
 const OTC_EXCEPTIONS = [
   'biogesic', 'calpol', 'tempra', 'rexidol', 'paracetamol', 'bioflu', 'neozep', 'decolgen',
   'solmux', 'ascof', 'robitussin', 'tuseran', 'ambroxol', 'carbocisteine', 'kremil', 'gaviscon',
   'maalox', 'tums', 'diatabs', 'loperamide', 'enervon', 'revicon', 'tiki-tiki', 'ceelin',
-  'ascorbic', 'zinc', 'strepsils', 'woods', 'vicks', 'katinko', 'white flower', 'salonpas', 'betadine'
+  'ascorbic', 'zinc', 'strepsils', 'woods', 'vicks', 'katinko', 'white flower', 'salonpas', 'betadine',
+  'alaxan', 'medicol', 'advil'
 ];
 
 /**

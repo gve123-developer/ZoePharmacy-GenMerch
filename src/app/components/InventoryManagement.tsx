@@ -698,7 +698,11 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                               <div className="flex items-center gap-1.5 flex-wrap">
                                 <span className="font-bold text-gray-900">{product.name.replace(/\*/g, '')}</span>
                                 {isRxProduct(product) && (
-                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-600 text-white shadow-xs" title="Prescription Required (Rx)">
+                                  <span
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white shadow-xs"
+                                    style={{ backgroundColor: '#dc2626', color: '#ffffff' }}
+                                    title="Prescription Required (Rx)"
+                                  >
                                     Rx
                                   </span>
                                 )}

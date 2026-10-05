@@ -29,6 +29,7 @@ interface CartItem {
 
 const HEALTH_CONDITIONS = [
   { id: 'all', label: 'All Health Uses' },
+  { id: 'rx_only', label: 'Prescription Medicines (Rx Only)' },
   { id: 'fever', label: 'For Fever & Pain (Lagnat at Sakit)', keywords: ['biogesic', 'paracetamol', 'advil', 'alaxan', 'medicol', 'tempra', 'calpol', 'ibuprofen', 'mefenamic', 'ponstan', 'arcoxia', 'aspilets', 'fever', 'pain', 'headache', 'toothache'] },
   { id: 'cough_cold', label: 'For Cough, Cold & Flu (Ubo at Sipon)', keywords: ['bioflu', 'neozep', 'decolgen', 'solmux', 'ascof', 'robitussin', 'tuseran', 'ambroxol', 'carbocisteine', 'benadryl', 'bisolvon', 'ambrolex', 'asmalin', 'symdek', 'cough', 'cold', 'flu', 'phlegm'] },
   { id: 'allergy', label: 'For Allergy & Itch (Pangangati)', keywords: ['allerkid', 'allerta', 'alnix', 'allerzet', 'cetirizine', 'loratadine', 'virlix', 'zyrtec', 'antihistamine', 'allergy', 'itch', 'hives'] },
@@ -195,9 +196,11 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
   const filteredProducts = useMemo(() => {
     return products
       .filter(product => {
-        // Search query (name or sku)
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+        // Search query (name, sku, or 'rx')
+        const trimmedSearch = searchQuery.trim().toLowerCase();
+        const matchesSearch = trimmedSearch === 'rx' 
+          ? isRxProduct(product)
+          : (product.name.toLowerCase().includes(trimmedSearch) || product.sku.toLowerCase().includes(trimmedSearch));
         if (!matchesSearch) return false;
 
         // A-Z Letter filter
@@ -210,12 +213,16 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
         const descLower = (product.description || '').toLowerCase();
         const combinedText = `${nameLower} ${descLower}`;
 
-        // Health Condition / Purpose Filter (e.g. For Fever, For Cough, etc.)
+        // Health Condition / Purpose Filter (e.g. Rx Only, For Fever, For Cough, etc.)
         if (filterCondition !== 'all') {
-          const condition = HEALTH_CONDITIONS.find(c => c.id === filterCondition);
-          if (condition && condition.keywords) {
-            const matchesCondition = condition.keywords.some(k => combinedText.includes(k));
-            if (!matchesCondition) return false;
+          if (filterCondition === 'rx_only') {
+            if (!isRxProduct(product)) return false;
+          } else {
+            const condition = HEALTH_CONDITIONS.find(c => c.id === filterCondition);
+            if (condition && condition.keywords) {
+              const matchesCondition = condition.keywords.some(k => combinedText.includes(k));
+              if (!matchesCondition) return false;
+            }
           }
         }
 
@@ -681,7 +688,11 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                               <div className="flex items-center gap-2 flex-wrap">
                                 <h4 className="font-bold text-gray-900">{product.name.replace(/\*/g, '')}</h4>
                                 {isRxProduct(product) && (
-                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-600 text-white shadow-xs" title="Prescription Required (Rx)">
+                                  <span
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider text-white shadow-xs shrink-0"
+                                    style={{ backgroundColor: '#dc2626', color: '#ffffff' }}
+                                    title="Prescription Required (Rx)"
+                                  >
                                     Rx
                                   </span>
                                 )}
@@ -767,7 +778,11 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                                     <div className="flex items-center gap-1.5 flex-wrap">
                                       <h4 className="font-bold text-sm text-gray-800 truncate uppercase tracking-tight">{item.product.name.replace(/\*/g, '')}</h4>
                                       {isRxProduct(item.product) && (
-                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-red-600 text-white shrink-0 shadow-xs" title="Prescription Required (Rx)">
+                                        <span
+                                          className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider text-white shrink-0 shadow-xs"
+                                          style={{ backgroundColor: '#dc2626', color: '#ffffff' }}
+                                          title="Prescription Required (Rx)"
+                                        >
                                           Rx
                                         </span>
                                       )}
