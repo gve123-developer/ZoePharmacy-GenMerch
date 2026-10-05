@@ -35,6 +35,11 @@ function apiError(int $code, string $message, string $debug = ''): void
 // GET: Fetch all products
 if ($method === 'GET') {
     try {
+        // Clean any lingering asterisks from product names
+        try {
+            $conn->exec("UPDATE products SET name = TRIM(REPLACE(name, '*', '')) WHERE name LIKE '%*%'");
+            $conn->exec("UPDATE deleted_products SET name = TRIM(REPLACE(name, '*', '')) WHERE name LIKE '%*%'");
+        } catch (Throwable $ignored) {}
 
         $sql = "
             SELECT

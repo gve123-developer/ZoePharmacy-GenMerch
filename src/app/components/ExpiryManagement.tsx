@@ -10,6 +10,7 @@ import { User, Product, LossEntry } from '@/app/App';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
 import { speak } from '@/app/utils/voiceUtils';
+import { isRxProduct } from '@/app/utils/rxUtils';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -374,7 +375,16 @@ export function ExpiryManagement({ currentUser, products, onProductsChange }: Ex
                                                 const status = getExpiryStatus(product);
                                                 return (
                                                     <TableRow key={product.id} className="hover:bg-gray-50 transition-colors even:bg-gray-50/50">
-                                                        <TableCell className="font-medium text-gray-900 whitespace-nowrap min-w-[150px] border px-4 py-2">{product.name}</TableCell>
+                                                        <TableCell className="font-medium text-gray-900 whitespace-nowrap min-w-[150px] border px-4 py-2">
+                                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                                <span>{product.name.replace(/\*/g, '')}</span>
+                                                                {isRxProduct(product) && (
+                                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-600 text-white shadow-xs" title="Prescription Required (Rx)">
+                                                                        Rx
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
                                                         <TableCell className="text-gray-500 font-mono text-xs whitespace-nowrap border px-4 py-2">{product.sku}</TableCell>
                                                         <TableCell className="whitespace-nowrap border px-4 py-2">
                                                             <Badge variant="outline" className="font-normal">

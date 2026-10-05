@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { jsPDF } from 'jspdf';
 import { speak } from '@/app/utils/voiceUtils';
+import { isRxProduct } from '@/app/utils/rxUtils';
 import { User, Product, Transaction } from '@/app/App';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -677,8 +678,13 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-bold text-gray-900">{product.name}</h4>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h4 className="font-bold text-gray-900">{product.name.replace(/\*/g, '')}</h4>
+                                {isRxProduct(product) && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-600 text-white shadow-xs" title="Prescription Required (Rx)">
+                                    Rx
+                                  </span>
+                                )}
                                 {(() => {
                                   const days = getDaysRemaining(product.expiryDate);
                                   if (days !== undefined) {
@@ -758,7 +764,14 @@ export function POSSystem({ currentUser, products, onProductsChange }: POSSystem
                               <div key={item.product.id} className="relative bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
                                 <div className="flex justify-between items-start mb-2">
                                   <div className="flex-1 min-w-0 pr-6">
-                                    <h4 className="font-bold text-sm text-gray-800 truncate uppercase tracking-tight">{item.product.name}</h4>
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <h4 className="font-bold text-sm text-gray-800 truncate uppercase tracking-tight">{item.product.name.replace(/\*/g, '')}</h4>
+                                      {isRxProduct(item.product) && (
+                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-red-600 text-white shrink-0 shadow-xs" title="Prescription Required (Rx)">
+                                          Rx
+                                        </span>
+                                      )}
+                                    </div>
                                     <p className="text-[10px] text-gray-400 font-mono">{item.product.sku}</p>
                                     <p className="text-[11px] text-[#2b59c3] font-medium mt-1">₱{item.product.price.toFixed(2)} each</p>
                                   </div>

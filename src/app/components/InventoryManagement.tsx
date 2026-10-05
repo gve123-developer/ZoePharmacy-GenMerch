@@ -23,6 +23,7 @@ import {
 import { cn } from '@/app/components/ui/utils';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { logAuditAction } from '@/app/utils/auditUtils';
+import { isRxProduct } from '@/app/utils/rxUtils';
 import { OwnerPasscodeModal } from '@/app/components/OwnerPasscodeModal';
 import {
   AlertDialog,
@@ -694,7 +695,14 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                         <TableRow key={product.id} className="hover:bg-gray-50/50 transition-colors">
                           <TableCell className="px-6 py-4 border-r border-gray-200">
                             <div className="flex flex-col">
-                              <span className="font-bold text-gray-900">{product.name}</span>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-bold text-gray-900">{product.name.replace(/\*/g, '')}</span>
+                                {isRxProduct(product) && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-600 text-white shadow-xs" title="Prescription Required (Rx)">
+                                    Rx
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center gap-2 mt-1">
                                 <span className="text-[10px] text-gray-400 font-black uppercase tracking-tighter bg-gray-100 px-1 rounded">{product.sku}</span>
                                 <span className="text-[10px] text-blue-500 font-bold uppercase">{product.category}</span>
