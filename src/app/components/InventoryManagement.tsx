@@ -53,6 +53,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [primarySort, setPrimarySort] = useState<'name' | 'stock' | 'none'>('none');
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isAuthAddOpen, setIsAuthAddOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -315,13 +316,11 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
               <h2 className="text-2xl font-bold text-gray-900">Inventory Management</h2>
               <p className="text-sm text-gray-700 font-semibold mt-1">Manage your products and stock levels</p>
             </div>
+            <Button onClick={() => setIsAuthAddOpen(true)}>
+              <Plus className="size-4 mr-2" />
+              Add Product
+            </Button>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="size-4 mr-2" />
-                  Add Product
-                </Button>
-              </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Add New Product</DialogTitle>
@@ -981,6 +980,19 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Owner Passcode Authorization for Add */}
+        <OwnerPasscodeModal
+          isOpen={isAuthAddOpen}
+          actionTitle="Add New Product"
+          actionDescription="Owner authorization required before creating a new product in the inventory."
+          onSuccess={() => {
+            setIsAuthAddOpen(false);
+            setFormData({});
+            setIsAddDialogOpen(true);
+          }}
+          onClose={() => setIsAuthAddOpen(false)}
+        />
 
         {/* Owner Passcode Authorization for Edit */}
         <OwnerPasscodeModal
