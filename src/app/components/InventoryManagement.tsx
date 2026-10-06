@@ -54,6 +54,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isAuthAddOpen, setIsAuthAddOpen] = useState(false);
+  const [showAddConfirm, setShowAddConfirm] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -62,6 +63,14 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
   const [isDeleting, setIsDeleting] = useState(false);
   const [productToAuthEdit, setProductToAuthEdit] = useState<Product | null>(null);
   const [productToAuthDelete, setProductToAuthDelete] = useState<Product | null>(null);
+
+  const onTriggerAddConfirm = () => {
+    if (!formData.name || !formData.sku || !formData.category || !formData.price || !formData.cost || !formData.quantity || !formData.reorderLevel) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    setShowAddConfirm(true);
+  };
 
   const handleAddProduct = async () => {
     if (!formData.name || !formData.sku || !formData.category || !formData.price || !formData.cost || !formData.quantity || !formData.reorderLevel) {
@@ -386,7 +395,7 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => { setIsAddDialogOpen(false); setFormData({}); }}>Cancel</Button>
-                  <Button onClick={handleAddProduct}>Add Product</Button>
+                  <Button onClick={onTriggerAddConfirm}>Add Product</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -929,6 +938,71 @@ export function InventoryManagement({ currentUser, products, onProductsChange }:
             </DialogContent>
           </Dialog>
         </ErrorBoundary>
+
+        {/* Confirm Add New Product Dialog */}
+        <AlertDialog open={showAddConfirm} onOpenChange={setShowAddConfirm}>
+          <AlertDialogContent className="max-w-md bg-white border-0 shadow-2xl p-6 rounded-2xl">
+            <AlertDialogHeader className="flex flex-col items-center text-center">
+              <div className="size-14 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+                <Package className="size-7 text-emerald-600" />
+              </div>
+              <AlertDialogTitle className="text-xl font-black text-gray-900">
+                Confirm Add New Product?
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm text-gray-600 mt-2">
+                Are you sure you want to add{' '}
+                <span className="font-bold text-gray-900">"{formData.name}"</span> to the inventory?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="bg-emerald-50/60 border border-emerald-100 rounded-xl p-3.5 my-3 text-xs text-gray-700 space-y-1.5">
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Product Name:</span>
+                <span className="font-bold text-gray-900">{formData.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Category:</span>
+                <span className="font-bold text-gray-900">{formData.category}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">SKU:</span>
+                <span className="font-bold text-gray-900">{formData.sku}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Selling Price:</span>
+                <span className="font-bold text-gray-900">₱{Number(formData.price || 0).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-gray-500">Initial Quantity:</span>
+                <span className="font-bold text-gray-900">{formData.quantity} units</span>
+              </div>
+              {formData.expiryDate && (
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-500">Expiry Date:</span>
+                  <span className="font-bold text-gray-900">{formData.expiryDate}</span>
+                </div>
+              )}
+            </div>
+
+            <AlertDialogFooter className="flex gap-2 sm:gap-3 mt-4">
+              <AlertDialogCancel
+                onClick={() => setShowAddConfirm(false)}
+                className="flex-1 font-bold rounded-xl"
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  setShowAddConfirm(false);
+                  handleAddProduct();
+                }}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl"
+              >
+                Yes, Add Product
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Confirm Save Changes Dialog */}
         <AlertDialog open={showSaveConfirm} onOpenChange={setShowSaveConfirm}>
