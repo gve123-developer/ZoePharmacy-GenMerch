@@ -1,0 +1,4151 @@
+{
+  "july_transactions": [
+    {
+      "tx_id": "TRX-00001",
+      "date_time": "2026-07-02 08:55:18",
+      "payment_method": "CASH",
+      "total_sale": 98.56,
+      "cash_received": 100.0,
+      "change_due": 1.44,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00202",
+          "name": "BIODERM Soap 90g (Blue)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 50.0,
+          "unit_price": 56.0,
+          "total_cost": 50.0,
+          "total_price": 56.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00217",
+          "name": "BIOGESIC 120mg/60mL (Orng)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 38.0,
+          "unit_price": 42.56,
+          "total_cost": 38.0,
+          "total_price": 42.56,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00002",
+      "date_time": "2026-07-02 10:24:42",
+      "payment_method": "CASH",
+      "total_sale": 31.8,
+      "cash_received": 50.0,
+      "change_due": 18.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00093",
+          "name": "ASPILETS Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.5,
+          "unit_price": 6.16,
+          "total_cost": 22.0,
+          "total_price": 24.64,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 6.4,
+          "total_price": 7.16,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00003",
+      "date_time": "2026-07-02 12:18:10",
+      "payment_method": "CASH",
+      "total_sale": 403.2,
+      "cash_received": 500.0,
+      "change_due": 96.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00004",
+      "date_time": "2026-07-02 12:40:58",
+      "payment_method": "CASH",
+      "total_sale": 98.56,
+      "cash_received": 100.0,
+      "change_due": 1.44,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 88.0,
+          "total_price": 98.56,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00005",
+      "date_time": "2026-07-02 13:11:12",
+      "payment_method": "CASH",
+      "total_sale": 4827.2,
+      "cash_received": 5000.0,
+      "change_due": 172.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3950.0,
+          "total_price": 4424.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00006",
+      "date_time": "2026-07-03 09:16:59",
+      "payment_method": "CASH",
+      "total_sale": 672.0,
+      "cash_received": 1000.0,
+      "change_due": 328.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00171",
+          "name": "BENCH D/Scent Col. 125-Sunday Mrng",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00007",
+      "date_time": "2026-07-03 09:41:39",
+      "payment_method": "CASH",
+      "total_sale": 3539.2,
+      "cash_received": 4000.0,
+      "change_due": 460.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3160.0,
+          "total_price": 3539.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00008",
+      "date_time": "2026-07-03 11:46:54",
+      "payment_method": "CASH",
+      "total_sale": 2004.8,
+      "cash_received": 2500.0,
+      "change_due": 495.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00128",
+          "name": "BENCH B/Spray 100mL B20",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 210.0,
+          "total_price": 235.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 1580.0,
+          "total_price": 1769.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00009",
+      "date_time": "2026-07-03 12:23:50",
+      "payment_method": "CASH",
+      "total_sale": 134.0,
+      "cash_received": 200.0,
+      "change_due": 66.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00010",
+      "date_time": "2026-07-03 18:21:12",
+      "payment_method": "CASH",
+      "total_sale": 28.0,
+      "cash_received": 50.0,
+      "change_due": 22.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 25.0,
+          "total_price": 28.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00011",
+      "date_time": "2026-07-04 12:07:19",
+      "payment_method": "CASH",
+      "total_sale": 106.4,
+      "cash_received": 200.0,
+      "change_due": 93.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00117",
+          "name": "BAND-AID Adhesive 50s",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 95.0,
+          "unit_price": 106.4,
+          "total_cost": 95.0,
+          "total_price": 106.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00012",
+      "date_time": "2026-07-04 15:15:37",
+      "payment_method": "CASH",
+      "total_sale": 672.0,
+      "cash_received": 1000.0,
+      "change_due": 328.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00013",
+      "date_time": "2026-07-04 16:19:15",
+      "payment_method": "CASH",
+      "total_sale": 1498.6,
+      "cash_received": 1500.0,
+      "change_due": 1.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00226",
+          "name": "BISOLVON Syrup 8mg/125mL",
+          "category": "Pharmaceutical",
+          "qty": 3,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 630.0,
+          "total_price": 705.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00025",
+          "name": "ALCOPLUS Isopropyl 70% 500mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 108.0,
+          "unit_price": 121.0,
+          "total_cost": 108.0,
+          "total_price": 121.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00014",
+      "date_time": "2026-07-04 17:01:45",
+      "payment_method": "CASH",
+      "total_sale": 347.2,
+      "cash_received": 500.0,
+      "change_due": 152.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00234",
+          "name": "BONAMIL 180g",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 155.0,
+          "unit_price": 173.6,
+          "total_cost": 310.0,
+          "total_price": 347.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00015",
+      "date_time": "2026-07-04 19:28:59",
+      "payment_method": "CASH",
+      "total_sale": 3.58,
+      "cash_received": 20.0,
+      "change_due": 16.42,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00016",
+      "date_time": "2026-07-05 11:32:16",
+      "payment_method": "CASH",
+      "total_sale": 235.2,
+      "cash_received": 500.0,
+      "change_due": 264.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00096",
+          "name": "AUGMENTIN 228mg 70mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 210.0,
+          "total_price": 235.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00017",
+      "date_time": "2026-07-05 12:59:58",
+      "payment_method": "CASH",
+      "total_sale": 798.16,
+      "cash_received": 1000.0,
+      "change_due": 201.84,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00184",
+          "name": "BETNOVATE Ointment 5g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 145.0,
+          "unit_price": 162.4,
+          "total_cost": 145.0,
+          "total_price": 162.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 88.0,
+          "total_price": 98.56,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00018",
+      "date_time": "2026-07-05 17:02:56",
+      "payment_method": "CASH",
+      "total_sale": 156.8,
+      "cash_received": 200.0,
+      "change_due": 43.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00092",
+          "name": "ASMALIN Syrup (New) 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 140.0,
+          "unit_price": 156.8,
+          "total_cost": 140.0,
+          "total_price": 156.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00019",
+      "date_time": "2026-07-05 17:09:40",
+      "payment_method": "CASH",
+      "total_sale": 22.4,
+      "cash_received": 50.0,
+      "change_due": 27.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00020",
+      "date_time": "2026-07-06 11:55:35",
+      "payment_method": "CASH",
+      "total_sale": 1786.4,
+      "cash_received": 2000.0,
+      "change_due": 213.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 15.0,
+          "total_price": 16.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 1580.0,
+          "total_price": 1769.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00021",
+      "date_time": "2026-07-06 13:49:47",
+      "payment_method": "CASH",
+      "total_sale": 257.6,
+      "cash_received": 500.0,
+      "change_due": 242.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00208",
+          "name": "BIODERM Soap 135g (Blue)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 70.0,
+          "unit_price": 78.4,
+          "total_cost": 70.0,
+          "total_price": 78.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00022",
+      "date_time": "2026-07-06 17:42:31",
+      "payment_method": "GCASH",
+      "total_sale": 87.0,
+      "cash_received": 87.0,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00061",
+          "name": "AP-AP Solution 60mL (Dann's Aid)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 78.0,
+          "unit_price": 87.0,
+          "total_cost": 78.0,
+          "total_price": 87.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00023",
+      "date_time": "2026-07-07 12:38:22",
+      "payment_method": "GCASH",
+      "total_sale": 197.12,
+      "cash_received": 197.12,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 16.0,
+          "total_price": 17.92,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00024",
+      "date_time": "2026-07-07 15:26:51",
+      "payment_method": "GCASH",
+      "total_sale": 672.0,
+      "cash_received": 672.0,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00171",
+          "name": "BENCH D/Scent Col. 125-Sunday Mrng",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00025",
+      "date_time": "2026-07-07 16:34:22",
+      "payment_method": "CASH",
+      "total_sale": 3.58,
+      "cash_received": 20.0,
+      "change_due": 16.42,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00026",
+      "date_time": "2026-07-07 18:14:14",
+      "payment_method": "CASH",
+      "total_sale": 268.8,
+      "cash_received": 500.0,
+      "change_due": 231.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 80.0,
+          "total_price": 89.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00238",
+          "name": "BONAMINE Chew Tablet (Kids)",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 110.0,
+          "total_price": 123.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00237",
+          "name": "BONAMINE Chew Tablet (Adult)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 25.0,
+          "unit_price": 28.0,
+          "total_cost": 50.0,
+          "total_price": 56.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00027",
+      "date_time": "2026-07-07 18:20:41",
+      "payment_method": "CASH",
+      "total_sale": 84.22,
+      "cash_received": 100.0,
+      "change_due": 15.78,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00249",
+          "name": "C.Y.GABRIEL Soap 60-Medicated",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 40.0,
+          "unit_price": 44.8,
+          "total_cost": 40.0,
+          "total_price": 44.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 32.0,
+          "total_price": 35.84,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00028",
+      "date_time": "2026-07-08 11:08:13",
+      "payment_method": "CASH",
+      "total_sale": 147.16,
+      "cash_received": 200.0,
+      "change_due": 52.84,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00143",
+          "name": "BENCH D/Scent Col. 25-Happy Hour",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 125.0,
+          "unit_price": 140.0,
+          "total_cost": 125.0,
+          "total_price": 140.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 6.4,
+          "total_price": 7.16,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00029",
+      "date_time": "2026-07-08 11:44:20",
+      "payment_method": "GCASH",
+      "total_sale": 313.2,
+      "cash_received": 313.2,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00063",
+          "name": "APPEBON KID Syrup 120mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 195.0,
+          "unit_price": 218.0,
+          "total_cost": 195.0,
+          "total_price": 218.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00100",
+          "name": "AUGMENTIN Tablet 375mg",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 8.5,
+          "unit_price": 9.52,
+          "total_cost": 85.0,
+          "total_price": 95.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00030",
+      "date_time": "2026-07-08 12:12:46",
+      "payment_method": "CASH",
+      "total_sale": 218.4,
+      "cash_received": 500.0,
+      "change_due": 281.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00210",
+          "name": "BIODERM Soap 135g (Pink)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 70.0,
+          "unit_price": 78.4,
+          "total_cost": 70.0,
+          "total_price": 78.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00141",
+          "name": "BENCH D/Scent Col. 25-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 125.0,
+          "unit_price": 140.0,
+          "total_cost": 125.0,
+          "total_price": 140.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00031",
+      "date_time": "2026-07-08 13:33:52",
+      "payment_method": "CASH",
+      "total_sale": 44.0,
+      "cash_received": 50.0,
+      "change_due": 6.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 38.0,
+          "total_price": 44.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00032",
+      "date_time": "2026-07-08 16:48:39",
+      "payment_method": "CASH",
+      "total_sale": 202.58,
+      "cash_received": 500.0,
+      "change_due": 297.42,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00034",
+          "name": "ALNIX Plus Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 178.0,
+          "unit_price": 199.0,
+          "total_cost": 178.0,
+          "total_price": 199.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00033",
+      "date_time": "2026-07-09 09:40:33",
+      "payment_method": "CASH",
+      "total_sale": 403.2,
+      "cash_received": 500.0,
+      "change_due": 96.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00034",
+      "date_time": "2026-07-09 10:45:51",
+      "payment_method": "CASH",
+      "total_sale": 515.2,
+      "cash_received": 1000.0,
+      "change_due": 484.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00095",
+          "name": "AUGMENTIN 156mg 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 180.0,
+          "unit_price": 201.6,
+          "total_cost": 180.0,
+          "total_price": 201.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00066",
+          "name": "APPEBON with Iron Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 140.0,
+          "unit_price": 156.8,
+          "total_cost": 280.0,
+          "total_price": 313.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00035",
+      "date_time": "2026-07-09 12:40:57",
+      "payment_method": "CASH",
+      "total_sale": 100.8,
+      "cash_received": 200.0,
+      "change_due": 99.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00187",
+          "name": "BIGEN Speedy (Light Brown)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 90.0,
+          "unit_price": 100.8,
+          "total_cost": 90.0,
+          "total_price": 100.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00036",
+      "date_time": "2026-07-09 14:27:50",
+      "payment_method": "CASH",
+      "total_sale": 285.92,
+      "cash_received": 500.0,
+      "change_due": 214.08,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 240.0,
+          "total_price": 268.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 16.0,
+          "total_price": 17.92,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00037",
+      "date_time": "2026-07-10 10:43:45",
+      "payment_method": "CASH",
+      "total_sale": 191.52,
+      "cash_received": 200.0,
+      "change_due": 8.48,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00093",
+          "name": "ASPILETS Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 5.5,
+          "unit_price": 6.16,
+          "total_cost": 11.0,
+          "total_price": 12.32,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00038",
+      "date_time": "2026-07-10 11:15:45",
+      "payment_method": "CASH",
+      "total_sale": 268.0,
+      "cash_received": 500.0,
+      "change_due": 232.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 240.0,
+          "total_price": 268.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00039",
+      "date_time": "2026-07-10 12:58:23",
+      "payment_method": "CASH",
+      "total_sale": 123.2,
+      "cash_received": 200.0,
+      "change_due": 76.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 75.0,
+          "total_price": 84.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00196",
+          "name": "BIODERM Soap 60g (Blue)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 35.0,
+          "unit_price": 39.2,
+          "total_cost": 35.0,
+          "total_price": 39.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00040",
+      "date_time": "2026-07-10 16:02:25",
+      "payment_method": "CASH",
+      "total_sale": 517.2,
+      "cash_received": 1000.0,
+      "change_due": 482.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00082",
+          "name": "ASCOF Syrup Forte Menthol 60mL SF",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 115.0,
+          "unit_price": 128.8,
+          "total_cost": 115.0,
+          "total_price": 128.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 320.0,
+          "total_price": 358.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00016",
+          "name": "ALCOPLUS Ethyl 70% 60mL Spray",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 26.0,
+          "unit_price": 30.0,
+          "total_cost": 26.0,
+          "total_price": 30.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00041",
+      "date_time": "2026-07-10 19:22:12",
+      "payment_method": "CASH",
+      "total_sale": 347.2,
+      "cash_received": 500.0,
+      "change_due": 152.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00241",
+          "name": "BONNA 400g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 310.0,
+          "unit_price": 347.2,
+          "total_cost": 310.0,
+          "total_price": 347.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00042",
+      "date_time": "2026-07-11 08:54:31",
+      "payment_method": "CASH",
+      "total_sale": 235.2,
+      "cash_received": 500.0,
+      "change_due": 264.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00133",
+          "name": "BENCH B/Spray 100mL i Desire",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 210.0,
+          "total_price": 235.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00043",
+      "date_time": "2026-07-11 11:47:35",
+      "payment_method": "CASH",
+      "total_sale": 537.2,
+      "cash_received": 1000.0,
+      "change_due": 462.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00044",
+      "date_time": "2026-07-11 12:18:32",
+      "payment_method": "CASH",
+      "total_sale": 168.0,
+      "cash_received": 200.0,
+      "change_due": 32.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00111",
+          "name": "AXE Spray 50mL (You)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 150.0,
+          "unit_price": 168.0,
+          "total_cost": 150.0,
+          "total_price": 168.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00045",
+      "date_time": "2026-07-11 15:18:46",
+      "payment_method": "CASH",
+      "total_sale": 84.0,
+      "cash_received": 100.0,
+      "change_due": 16.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 75.0,
+          "total_price": 84.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00046",
+      "date_time": "2026-07-12 09:41:52",
+      "payment_method": "CASH",
+      "total_sale": 259.84,
+      "cash_received": 500.0,
+      "change_due": 240.16,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00084",
+          "name": "ASCOF Syrup Forte 120mL Sugar Free",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 162.0,
+          "unit_price": 181.44,
+          "total_cost": 162.0,
+          "total_price": 181.44,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00207",
+          "name": "BIODERM Soap 135g (Beige)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 70.0,
+          "unit_price": 78.4,
+          "total_cost": 70.0,
+          "total_price": 78.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00047",
+      "date_time": "2026-07-12 11:51:30",
+      "payment_method": "CASH",
+      "total_sale": 35.84,
+      "cash_received": 50.0,
+      "change_due": 14.16,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 32.0,
+          "total_price": 35.84,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00048",
+      "date_time": "2026-07-12 14:42:34",
+      "payment_method": "CASH",
+      "total_sale": 3705.2,
+      "cash_received": 4000.0,
+      "change_due": 294.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00005",
+          "name": "AGUA OXIGENADA 10V 120mL (Ace)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 28.0,
+          "unit_price": 32.0,
+          "total_cost": 28.0,
+          "total_price": 32.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3160.0,
+          "total_price": 3539.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00049",
+      "date_time": "2026-07-12 15:51:39",
+      "payment_method": "CASH",
+      "total_sale": 851.2,
+      "cash_received": 1000.0,
+      "change_due": 148.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00171",
+          "name": "BENCH D/Scent Col. 125-Sunday Mrng",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00050",
+      "date_time": "2026-07-13 10:05:22",
+      "payment_method": "CASH",
+      "total_sale": 64.0,
+      "cash_received": 100.0,
+      "change_due": 36.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00030",
+          "name": "ALLERTA Tablet 10mg",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 14.0,
+          "unit_price": 16.0,
+          "total_cost": 56.0,
+          "total_price": 64.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00051",
+      "date_time": "2026-07-13 12:20:50",
+      "payment_method": "CASH",
+      "total_sale": 90.84,
+      "cash_received": 100.0,
+      "change_due": 9.16,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 32.0,
+          "total_price": 35.84,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 47.5,
+          "total_price": 55.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00052",
+      "date_time": "2026-07-13 12:30:59",
+      "payment_method": "CASH",
+      "total_sale": 447.2,
+      "cash_received": 500.0,
+      "change_due": 52.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 240.0,
+          "total_price": 268.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00053",
+      "date_time": "2026-07-13 13:47:17",
+      "payment_method": "CASH",
+      "total_sale": 337.47,
+      "cash_received": 500.0,
+      "change_due": 162.53,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00088",
+          "name": "ASCORBIC ACID 500mg (Rhea)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.1,
+          "unit_price": 3.47,
+          "total_cost": 3.1,
+          "total_price": 3.47,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00148",
+          "name": "BENCH D/Scent Col. 25-Sunday Mrng",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 125.0,
+          "unit_price": 140.0,
+          "total_cost": 250.0,
+          "total_price": 280.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00060",
+          "name": "AP-AP Solution 30mL (LAR)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 48.0,
+          "unit_price": 54.0,
+          "total_cost": 48.0,
+          "total_price": 54.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00054",
+      "date_time": "2026-07-13 14:13:20",
+      "payment_method": "CASH",
+      "total_sale": 4692.8,
+      "cash_received": 5000.0,
+      "change_due": 307.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3950.0,
+          "total_price": 4424.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00150",
+          "name": "BENCH D/Scent Col. 50-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 240.0,
+          "unit_price": 268.8,
+          "total_cost": 240.0,
+          "total_price": 268.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00055",
+      "date_time": "2026-07-14 09:49:25",
+      "payment_method": "CASH",
+      "total_sale": 672.0,
+      "cash_received": 1000.0,
+      "change_due": 328.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00056",
+      "date_time": "2026-07-14 12:34:34",
+      "payment_method": "CASH",
+      "total_sale": 39.42,
+      "cash_received": 50.0,
+      "change_due": 10.58,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 32.0,
+          "total_price": 35.84,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00057",
+      "date_time": "2026-07-14 13:11:36",
+      "payment_method": "CASH",
+      "total_sale": 208.56,
+      "cash_received": 500.0,
+      "change_due": 291.44,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 88.0,
+          "total_price": 98.56,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 95.0,
+          "total_price": 110.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00058",
+      "date_time": "2026-07-14 13:22:29",
+      "payment_method": "CASH",
+      "total_sale": 347.2,
+      "cash_received": 500.0,
+      "change_due": 152.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00210",
+          "name": "BIODERM Soap 135g (Pink)",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 70.0,
+          "unit_price": 78.4,
+          "total_cost": 140.0,
+          "total_price": 156.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 10.0,
+          "total_price": 11.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00059",
+      "date_time": "2026-07-14 16:00:41",
+      "payment_method": "GCASH",
+      "total_sale": 184.0,
+      "cash_received": 184.0,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00029",
+          "name": "ALLERTA Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 165.0,
+          "unit_price": 184.0,
+          "total_cost": 165.0,
+          "total_price": 184.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00060",
+      "date_time": "2026-07-15 08:57:35",
+      "payment_method": "CASH",
+      "total_sale": 21.5,
+      "cash_received": 50.0,
+      "change_due": 28.5,
+      "status": "VOIDED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 16.0,
+          "total_price": 17.92,
+          "status": "VOIDED"
+        },
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "VOIDED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00061",
+      "date_time": "2026-07-15 10:40:30",
+      "payment_method": "CASH",
+      "total_sale": 22.0,
+      "cash_received": 50.0,
+      "change_due": 28.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 19.0,
+          "total_price": 22.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00062",
+      "date_time": "2026-07-15 17:36:36",
+      "payment_method": "CASH",
+      "total_sale": 16.8,
+      "cash_received": 20.0,
+      "change_due": 3.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 15.0,
+          "total_price": 16.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00063",
+      "date_time": "2026-07-15 19:07:32",
+      "payment_method": "CASH",
+      "total_sale": 36.0,
+      "cash_received": 50.0,
+      "change_due": 14.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00049",
+          "name": "AMOXICILLIN Cap 250mg (Benedex)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 16.0,
+          "unit_price": 18.0,
+          "total_cost": 32.0,
+          "total_price": 36.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00064",
+      "date_time": "2026-07-16 08:50:19",
+      "payment_method": "CASH",
+      "total_sale": 4827.2,
+      "cash_received": 5000.0,
+      "change_due": 172.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3950.0,
+          "total_price": 4424.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00065",
+      "date_time": "2026-07-16 11:54:48",
+      "payment_method": "CASH",
+      "total_sale": 828.8,
+      "cash_received": 1000.0,
+      "change_due": 171.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00120",
+          "name": "BENADRYL AH 50mg Cap 100s",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 260.0,
+          "unit_price": 291.2,
+          "total_cost": 260.0,
+          "total_price": 291.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00153",
+          "name": "BENCH D/Scent Col. 50-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 240.0,
+          "unit_price": 268.8,
+          "total_cost": 480.0,
+          "total_price": 537.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00066",
+      "date_time": "2026-07-16 19:06:46",
+      "payment_method": "CASH",
+      "total_sale": 1702.4,
+      "cash_received": 2000.0,
+      "change_due": 297.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 320.0,
+          "total_price": 358.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00085",
+          "name": "ASCOF Syrup Strawberry 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 100.0,
+          "unit_price": 112.0,
+          "total_cost": 100.0,
+          "total_price": 112.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 3,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 1080.0,
+          "total_price": 1209.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00067",
+      "date_time": "2026-07-17 14:25:14",
+      "payment_method": "CASH",
+      "total_sale": 162.4,
+      "cash_received": 200.0,
+      "change_due": 37.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00184",
+          "name": "BETNOVATE Ointment 5g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 145.0,
+          "unit_price": 162.4,
+          "total_cost": 145.0,
+          "total_price": 162.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00068",
+      "date_time": "2026-07-17 14:49:33",
+      "payment_method": "CASH",
+      "total_sale": 576.8,
+      "cash_received": 1000.0,
+      "change_due": 423.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 75.0,
+          "total_price": 84.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00136",
+          "name": "BENCH B/Spray 100mL Pure Play",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 420.0,
+          "total_price": 470.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00069",
+      "date_time": "2026-07-17 15:48:39",
+      "payment_method": "CASH",
+      "total_sale": 1825.6,
+      "cash_received": 2000.0,
+      "change_due": 174.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 1580.0,
+          "total_price": 1769.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00202",
+          "name": "BIODERM Soap 90g (Blue)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 50.0,
+          "unit_price": 56.0,
+          "total_cost": 50.0,
+          "total_price": 56.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00070",
+      "date_time": "2026-07-17 17:35:58",
+      "payment_method": "CASH",
+      "total_sale": 183.28,
+      "cash_received": 200.0,
+      "change_due": 16.72,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 44.0,
+          "total_price": 49.28,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00071",
+      "date_time": "2026-07-18 13:12:10",
+      "payment_method": "CASH",
+      "total_sale": 35.84,
+      "cash_received": 50.0,
+      "change_due": 14.16,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 32.0,
+          "total_price": 35.84,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00072",
+      "date_time": "2026-07-18 13:16:58",
+      "payment_method": "CASH",
+      "total_sale": 182.0,
+      "cash_received": 200.0,
+      "change_due": 18.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00013",
+          "name": "ALCOPLUS Ethyl 70% 250mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 62.0,
+          "unit_price": 70.0,
+          "total_cost": 62.0,
+          "total_price": 70.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00237",
+          "name": "BONAMINE Chew Tablet (Adult)",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 25.0,
+          "unit_price": 28.0,
+          "total_cost": 100.0,
+          "total_price": 112.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00073",
+      "date_time": "2026-07-18 14:18:25",
+      "payment_method": "CASH",
+      "total_sale": 212.8,
+      "cash_received": 500.0,
+      "change_due": 287.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 30.0,
+          "total_price": 33.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00074",
+      "date_time": "2026-07-18 17:59:39",
+      "payment_method": "CASH",
+      "total_sale": 1769.6,
+      "cash_received": 2000.0,
+      "change_due": 230.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 1580.0,
+          "total_price": 1769.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00075",
+      "date_time": "2026-07-18 18:40:57",
+      "payment_method": "CASH",
+      "total_sale": 5230.4,
+      "cash_received": 5500.0,
+      "change_due": 269.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3950.0,
+          "total_price": 4424.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00150",
+          "name": "BENCH D/Scent Col. 50-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 3,
+          "unit_cost": 240.0,
+          "unit_price": 268.8,
+          "total_cost": 720.0,
+          "total_price": 806.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00076",
+      "date_time": "2026-07-19 10:12:28",
+      "payment_method": "CASH",
+      "total_sale": 16.8,
+      "cash_received": 20.0,
+      "change_due": 3.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 15.0,
+          "total_price": 16.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00077",
+      "date_time": "2026-07-19 11:48:12",
+      "payment_method": "CASH",
+      "total_sale": 319.2,
+      "cash_received": 500.0,
+      "change_due": 180.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00092",
+          "name": "ASMALIN Syrup (New) 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 140.0,
+          "unit_price": 156.8,
+          "total_cost": 140.0,
+          "total_price": 156.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00184",
+          "name": "BETNOVATE Ointment 5g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 145.0,
+          "unit_price": 162.4,
+          "total_cost": 145.0,
+          "total_price": 162.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00078",
+      "date_time": "2026-07-19 13:19:28",
+      "payment_method": "CASH",
+      "total_sale": 134.0,
+      "cash_received": 200.0,
+      "change_due": 66.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00079",
+      "date_time": "2026-07-19 18:41:40",
+      "payment_method": "GCASH",
+      "total_sale": 22.4,
+      "cash_received": 22.4,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00080",
+      "date_time": "2026-07-20 11:02:29",
+      "payment_method": "GCASH",
+      "total_sale": 235.2,
+      "cash_received": 235.2,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00131",
+          "name": "BENCH B/Spray 100mL Eight",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 210.0,
+          "total_price": 235.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00081",
+      "date_time": "2026-07-20 11:05:49",
+      "payment_method": "CASH",
+      "total_sale": 21.94,
+      "cash_received": 50.0,
+      "change_due": 28.06,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 3,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 9.6,
+          "total_price": 10.74,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 10.0,
+          "total_price": 11.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00082",
+      "date_time": "2026-07-20 18:06:49",
+      "payment_method": "GCASH",
+      "total_sale": 1993.6,
+      "cash_received": 1993.6,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 1580.0,
+          "total_price": 1769.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00117",
+          "name": "BAND-AID Adhesive 50s",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 95.0,
+          "unit_price": 106.4,
+          "total_cost": 95.0,
+          "total_price": 106.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00106",
+          "name": "AXE Roll-On 40mL (Gold Temp)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 75.0,
+          "unit_price": 84.0,
+          "total_cost": 75.0,
+          "total_price": 84.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 30.0,
+          "total_price": 33.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00083",
+      "date_time": "2026-07-21 09:03:54",
+      "payment_method": "CASH",
+      "total_sale": 806.4,
+      "cash_received": 1000.0,
+      "change_due": 193.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 720.0,
+          "total_price": 806.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00084",
+      "date_time": "2026-07-21 12:27:50",
+      "payment_method": "CASH",
+      "total_sale": 1769.2,
+      "cash_received": 2000.0,
+      "change_due": 230.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00171",
+          "name": "BENCH D/Scent Col. 125-Sunday Mrng",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 1200.0,
+          "total_price": 1344.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 19.0,
+          "total_price": 22.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00085",
+      "date_time": "2026-07-21 13:19:29",
+      "payment_method": "CASH",
+      "total_sale": 4919.04,
+      "cash_received": 5000.0,
+      "change_due": 80.96,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00073",
+          "name": "ASCOF Forte 600mg Capsule 60s",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 420.0,
+          "unit_price": 470.4,
+          "total_cost": 4200.0,
+          "total_price": 4704.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 32.0,
+          "total_price": 35.84,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00086",
+      "date_time": "2026-07-21 13:25:15",
+      "payment_method": "CASH",
+      "total_sale": 4746.48,
+      "cash_received": 5000.0,
+      "change_due": 253.52,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00064",
+          "name": "APPEBON KID Syrup 250mL",
+          "category": "Pharmaceutical",
+          "qty": 3,
+          "unit_cost": 345.0,
+          "unit_price": 386.0,
+          "total_cost": 1035.0,
+          "total_price": 1158.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 3160.0,
+          "total_price": 3539.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 44.0,
+          "total_price": 49.28,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00087",
+      "date_time": "2026-07-22 11:29:51",
+      "payment_method": "CASH",
+      "total_sale": 22.4,
+      "cash_received": 50.0,
+      "change_due": 27.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00088",
+      "date_time": "2026-07-22 16:31:41",
+      "payment_method": "CASH",
+      "total_sale": 340.48,
+      "cash_received": 500.0,
+      "change_due": 159.52,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 44.0,
+          "total_price": 49.28,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00120",
+          "name": "BENADRYL AH 50mg Cap 100s",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 260.0,
+          "unit_price": 291.2,
+          "total_cost": 260.0,
+          "total_price": 291.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00089",
+      "date_time": "2026-07-22 17:21:28",
+      "payment_method": "CASH",
+      "total_sale": 162.0,
+      "cash_received": 200.0,
+      "change_due": 38.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00031",
+          "name": "ALLERZET 2.5mg Syrup 30mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 145.0,
+          "unit_price": 162.0,
+          "total_cost": 145.0,
+          "total_price": 162.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00090",
+      "date_time": "2026-07-23 10:28:42",
+      "payment_method": "CASH",
+      "total_sale": 106.4,
+      "cash_received": 200.0,
+      "change_due": 93.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00072",
+          "name": "ASCOF 600mg 5-DAY Relief Pack",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 95.0,
+          "unit_price": 106.4,
+          "total_cost": 95.0,
+          "total_price": 106.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00091",
+      "date_time": "2026-07-23 12:48:22",
+      "payment_method": "CASH",
+      "total_sale": 205.18,
+      "cash_received": 500.0,
+      "change_due": 294.82,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00224",
+          "name": "BISOLVON Syrup 4mg/120mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 180.0,
+          "unit_price": 201.6,
+          "total_cost": 180.0,
+          "total_price": 201.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00092",
+      "date_time": "2026-07-23 14:01:28",
+      "payment_method": "CASH",
+      "total_sale": 323.8,
+      "cash_received": 500.0,
+      "change_due": 176.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 47.5,
+          "total_price": 55.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00156",
+          "name": "BENCH D/Scent Col. 50-Spring Brk",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 240.0,
+          "unit_price": 268.8,
+          "total_cost": 240.0,
+          "total_price": 268.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00093",
+      "date_time": "2026-07-23 15:23:10",
+      "payment_method": "CASH",
+      "total_sale": 268.8,
+      "cash_received": 500.0,
+      "change_due": 231.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00119",
+          "name": "BENADRYL AH 25mg Cap 100s",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 240.0,
+          "unit_price": 268.8,
+          "total_cost": 240.0,
+          "total_price": 268.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00094",
+      "date_time": "2026-07-24 11:07:42",
+      "payment_method": "CASH",
+      "total_sale": 3.58,
+      "cash_received": 20.0,
+      "change_due": 16.42,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00095",
+      "date_time": "2026-07-24 13:28:45",
+      "payment_method": "CASH",
+      "total_sale": 313.6,
+      "cash_received": 500.0,
+      "change_due": 186.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00066",
+          "name": "APPEBON with Iron Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 140.0,
+          "unit_price": 156.8,
+          "total_cost": 280.0,
+          "total_price": 313.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00096",
+      "date_time": "2026-07-24 17:00:27",
+      "payment_method": "CASH",
+      "total_sale": 579.2,
+      "cash_received": 1000.0,
+      "change_due": 420.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 37.5,
+          "total_price": 42.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00097",
+      "date_time": "2026-07-24 19:33:19",
+      "payment_method": "CASH",
+      "total_sale": 288.4,
+      "cash_received": 500.0,
+      "change_due": 211.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 37.5,
+          "total_price": 42.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 220.0,
+          "total_price": 246.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00098",
+      "date_time": "2026-07-25 12:29:12",
+      "payment_method": "CASH",
+      "total_sale": 55.0,
+      "cash_received": 100.0,
+      "change_due": 45.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 47.5,
+          "total_price": 55.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00099",
+      "date_time": "2026-07-25 15:02:51",
+      "payment_method": "CASH",
+      "total_sale": 232.4,
+      "cash_received": 500.0,
+      "change_due": 267.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 37.5,
+          "total_price": 42.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00191",
+          "name": "BIGEN-B (Brown Black)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 85.0,
+          "unit_price": 95.2,
+          "total_cost": 170.0,
+          "total_price": 190.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00100",
+      "date_time": "2026-07-25 15:30:38",
+      "payment_method": "GCASH",
+      "total_sale": 821.2,
+      "cash_received": 821.2,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 95.0,
+          "total_price": 110.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00197",
+          "name": "BIODERM Soap 60g (Green)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 35.0,
+          "unit_price": 39.2,
+          "total_cost": 35.0,
+          "total_price": 39.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00101",
+      "date_time": "2026-07-25 18:15:54",
+      "payment_method": "CASH",
+      "total_sale": 55.0,
+      "cash_received": 100.0,
+      "change_due": 45.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 47.5,
+          "total_price": 55.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00102",
+      "date_time": "2026-07-26 13:54:44",
+      "payment_method": "GCASH",
+      "total_sale": 250.0,
+      "cash_received": 250.0,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00057",
+          "name": "AMVASC BE 10mg Tablet",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 22.0,
+          "unit_price": 25.0,
+          "total_cost": 220.0,
+          "total_price": 250.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00103",
+      "date_time": "2026-07-26 16:49:57",
+      "payment_method": "GCASH",
+      "total_sale": 512.2,
+      "cash_received": 512.2,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00034",
+          "name": "ALNIX Plus Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 178.0,
+          "unit_price": 199.0,
+          "total_cost": 178.0,
+          "total_price": 199.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00104",
+      "date_time": "2026-07-26 19:11:43",
+      "payment_method": "CASH",
+      "total_sale": 689.92,
+      "cash_received": 1000.0,
+      "change_due": 310.08,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 16.0,
+          "total_price": 17.92,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00105",
+      "date_time": "2026-07-27 10:56:39",
+      "payment_method": "CASH",
+      "total_sale": 100.0,
+      "cash_received": 100.0,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00057",
+          "name": "AMVASC BE 10mg Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 25.0,
+          "total_cost": 88.0,
+          "total_price": 100.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00106",
+      "date_time": "2026-07-27 12:27:20",
+      "payment_method": "GCASH",
+      "total_sale": 442.0,
+      "cash_received": 442.0,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00207",
+          "name": "BIODERM Soap 135g (Beige)",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 70.0,
+          "unit_price": 78.4,
+          "total_cost": 140.0,
+          "total_price": 156.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00226",
+          "name": "BISOLVON Syrup 8mg/125mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 210.0,
+          "total_price": 235.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00012",
+          "name": "ALCOPLUS Ethyl 70% 150mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 45.0,
+          "unit_price": 50.0,
+          "total_cost": 45.0,
+          "total_price": 50.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00107",
+      "date_time": "2026-07-27 12:50:40",
+      "payment_method": "GCASH",
+      "total_sale": 1209.6,
+      "cash_received": 1209.6,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 3,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 1080.0,
+          "total_price": 1209.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00108",
+      "date_time": "2026-07-27 16:22:28",
+      "payment_method": "GCASH",
+      "total_sale": 559.2,
+      "cash_received": 559.2,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 240.0,
+          "total_price": 268.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 80.0,
+          "total_price": 89.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00185",
+          "name": "BIGEN Speedy (Brown Black)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 90.0,
+          "unit_price": 100.8,
+          "total_cost": 180.0,
+          "total_price": 201.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00109",
+      "date_time": "2026-07-27 19:23:24",
+      "payment_method": "CASH",
+      "total_sale": 386.0,
+      "cash_received": 500.0,
+      "change_due": 114.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00064",
+          "name": "APPEBON KID Syrup 250mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 345.0,
+          "unit_price": 386.0,
+          "total_cost": 345.0,
+          "total_price": 386.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00110",
+      "date_time": "2026-07-28 10:09:12",
+      "payment_method": "CASH",
+      "total_sale": 84.0,
+      "cash_received": 100.0,
+      "change_due": 16.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00104",
+          "name": "AXE Roll-On 40mL (Click)",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 75.0,
+          "unit_price": 84.0,
+          "total_cost": 75.0,
+          "total_price": 84.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00111",
+      "date_time": "2026-07-28 10:50:28",
+      "payment_method": "CASH",
+      "total_sale": 42.0,
+      "cash_received": 50.0,
+      "change_due": 8.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 37.5,
+          "total_price": 42.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00112",
+      "date_time": "2026-07-28 19:12:33",
+      "payment_method": "CASH",
+      "total_sale": 265.44,
+      "cash_received": 500.0,
+      "change_due": 234.56,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00083",
+          "name": "ASCOF Syrup Forte Menthol 120mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 158.0,
+          "unit_price": 176.96,
+          "total_cost": 158.0,
+          "total_price": 176.96,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00246",
+          "name": "BUSCOPAN Plus Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 12.0,
+          "unit_price": 13.44,
+          "total_cost": 24.0,
+          "total_price": 26.88,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00220",
+          "name": "BIOGESIC 250mg/60mL (Stwbry)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 55.0,
+          "unit_price": 61.6,
+          "total_cost": 55.0,
+          "total_price": 61.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00113",
+      "date_time": "2026-07-28 19:13:14",
+      "payment_method": "CASH",
+      "total_sale": 280.8,
+      "cash_received": 500.0,
+      "change_due": 219.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00056",
+          "name": "AMVASC BE 5mg Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 18.0,
+          "unit_price": 20.0,
+          "total_cost": 36.0,
+          "total_price": 40.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 160.0,
+          "total_price": 179.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00222",
+          "name": "BIOGESIC Tablet",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 8.0,
+          "unit_price": 8.96,
+          "total_cost": 40.0,
+          "total_price": 44.8,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 15.0,
+          "total_price": 16.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00114",
+      "date_time": "2026-07-28 19:31:34",
+      "payment_method": "CASH",
+      "total_sale": 9531.2,
+      "cash_received": 10000.0,
+      "change_due": 468.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 7900.0,
+          "total_price": 8848.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 10.0,
+          "total_price": 11.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00169",
+          "name": "BENCH D/Scent Col. 125-Nine 2 Mine",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00115",
+      "date_time": "2026-07-29 10:29:18",
+      "payment_method": "GCASH",
+      "total_sale": 268.8,
+      "cash_received": 268.8,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00119",
+          "name": "BENADRYL AH 25mg Cap 100s",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 240.0,
+          "unit_price": 268.8,
+          "total_cost": 240.0,
+          "total_price": 268.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00116",
+      "date_time": "2026-07-29 13:39:44",
+      "payment_method": "CASH",
+      "total_sale": 481.6,
+      "cash_received": 500.0,
+      "change_due": 18.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00238",
+          "name": "BONAMINE Chew Tablet (Kids)",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 110.0,
+          "total_price": 123.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00231",
+          "name": "BONAKID 180g",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 160.0,
+          "unit_price": 179.2,
+          "total_cost": 320.0,
+          "total_price": 358.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00117",
+      "date_time": "2026-07-29 15:28:51",
+      "payment_method": "GCASH",
+      "total_sale": 501.76,
+      "cash_received": 501.76,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 88.0,
+          "total_price": 98.56,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00118",
+      "date_time": "2026-07-29 19:34:25",
+      "payment_method": "CASH",
+      "total_sale": 61.6,
+      "cash_received": 100.0,
+      "change_due": 38.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00093",
+          "name": "ASPILETS Tablet",
+          "category": "Pharmaceutical",
+          "qty": 10,
+          "unit_cost": 5.5,
+          "unit_price": 6.16,
+          "total_cost": 55.0,
+          "total_price": 61.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00119",
+      "date_time": "2026-07-30 09:32:17",
+      "payment_method": "CASH",
+      "total_sale": 1818.88,
+      "cash_received": 2000.0,
+      "change_due": 181.12,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00074",
+          "name": "ASCOF Forte 600mg Capsule 120s",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 790.0,
+          "unit_price": 884.8,
+          "total_cost": 1580.0,
+          "total_price": 1769.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 44.0,
+          "total_price": 49.28,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00120",
+      "date_time": "2026-07-30 11:44:46",
+      "payment_method": "CASH",
+      "total_sale": 884.8,
+      "cash_received": 1000.0,
+      "change_due": 115.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00250",
+          "name": "C.Y.GABRIEL Soap 60-Papaya",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 40.0,
+          "unit_price": 44.8,
+          "total_cost": 80.0,
+          "total_price": 89.6,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00081",
+          "name": "ASCOF Syrup Forte Menthol 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 110.0,
+          "unit_price": 123.2,
+          "total_cost": 110.0,
+          "total_price": 123.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00121",
+      "date_time": "2026-07-30 13:12:19",
+      "payment_method": "CASH",
+      "total_sale": 41.8,
+      "cash_received": 50.0,
+      "change_due": 8.2,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00017",
+          "name": "ALCOPLUS Isopropyl 40% 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 22.0,
+          "unit_price": 25.0,
+          "total_cost": 22.0,
+          "total_price": 25.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 15.0,
+          "total_price": 16.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00122",
+      "date_time": "2026-07-30 14:37:25",
+      "payment_method": "CASH",
+      "total_sale": 672.0,
+      "cash_received": 1000.0,
+      "change_due": 328.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00123",
+      "date_time": "2026-07-30 15:17:43",
+      "payment_method": "GCASH",
+      "total_sale": 98.56,
+      "cash_received": 98.56,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 88.0,
+          "total_price": 98.56,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00124",
+      "date_time": "2026-07-31 12:16:12",
+      "payment_method": "CASH",
+      "total_sale": 201.58,
+      "cash_received": 500.0,
+      "change_due": 298.42,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00005",
+          "name": "AGUA OXIGENADA 10V 120mL (Ace)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 28.0,
+          "unit_price": 32.0,
+          "total_cost": 56.0,
+          "total_price": 64.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00040",
+          "name": "AMBROLEX 15mg Syrup 60mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 120.0,
+          "unit_price": 134.0,
+          "total_cost": 120.0,
+          "total_price": 134.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00087",
+          "name": "ASCORBIC ACID 500 (Ritemed)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 3.2,
+          "unit_price": 3.58,
+          "total_cost": 3.2,
+          "total_price": 3.58,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00125",
+      "date_time": "2026-07-31 16:12:55",
+      "payment_method": "CASH",
+      "total_sale": 11.2,
+      "cash_received": 20.0,
+      "change_due": 8.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 10.0,
+          "total_price": 11.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00126",
+      "date_time": "2026-07-31 17:05:18",
+      "payment_method": "CASH",
+      "total_sale": 120.96,
+      "cash_received": 200.0,
+      "change_due": 79.04,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00216",
+          "name": "BIOFLU Tablet",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 22.0,
+          "unit_price": 24.64,
+          "total_cost": 88.0,
+          "total_price": 98.56,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00127",
+      "date_time": "2026-07-31 18:59:48",
+      "payment_method": "CASH",
+      "total_sale": 88.6,
+      "cash_received": 100.0,
+      "change_due": 11.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00007",
+          "name": "ALAXAN FR Capsule",
+          "category": "Pharmaceutical",
+          "qty": 5,
+          "unit_cost": 9.5,
+          "unit_price": 11.0,
+          "total_cost": 47.5,
+          "total_price": 55.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00175",
+          "name": "BETADINE Antiseptic 7.5mL",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 30.0,
+          "unit_price": 33.6,
+          "total_cost": 30.0,
+          "total_price": 33.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00128",
+      "date_time": "2026-08-01 12:23:36",
+      "payment_method": "CASH",
+      "total_sale": 403.2,
+      "cash_received": 500.0,
+      "change_due": 96.8,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00129",
+      "date_time": "2026-08-01 14:17:19",
+      "payment_method": "CASH",
+      "total_sale": 672.0,
+      "cash_received": 1000.0,
+      "change_due": 328.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00171",
+          "name": "BENCH D/Scent Col. 125-Sunday Mrng",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00130",
+      "date_time": "2026-08-01 15:18:33",
+      "payment_method": "CASH",
+      "total_sale": 224.0,
+      "cash_received": 500.0,
+      "change_due": 276.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00191",
+          "name": "BIGEN-B (Brown Black)",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 85.0,
+          "unit_price": 95.2,
+          "total_cost": 85.0,
+          "total_price": 95.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00082",
+          "name": "ASCOF Syrup Forte Menthol 60mL SF",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 115.0,
+          "unit_price": 128.8,
+          "total_cost": 115.0,
+          "total_price": 128.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00131",
+      "date_time": "2026-08-01 15:33:58",
+      "payment_method": "CASH",
+      "total_sale": 778.4,
+      "cash_received": 1000.0,
+      "change_due": 221.6,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 360.0,
+          "total_price": 403.2,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00232",
+          "name": "BONAKID 400g",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 320.0,
+          "unit_price": 358.4,
+          "total_cost": 320.0,
+          "total_price": 358.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00086",
+          "name": "ASCOF Tablet 300mg (Lagundi)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 7.5,
+          "unit_price": 8.4,
+          "total_cost": 15.0,
+          "total_price": 16.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00132",
+      "date_time": "2026-08-01 16:14:16",
+      "payment_method": "CASH",
+      "total_sale": 1092.0,
+      "cash_received": 1500.0,
+      "change_due": 408.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 720.0,
+          "total_price": 806.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00192",
+          "name": "BIGEN-C (Dark Brown)",
+          "category": "Pharmaceutical",
+          "qty": 3,
+          "unit_cost": 85.0,
+          "unit_price": 95.2,
+          "total_cost": 255.0,
+          "total_price": 285.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00133",
+      "date_time": "2026-08-02 08:56:48",
+      "payment_method": "CASH",
+      "total_sale": 1713.6,
+      "cash_received": 2000.0,
+      "change_due": 286.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00164",
+          "name": "BENCH D/Scent Col. 125-Bubble Pop",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 600.0,
+          "unit_price": 672.0,
+          "total_cost": 600.0,
+          "total_price": 672.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00159",
+          "name": "BENCH D/Scent Col. 75-IndianSumm",
+          "category": "Non-pharmaceutical",
+          "qty": 2,
+          "unit_cost": 360.0,
+          "unit_price": 403.2,
+          "total_cost": 720.0,
+          "total_price": 806.4,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00133",
+          "name": "BENCH B/Spray 100mL i Desire",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 210.0,
+          "unit_price": 235.2,
+          "total_cost": 210.0,
+          "total_price": 235.2,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00134",
+      "date_time": "2026-08-02 18:00:35",
+      "payment_method": "GCASH",
+      "total_sale": 100.8,
+      "cash_received": 100.8,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00237",
+          "name": "BONAMINE Chew Tablet (Adult)",
+          "category": "Pharmaceutical",
+          "qty": 2,
+          "unit_cost": 25.0,
+          "unit_price": 28.0,
+          "total_cost": 50.0,
+          "total_price": 56.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00250",
+          "name": "C.Y.GABRIEL Soap 60-Papaya",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 40.0,
+          "unit_price": 44.8,
+          "total_cost": 40.0,
+          "total_price": 44.8,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00135",
+      "date_time": "2026-08-02 18:58:20",
+      "payment_method": "CASH",
+      "total_sale": 201.6,
+      "cash_received": 500.0,
+      "change_due": 298.4,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00140",
+          "name": "BENCH D/Scent Col. 25-Beach Bum",
+          "category": "Non-pharmaceutical",
+          "qty": 1,
+          "unit_cost": 125.0,
+          "unit_price": 140.0,
+          "total_cost": 125.0,
+          "total_price": 140.0,
+          "status": "COMPLETED"
+        },
+        {
+          "sku": "SKU-00182",
+          "name": "BETET BALM",
+          "category": "Pharmaceutical",
+          "qty": 1,
+          "unit_cost": 55.0,
+          "unit_price": 61.6,
+          "total_cost": 55.0,
+          "total_price": 61.6,
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "tx_id": "TRX-00136",
+      "date_time": "2026-08-02 19:28:53",
+      "payment_method": "GCASH",
+      "total_sale": 22.4,
+      "cash_received": 22.4,
+      "change_due": 0.0,
+      "status": "COMPLETED",
+      "items": [
+        {
+          "sku": "SKU-00247",
+          "name": "BUSCOPAN Tablet 4's",
+          "category": "Pharmaceutical",
+          "qty": 4,
+          "unit_cost": 5.0,
+          "unit_price": 5.6,
+          "total_cost": 20.0,
+          "total_price": 22.4,
+          "status": "COMPLETED"
+        }
+      ]
+    }
+  ]
+}
