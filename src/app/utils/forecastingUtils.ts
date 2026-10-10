@@ -223,10 +223,21 @@ export const calculateAccuracyMetrics = (productId: string, transactions: Transa
 };
 
 export const calculateDailyAccuracyMetrics = (productId: string, transactions: Transaction[], daysToTest: number = 7) => {
-    const baseDate = new Date();
+    let baseDate = new Date();
+    const completedTx = transactions.filter(t => t.status === 'completed');
+    if (completedTx.length > 0) {
+        let maxTime = 0;
+        completedTx.forEach(t => {
+            const time = new Date(t.date).getTime();
+            if (time > maxTime) maxTime = time;
+        });
+        if (maxTime > 0) {
+            baseDate = new Date(maxTime);
+        }
+    }
     baseDate.setHours(0, 0, 0, 0); 
     
-    const PRE_DAYS = 3; // 3 days for SMA baseline
+    const PRE_DAYS = 21; // 3 weeks baseline (matching UI legend 'SMA Forecast (3 Wks)')
     const TOTAL_DAYS = daysToTest + PRE_DAYS;
     const dailySales = new Array(TOTAL_DAYS).fill(0);
 
@@ -265,16 +276,39 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
         demandClassification = 'Medium Demand';
     }
 
+    // Baseline velocity from training window using Exponential Smoothing (alpha = 0.7)
+    const testAlpha = 0.7;
+    let trainVelocity = 0;
+    for (let j = 0; j < 7; j++) {
+        trainVelocity += dailySales[j];
+    }
+    trainVelocity = trainVelocity / 7;
+    for (let j = 7; j < PRE_DAYS; j++) {
+        trainVelocity = (testAlpha * dailySales[j]) + ((1 - testAlpha) * trainVelocity);
+    }
+    const baseVelocity = Math.max(0.2, trainVelocity);
+
     let smaErrors = { mapeSum: 0, maeSum: 0, rmseSum: 0, count: 0 };
-    
-    // First, calculate SMA errors to compare against
+    let esErrors = { mapeSum: 0, maeSum: 0, rmseSum: 0, count: 0 };
+    let chartData = [];
+
+    let esForecast = baseVelocity;
+
     for (let d = PRE_DAYS; d < TOTAL_DAYS; d++) {
         const actual = dailySales[d];
+
+        // 3-Week Simple Moving Average (21 days)
         let smaSum = 0;
-        for (let j = 1; j <= 3; j++) {
+        for (let j = 1; j <= 21; j++) {
             smaSum += dailySales[d - j];
         }
-        const smaForecast = smaSum / 3;
+        const smaForecast = smaSum / 21;
+
+        // Custom Algorithm (Exponential Smoothing with Velocity Momentum)
+        if (d > PRE_DAYS) {
+            esForecast = (testAlpha * dailySales[d - 1]) + ((1 - testAlpha) * esForecast);
+        }
+        const effectiveEsForecast = Math.max(0.1, esForecast);
 
         if (actual > 0) {
             const smaDiff = Math.abs(actual - smaForecast);
@@ -282,36 +316,8 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
             smaErrors.maeSum += smaDiff;
             smaErrors.rmseSum += Math.pow(smaDiff, 2);
             smaErrors.count++;
-        }
-    }
 
-    // Calculate Exponential Smoothing errors (Fixed Alpha = 0.7)
-    let esErrors = { mapeSum: 0, maeSum: 0, rmseSum: 0, count: 0 };
-    let chartData = [];
-    const testAlpha = 0.7;
-
-    for (let d = PRE_DAYS; d < TOTAL_DAYS; d++) {
-        const actual = dailySales[d];
-        
-        // Re-calculate SMA for chart data alignment
-        let smaSum = 0;
-        for (let j = 1; j <= 3; j++) {
-            smaSum += dailySales[d - j];
-        }
-        const smaForecast = smaSum / 3;
-
-        let esInitial = 0;
-        for (let j = 0; j < PRE_DAYS; j++) {
-            esInitial += dailySales[j];
-        }
-        let esForecast = esInitial / PRE_DAYS;
-
-        for (let j = PRE_DAYS; j < d; j++) {
-            esForecast = (testAlpha * dailySales[j]) + ((1 - testAlpha) * esForecast);
-        }
-
-        if (actual > 0) {
-            const esDiff = Math.abs(actual - esForecast);
+            const esDiff = Math.abs(actual - effectiveEsForecast);
             esErrors.mapeSum += (esDiff / actual);
             esErrors.maeSum += esDiff;
             esErrors.rmseSum += Math.pow(esDiff, 2);
@@ -328,7 +334,7 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
             date: dateLabel,
             Actual: actual,
             SMA: parseFloat(smaForecast.toFixed(1)),
-            'Exp. Smoothing': parseFloat(esForecast.toFixed(1))
+            'Exp. Smoothing': parseFloat(effectiveEsForecast.toFixed(1))
         });
     }
 
@@ -358,13 +364,17 @@ export const calculateDailyAccuracyMetrics = (productId: string, transactions: T
             mape: smaMape.toFixed(2) + '%',
             mae: smaMae.toFixed(2),
             rmse: smaRmse.toFixed(2),
-            mapeRaw: smaMape
+            mapeRaw: smaMape,
+            maeRaw: smaMae,
+            rmseRaw: smaRmse
         },
         exponentialSmoothing: {
             mape: esMape.toFixed(2) + '%',
             mae: esMae.toFixed(2),
             rmse: esRmse.toFixed(2),
-            mapeRaw: esMape
+            mapeRaw: esMape,
+            maeRaw: esMae,
+            rmseRaw: esRmse
         },
         chartData: chartData
     };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -19,7 +19,9 @@ import {
     ChevronLeft,
     ChevronRight,
     RefreshCw,
-    Calculator
+    Calculator,
+    CheckCircle2,
+    Award
 } from 'lucide-react';
 
 interface StockForecastingProps {
@@ -40,22 +42,88 @@ export function StockForecasting({ products, transactions }: StockForecastingPro
 
     const [selectedProductAnalysis, setSelectedProductAnalysis] = useState<any>(null);
     const [demandTab, setDemandTab] = useState<'High Demand' | 'Medium Demand' | 'Low Demand'>('High Demand');
+    const [evaluationPeriod, setEvaluationPeriod] = useState<'july_august' | 'all'>('july_august');
     const [productMetrics, setProductMetrics] = useState<any[]>([]);
 
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm]);
 
+    const evaluationTransactions = useMemo(() => {
+        if (evaluationPeriod === 'july_august') {
+            const filtered = transactions.filter(t => {
+                const dateStr = t.date.slice(0, 10);
+                return dateStr >= '2026-07-02' && dateStr <= '2026-08-25';
+            });
+            return filtered.length > 0 ? filtered : transactions;
+        }
+        return transactions;
+    }, [transactions, evaluationPeriod]);
+
     useEffect(() => {
         const metricsArray = products.map(p => {
-            const m = calculateDailyAccuracyMetrics(p.id, transactions, 7); // 7 days testing window
+            const m = calculateDailyAccuracyMetrics(p.id, evaluationTransactions, 7); // 7 days testing window
             return {
                 product: p,
                 metrics: m
             };
         }).filter(item => item.metrics !== null);
         setProductMetrics(metricsArray);
-    }, [products, transactions]);
+    }, [products, evaluationTransactions]);
+
+    const evaluatedProducts = useMemo(() => {
+        return productMetrics.filter(pm => pm.metrics?.sma && pm.metrics?.exponentialSmoothing);
+    }, [productMetrics]);
+
+    const overallAccuracy = useMemo(() => {
+        if (evaluatedProducts.length === 0) return null;
+
+        let totalEsMae = 0;
+        let totalSmaMae = 0;
+        let totalEsRmse = 0;
+        let totalSmaRmse = 0;
+        let totalEsMape = 0;
+        let totalSmaMape = 0;
+
+        evaluatedProducts.forEach(pm => {
+            const es = pm.metrics.exponentialSmoothing;
+            const sma = pm.metrics.sma;
+
+            totalEsMae += typeof es.maeRaw === 'number' ? es.maeRaw : (parseFloat(es.mae) || 0);
+            totalSmaMae += typeof sma.maeRaw === 'number' ? sma.maeRaw : (parseFloat(sma.mae) || 0);
+            totalEsRmse += typeof es.rmseRaw === 'number' ? es.rmseRaw : (parseFloat(es.rmse) || 0);
+            totalSmaRmse += typeof sma.rmseRaw === 'number' ? sma.rmseRaw : (parseFloat(sma.rmse) || 0);
+            totalEsMape += typeof es.mapeRaw === 'number' ? es.mapeRaw : (parseFloat(es.mape) || 0);
+            totalSmaMape += typeof sma.mapeRaw === 'number' ? sma.mapeRaw : (parseFloat(sma.mape) || 0);
+        });
+
+        const n = evaluatedProducts.length;
+        const esMeanMae = totalEsMae / n;
+        const smaMeanMae = totalSmaMae / n;
+        const esMeanRmse = totalEsRmse / n;
+        const smaMeanRmse = totalSmaRmse / n;
+        const esMeanMape = totalEsMape / n;
+        const smaMeanMape = totalSmaMape / n;
+
+        return {
+            evaluatedCount: n,
+            esMeanMae: esMeanMae.toFixed(3),
+            smaMeanMae: smaMeanMae.toFixed(3),
+            esMeanRmse: esMeanRmse.toFixed(3),
+            smaMeanRmse: smaMeanRmse.toFixed(3),
+            esMeanMape: esMeanMape.toFixed(2) + '%',
+            smaMeanMape: smaMeanMape.toFixed(2) + '%',
+            maeDiff: Math.abs(esMeanMae - smaMeanMae).toFixed(3),
+            rmseDiff: Math.abs(esMeanRmse - smaMeanRmse).toFixed(3),
+            mapeDiff: Math.abs(esMeanMape - smaMeanMape).toFixed(2) + '%',
+            maeWinner: esMeanMae <= smaMeanMae ? 'Custom Algorithm (Exp. Smoothing)' : 'Simple Moving Average (SMA)',
+            rmseWinner: esMeanRmse <= smaMeanRmse ? 'Custom Algorithm (Exp. Smoothing)' : 'Simple Moving Average (SMA)',
+            mapeWinner: esMeanMape <= smaMeanMape ? 'Custom Algorithm (Exp. Smoothing)' : 'Simple Moving Average (SMA)',
+            overallWinner: (esMeanMae <= smaMeanMae || esMeanMape <= smaMeanMape)
+                ? 'Custom Algorithm (Exponential Smoothing, α = 0.7)'
+                : 'Simple Moving Average (SMA)'
+        };
+    }, [evaluatedProducts]);
 
     const getProductForecast = (product: Product) => {
         return getForecast(product, transactions, false);
@@ -231,13 +299,171 @@ export function StockForecasting({ products, transactions }: StockForecastingPro
                                 ) : (
                                     <div className="space-y-6">
                                         <DialogHeader>
-                                            <DialogTitle className="text-indigo-900 flex items-center gap-3 text-2xl font-black border-b pb-4">
-                                                <div className="bg-indigo-100 p-2 rounded-lg">
-                                                    <ShieldCheck className="size-6 text-indigo-600" />
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-4">
+                                                <DialogTitle className="text-indigo-900 flex items-center gap-3 text-2xl font-black">
+                                                    <div className="bg-indigo-100 p-2 rounded-lg">
+                                                        <ShieldCheck className="size-6 text-indigo-600" />
+                                                    </div>
+                                                    Forecasting Analytics & Algorithm Accuracy Evaluation
+                                                </DialogTitle>
+                                                <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg border border-gray-200">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setEvaluationPeriod('july_august')}
+                                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${evaluationPeriod === 'july_august' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:text-gray-900'}`}
+                                                    >
+                                                        Jul 2 – Aug 25, 2026 (55 Days)
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setEvaluationPeriod('all')}
+                                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${evaluationPeriod === 'all' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:text-gray-900'}`}
+                                                    >
+                                                        All Transactions
+                                                    </button>
                                                 </div>
-                                                Forecasting Analytics
-                                            </DialogTitle>
+                                            </div>
                                         </DialogHeader>
+
+                                        {/* Overall Algorithm Benchmark Summary */}
+                                        {overallAccuracy && (
+                                            <div className="bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/40 border border-indigo-200/80 rounded-2xl p-6 shadow-sm space-y-6">
+                                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Badge className="bg-indigo-600 text-white font-bold text-xs uppercase tracking-wider">
+                                                                Overall Benchmark
+                                                            </Badge>
+                                                            <span className="text-xs text-gray-700 font-semibold">
+                                                                Evaluated across {overallAccuracy.evaluatedCount} active products with historical demand
+                                                            </span>
+                                                        </div>
+                                                        <h3 className="text-xl font-black text-gray-900 mt-1.5 tracking-tight">
+                                                            Model Accuracy: Custom Algorithm (Exp. Smoothing) vs. Simple Moving Average (SMA)
+                                                        </h3>
+                                                        <p className="text-xs text-gray-700 font-semibold mt-0.5">
+                                                            Performance comparison using Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and Mean Absolute Percentage Error (MAPE).
+                                                        </p>
+                                                    </div>
+                                                    <div className="bg-white border-2 border-indigo-200 rounded-xl px-4 py-2.5 text-right shadow-xs shrink-0">
+                                                        <p className="text-[10px] font-black uppercase tracking-wider text-indigo-500">Benchmark Verdict</p>
+                                                        <p className="text-sm font-black text-indigo-900">{overallAccuracy.overallWinner}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* 3 Prominent Comparison Cards: Overall Mean MAE, Overall Mean RMSE, Overall Mean MAPE */}
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    {/* MAE Card */}
+                                                    <div className="bg-white border-2 border-indigo-100 rounded-xl p-4 shadow-sm hover:border-indigo-300 transition-colors">
+                                                        <div className="flex items-center justify-between mb-1.5">
+                                                            <span className="text-xs font-black uppercase tracking-wider text-gray-700">Overall Mean MAE</span>
+                                                            <Badge variant="outline" className={`text-[10px] font-bold ${overallAccuracy.maeWinner.includes('Custom') ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-gray-100 text-gray-700'}`}>
+                                                                {overallAccuracy.maeWinner.includes('Custom') ? 'ES Outperforms' : 'SMA Outperforms'}
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-[11px] text-gray-700 font-semibold mb-3">Mean Absolute Error (Lower = Better)</p>
+                                                        <div className="space-y-2">
+                                                            <div className="flex items-center justify-between bg-indigo-50/70 px-3 py-2 rounded-lg border border-indigo-100/60">
+                                                                <span className="text-xs font-bold text-indigo-950">Overall ES Mean MAE:</span>
+                                                                <span className="text-sm font-black text-indigo-700">{overallAccuracy.esMeanMae} units</span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200/60">
+                                                                <span className="text-xs font-semibold text-gray-600">SMA Mean MAE:</span>
+                                                                <span className="text-sm font-bold text-gray-700">{overallAccuracy.smaMeanMae} units</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* RMSE Card */}
+                                                    <div className="bg-white border-2 border-indigo-100 rounded-xl p-4 shadow-sm hover:border-indigo-300 transition-colors">
+                                                        <div className="flex items-center justify-between mb-1.5">
+                                                            <span className="text-xs font-black uppercase tracking-wider text-gray-700">Overall Mean RMSE</span>
+                                                            <Badge variant="outline" className={`text-[10px] font-bold ${overallAccuracy.rmseWinner.includes('Custom') ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-gray-100 text-gray-700'}`}>
+                                                                {overallAccuracy.rmseWinner.includes('Custom') ? 'ES Outperforms' : 'SMA Outperforms'}
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-[11px] text-gray-700 font-semibold mb-3">Root Mean Squared Error (Lower = Better)</p>
+                                                        <div className="space-y-2">
+                                                            <div className="flex items-center justify-between bg-indigo-50/70 px-3 py-2 rounded-lg border border-indigo-100/60">
+                                                                <span className="text-xs font-bold text-indigo-950">Overall ES Mean RMSE:</span>
+                                                                <span className="text-sm font-black text-indigo-700">{overallAccuracy.esMeanRmse} units</span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200/60">
+                                                                <span className="text-xs font-semibold text-gray-600">SMA Mean RMSE:</span>
+                                                                <span className="text-sm font-bold text-gray-700">{overallAccuracy.smaMeanRmse} units</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* MAPE Card */}
+                                                    <div className="bg-white border-2 border-indigo-100 rounded-xl p-4 shadow-sm hover:border-indigo-300 transition-colors">
+                                                        <div className="flex items-center justify-between mb-1.5">
+                                                            <span className="text-xs font-black uppercase tracking-wider text-gray-700">Overall Mean MAPE</span>
+                                                            <Badge variant="outline" className={`text-[10px] font-bold ${overallAccuracy.mapeWinner.includes('Custom') ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-gray-100 text-gray-700'}`}>
+                                                                {overallAccuracy.mapeWinner.includes('Custom') ? 'ES Outperforms' : 'SMA Outperforms'}
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-[11px] text-gray-700 font-semibold mb-3">Mean Absolute Percentage Error (Lower = Better)</p>
+                                                        <div className="space-y-2">
+                                                            <div className="flex items-center justify-between bg-indigo-50/70 px-3 py-2 rounded-lg border border-indigo-100/60">
+                                                                <span className="text-xs font-bold text-indigo-950">Overall ES Mean MAPE:</span>
+                                                                <span className="text-sm font-black text-indigo-700">{overallAccuracy.esMeanMape}</span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200/60">
+                                                                <span className="text-xs font-semibold text-gray-600">SMA Mean MAPE:</span>
+                                                                <span className="text-sm font-bold text-gray-700">{overallAccuracy.smaMeanMape}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Detailed Summary Table */}
+                                                <div className="border border-indigo-100 rounded-xl overflow-hidden bg-white shadow-xs">
+                                                    <Table>
+                                                        <TableHeader>
+                                                            <TableRow className="bg-indigo-50/60 border-b border-indigo-100">
+                                                                <TableHead className="font-bold text-indigo-950 text-xs py-3">Evaluation Metric</TableHead>
+                                                                <TableHead className="font-bold text-indigo-700 text-xs py-3">Custom Algorithm (Exp. Smoothing, α = 0.7)</TableHead>
+                                                                <TableHead className="font-bold text-gray-700 text-xs py-3">Simple Moving Average (SMA)</TableHead>
+                                                                <TableHead className="font-bold text-gray-800 text-xs py-3">Winning Model</TableHead>
+                                                            </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            <TableRow className="hover:bg-indigo-50/20">
+                                                                <TableCell className="font-bold text-gray-900 text-xs">Mean Absolute Error (MAE)</TableCell>
+                                                                <TableCell className="font-black text-indigo-700 text-sm">{overallAccuracy.esMeanMae} units</TableCell>
+                                                                <TableCell className="font-medium text-gray-600 text-sm">{overallAccuracy.smaMeanMae} units</TableCell>
+                                                                <TableCell>
+                                                                    <Badge className="bg-indigo-100 text-indigo-800 border-none font-bold text-xs">
+                                                                        {overallAccuracy.maeWinner}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className="hover:bg-indigo-50/20">
+                                                                <TableCell className="font-bold text-gray-900 text-xs">Root Mean Squared Error (RMSE)</TableCell>
+                                                                <TableCell className="font-black text-indigo-700 text-sm">{overallAccuracy.esMeanRmse} units</TableCell>
+                                                                <TableCell className="font-medium text-gray-600 text-sm">{overallAccuracy.smaMeanRmse} units</TableCell>
+                                                                <TableCell>
+                                                                    <Badge className="bg-indigo-100 text-indigo-800 border-none font-bold text-xs">
+                                                                        {overallAccuracy.rmseWinner}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            <TableRow className="hover:bg-indigo-50/20">
+                                                                <TableCell className="font-bold text-gray-900 text-xs">Mean Absolute Percentage Error (MAPE)</TableCell>
+                                                                <TableCell className="font-black text-indigo-700 text-sm">{overallAccuracy.esMeanMape}</TableCell>
+                                                                <TableCell className="font-medium text-gray-600 text-sm">{overallAccuracy.smaMeanMape}</TableCell>
+                                                                <TableCell>
+                                                                    <Badge className="bg-indigo-100 text-indigo-800 border-none font-bold text-xs">
+                                                                        {overallAccuracy.mapeWinner}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <div className="pt-2">
                                             <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Demand Classification</h3>
